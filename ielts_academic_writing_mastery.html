@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Task 1: Academic Writing Mastery</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for in-browser JSX transpilation -->
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        /* Custom scrollbar for text area and scaffold */
+        textarea::-webkit-scrollbar, .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        textarea::-webkit-scrollbar-track, .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb, .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover, .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Cache TTS Voices on load
+        window.cachedVoices = [];
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.cachedVoices = window.speechSynthesis.getVoices();
+            };
+        }
+
+        // --- Icon Components ---
+        const SvgIcon = ({ d, points, ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+                {props.children}
+            </svg>
+        );
+
+        const Home = (p) => <SvgIcon {...p}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></SvgIcon>;
+        const ArrowRight = (p) => <SvgIcon {...p}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></SvgIcon>;
+        const ArrowLeft = (p) => <SvgIcon {...p}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></SvgIcon>;
+        const BarChart2 = (p) => <SvgIcon {...p}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></SvgIcon>;
+        const CheckCircle = (p) => <SvgIcon {...p}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></SvgIcon>;
+        const Play = (p) => <SvgIcon {...p}><polygon points="5 3 19 12 5 21 5 3"/></SvgIcon>;
+        const Lightbulb = (p) => <SvgIcon {...p}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></SvgIcon>;
+        const Award = (p) => <SvgIcon {...p}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></SvgIcon>;
+        const FileText = (p) => <SvgIcon {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></SvgIcon>;
+        const Copy = (p) => <SvgIcon {...p}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></SvgIcon>;
+        const BookOpen = (p) => <SvgIcon {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></SvgIcon>;
+        const Layers = (p) => <SvgIcon {...p}><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></SvgIcon>;
+        const ListChecks = (p) => <SvgIcon {...p}><path d="M11 6h9"/><path d="M11 12h9"/><path d="M11 18h9"/><polyline points="3 6 4 7 6 5"/><polyline points="3 12 4 13 6 11"/><polyline points="3 18 4 19 6 17"/></SvgIcon>;
+        const Edit3 = (p) => <SvgIcon {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></SvgIcon>;
+        const AlertTriangle = (p) => <SvgIcon {...p}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></SvgIcon>;
+
+        // --- Helper for 1x Speech Speed + specific Voices (Andrew, Brian, Emma) ---
+        const speakText = (text) => {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); 
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0; 
+                
+                let voices = window.speechSynthesis.getVoices();
+                if (voices.length === 0) voices = window.cachedVoices;
+
+                // Priority: Microsoft multilingual online Andrew, Brian, Emma
+                let preferredVoice = voices.find(v => 
+                    (v.name.includes('Andrew') || v.name.includes('Brian') || v.name.includes('Emma')) && v.name.includes('Online')
+                );
+                
+                if (!preferredVoice) {
+                    preferredVoice = voices.find(v => v.name.includes('Andrew') || v.name.includes('Brian') || v.name.includes('Emma'));
+                }
+
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("Speech synthesis not supported in this browser.");
+            }
+        };
+
+        // --- Safe Copy for HTML/iFrames ---
+        const fallbackCopyTextToClipboard = (text, setCopied) => {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            } catch (err) {}
+            document.body.removeChild(textArea);
+        };
+
+        // --- Compact Diagram Components with Expanded viewBox for Axis Visibility ---
+
+        // 1. Bar Chart (Clubs)
+        const IeltsBarChart = () => (
+            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+                <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Club Memberships (2015 vs 2020)</h3>
+                <p className="text-center text-[10px] text-slate-500 mb-2">Number of Secondary Students</p>
+                <svg viewBox="0 0 540 320" className="w-full h-auto font-sans">
+                <g transform="translate(30, 15)">
+                    {[0, 50, 100, 150, 200, 250, 300].map((val) => (
+                        <g key={val}>
+                        <line x1="40" y1={250 - (val * 0.75)} x2="480" y2={250 - (val * 0.75)} stroke="#e2e8f0" strokeWidth="1" />
+                        <text x="30" y={250 - (val * 0.75) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}</text>
+                        </g>
+                    ))}
+                    <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                    <text x="140" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">2015</text>
+                    <rect x="70" y={250 - (150 * 0.75)} width="40" height={150 * 0.75} fill="#3b82f6" />
+                    <rect x="120" y={250 - (120 * 0.75)} width="40" height={120 * 0.75} fill="#f59e0b" />
+                    <rect x="170" y={250 - (40 * 0.75)} width="40" height={40 * 0.75} fill="#10b981" />
+                    <text x="380" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">2020</text>
+                    <rect x="310" y={250 - (240 * 0.75)} width="40" height={240 * 0.75} fill="#3b82f6" />
+                    <rect x="360" y={250 - (70 * 0.75)} width="40" height={70 * 0.75} fill="#f59e0b" />
+                    <rect x="410" y={250 - (210 * 0.75)} width="40" height={210 * 0.75} fill="#10b981" />
+                    <g transform="translate(150, 290)">
+                        <rect x="0" y="0" width="10" height="10" fill="#3b82f6" /><text x="14" y="9" fontSize="10" fill="#475569">Sports</text>
+                        <rect x="70" y="0" width="10" height="10" fill="#f59e0b" /><text x="84" y="9" fontSize="10" fill="#475569">Drama</text>
+                        <rect x="140" y="0" width="10" height="10" fill="#10b981" /><text x="154" y="9" fontSize="10" fill="#475569">Coding</text>
+                    </g>
+                </g>
+                </svg>
+            </div>
+        );
+
+        // 2. Line Graph (Cafeteria Sales)
+        const IeltsLineGraph = () => (
+            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+                <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Cafeteria Lunch Sales</h3>
+                <p className="text-center text-[10px] text-slate-500 mb-2">Number of Meals Sold</p>
+                <svg viewBox="0 0 540 320" className="w-full h-auto font-sans">
+                <g transform="translate(30, 15)">
+                    {[0, 100, 200, 300, 400, 500].map((val) => (
+                        <g key={val}>
+                        <line x1="40" y1={250 - (val * 0.4)} x2="480" y2={250 - (val * 0.4)} stroke="#e2e8f0" strokeWidth="1" />
+                        <text x="30" y={250 - (val * 0.4) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}</text>
+                        </g>
+                    ))}
+                    <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                    <line x1="40" y1="50" x2="40" y2="250" stroke="#475569" strokeWidth="2" />
+                    {['Sep', 'Oct', 'Nov', 'Dec', 'Jan'].map((month, idx) => (
+                        <text key={month} x={80 + (idx * 95)} y="270" textAnchor="middle" fontSize="12" fill="#334155">{month}</text>
+                    ))}
+                    <polyline points="80,90 175,110 270,170 365,190 460,210" fill="none" stroke="#ef4444" strokeWidth="3" />
+                    {[[80,90], [175,110], [270,170], [365,190], [460,210]].map((pt, i) => (
+                        <circle key={`p-${i}`} cx={pt[0]} cy={pt[1]} r="4" fill="#ef4444" />
+                    ))}
+                    <polyline points="80,210 175,190 270,150 365,110 460,70" fill="none" stroke="#10b981" strokeWidth="3" strokeDasharray="5,5" />
+                    {[[80,210], [175,190], [270,150], [365,110], [460,70]].map((pt, i) => (
+                        <circle key={`s-${i}`} cx={pt[0]} cy={pt[1]} r="4" fill="#10b981" />
+                    ))}
+                    <g transform="translate(180, 290)">
+                        <line x1="0" y1="5" x2="15" y2="5" stroke="#ef4444" strokeWidth="3" /><text x="20" y="9" fontSize="10" fill="#475569">Pizza</text>
+                        <line x1="80" y1="5" x2="95" y2="5" stroke="#10b981" strokeWidth="3" strokeDasharray="4,2" /><text x="100" y="9" fontSize="10" fill="#475569">Salad</text>
+                    </g>
+                </g>
+                </svg>
+            </div>
+        );
+
+        // 3. Doughnut Chart (Transport)
+        const IeltsDoughnutChart = () => (
+            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+                <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Mode of Transport (Seniors)</h3>
+                <p className="text-center text-[10px] text-slate-500 mb-2">Percentage Breakdown</p>
+                <svg viewBox="0 0 540 280" className="w-full h-auto font-sans">
+                <g transform="translate(220, 140)">
+                    <circle r="80" cx="0" cy="0" fill="transparent" stroke="#3b82f6" strokeWidth="40" strokeDasharray="226.2 502.6" strokeDashoffset="0" />
+                    <circle r="80" cx="0" cy="0" fill="transparent" stroke="#f59e0b" strokeWidth="40" strokeDasharray="175.9 502.6" strokeDashoffset="-226.2" />
+                    <circle r="80" cx="0" cy="0" fill="transparent" stroke="#10b981" strokeWidth="40" strokeDasharray="100.5 502.6" strokeDashoffset="-402.1" />
+                    <text x="0" y="5" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#334155">100%</text>
+                </g>
+                <g transform="translate(370, 90)">
+                    <rect x="0" y="0" width="14" height="14" fill="#3b82f6" rx="2" /><text x="22" y="11" fontSize="13" fill="#475569">Walking (45%)</text>
+                    <rect x="0" y="35" width="14" height="14" fill="#f59e0b" rx="2" /><text x="22" y="46" fontSize="13" fill="#475569">School Bus (35%)</text>
+                    <rect x="0" y="70" width="14" height="14" fill="#10b981" rx="2" /><text x="22" y="81" fontSize="13" fill="#475569">Car/Drop-off (20%)</text>
+                </g>
+                </svg>
+            </div>
+        );
+
+        // 4. Dual Pie Charts (Subject Preferences)
+        const IeltsPieCharts = () => (
+            <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+                <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Favourite Elective Subjects</h3>
+                <div className="flex justify-around items-center mt-2 py-4">
+                <div className="flex flex-col items-center">
+                    <h4 className="font-bold text-slate-700 text-xs mb-1">Boys</h4>
+                    <svg viewBox="0 0 200 200" className="w-28 h-28">
+                    <circle r="45" cx="100" cy="100" fill="transparent" stroke="#3b82f6" strokeWidth="90" strokeDasharray="127.2 282.7" strokeDashoffset="0" />
+                    <circle r="45" cx="100" cy="100" fill="transparent" stroke="#10b981" strokeWidth="90" strokeDasharray="84.8 282.7" strokeDashoffset="-127.2" />
+                    <circle r="45" cx="100" cy="100" fill="transparent" stroke="#f59e0b" strokeWidth="90" strokeDasharray="70.6 282.7" strokeDashoffset="-212" />
+                    </svg>
+                </div>
+                <div className="flex flex-col items-center">
+                    <h4 className="font-bold text-slate-700 text-xs mb-1">Girls</h4>
+                    <svg viewBox="0 0 200 200" className="w-28 h-28">
+                    <circle r="45" cx="100" cy="100" fill="transparent" stroke="#f59e0b" strokeWidth="90" strokeDasharray="141.3 282.7" strokeDashoffset="0" />
+                    <circle r="45" cx="100" cy="100" fill="transparent" stroke="#3b82f6" strokeWidth="90" strokeDasharray="84.8 282.7" strokeDashoffset="-141.3" />
+                    <circle r="45" cx="100" cy="100" fill="transparent" stroke="#10b981" strokeWidth="90" strokeDasharray="56.5 282.7" strokeDashoffset="-226.1" />
+                    </svg>
+                </div>
+                <div className="flex flex-col justify-center space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div className="flex items-center"><div className="w-3 h-3 bg-[#3b82f6] rounded mr-2"></div><span className="text-xs">Tech</span></div>
+                    <div className="flex items-center"><div className="w-3 h-3 bg-[#10b981] rounded mr-2"></div><span className="text-xs">P.E.</span></div>
+                    <div className="flex items-center"><div className="w-3 h-3 bg-[#f59e0b] rounded mr-2"></div><span className="text-xs">Arts</span></div>
+                </div>
+                </div>
+            </div>
+        );
+
+        // 5. Bar Chart 2 (Part-Time Jobs)
+        const IeltsBarChart2 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Student Part-Time Jobs (%)</h3>
+            <svg viewBox="0 0 540 320" className="w-full h-auto font-sans mt-2">
+            <g transform="translate(30, 15)">
+                {[0, 10, 20, 30, 40, 50].map(val => (
+                    <g key={val}>
+                    <line x1="40" y1={250 - (val * 4)} x2="480" y2={250 - (val * 4)} stroke="#e2e8f0" />
+                    <text x="30" y={250 - (val * 4) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}</text>
+                    </g>
+                ))}
+                <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                <text x="140" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Gr 10</text>
+                <rect x="90" y={250 - (10 * 4)} width="30" height={10 * 4} fill="#3b82f6" />
+                <rect x="125" y={250 - (15 * 4)} width="30" height={15 * 4} fill="#f59e0b" />
+                <rect x="160" y={250 - (5 * 4)} width="30" height={5 * 4} fill="#10b981" />
+
+                <text x="280" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Gr 11</text>
+                <rect x="230" y={250 - (20 * 4)} width="30" height={20 * 4} fill="#3b82f6" />
+                <rect x="265" y={250 - (30 * 4)} width="30" height={30 * 4} fill="#f59e0b" />
+                <rect x="300" y={250 - (8 * 4)} width="30" height={8 * 4} fill="#10b981" />
+
+                <text x="420" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Gr 12</text>
+                <rect x="370" y={250 - (25 * 4)} width="30" height={25 * 4} fill="#3b82f6" />
+                <rect x="405" y={250 - (45 * 4)} width="30" height={45 * 4} fill="#f59e0b" />
+                <rect x="440" y={250 - (12 * 4)} width="30" height={12 * 4} fill="#10b981" />
+
+                <g transform="translate(140, 290)">
+                    <rect x="0" y="0" width="10" height="10" fill="#3b82f6" /><text x="14" y="9" fontSize="10" fill="#475569">Retail</text>
+                    <rect x="70" y="0" width="10" height="10" fill="#f59e0b" /><text x="84" y="9" fontSize="10" fill="#475569">Food</text>
+                    <rect x="140" y="0" width="10" height="10" fill="#10b981" /><text x="154" y="9" fontSize="10" fill="#475569">Tutor</text>
+                </g>
+            </g>
+            </svg>
+        </div>
+        );
+
+        // 6. Bar Chart 3 (Volunteer Hours)
+        const IeltsBarChart3 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Monthly Volunteer Hours</h3>
+            <svg viewBox="0 0 540 320" className="w-full h-auto font-sans mt-2">
+            <g transform="translate(30, 15)">
+                {[0, 10, 20, 30, 40, 50].map(val => (
+                    <g key={val}>
+                    <line x1="40" y1={250 - (val * 4)} x2="480" y2={250 - (val * 4)} stroke="#e2e8f0" />
+                    <text x="30" y={250 - (val * 4) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}</text>
+                    </g>
+                ))}
+                <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                <text x="120" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Fall</text>
+                <rect x="90" y={250 - (15 * 4)} width="25" height={15 * 4} fill="#3b82f6" />
+                <rect x="125" y={250 - (20 * 4)} width="25" height={20 * 4} fill="#ec4899" />
+                <text x="260" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Winter</text>
+                <rect x="230" y={250 - (25 * 4)} width="25" height={25 * 4} fill="#3b82f6" />
+                <rect x="265" y={250 - (40 * 4)} width="25" height={40 * 4} fill="#ec4899" />
+                <text x="400" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Spring</text>
+                <rect x="370" y={250 - (35 * 4)} width="25" height={35 * 4} fill="#3b82f6" />
+                <rect x="405" y={250 - (30 * 4)} width="25" height={30 * 4} fill="#ec4899" />
+                <g transform="translate(190, 290)">
+                    <rect x="0" y="0" width="10" height="10" fill="#3b82f6" /><text x="14" y="9" fontSize="10" fill="#475569">Boys</text>
+                    <rect x="60" y="0" width="10" height="10" fill="#ec4899" /><text x="74" y="9" fontSize="10" fill="#475569">Girls</text>
+                </g>
+            </g>
+            </svg>
+        </div>
+        );
+
+        // 7. Bar Chart 4 (Graduation Plans)
+        const IeltsBarChart4 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Graduation Plans (%)</h3>
+            <svg viewBox="0 0 540 320" className="w-full h-auto font-sans mt-2">
+            <g transform="translate(30, 15)">
+                {[0, 20, 40, 60, 80].map(val => (
+                    <g key={val}>
+                    <line x1="40" y1={250 - (val * 2.5)} x2="480" y2={250 - (val * 2.5)} stroke="#e2e8f0" />
+                    <text x="30" y={250 - (val * 2.5) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}</text>
+                    </g>
+                ))}
+                <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                <text x="110" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Uni</text>
+                <rect x="80" y={250 - (65 * 2.5)} width="25" height={65 * 2.5} fill="#94a3b8" />
+                <rect x="115" y={250 - (55 * 2.5)} width="25" height={55 * 2.5} fill="#3b82f6" />
+                <text x="250" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Trade</text>
+                <rect x="220" y={250 - (20 * 2.5)} width="25" height={20 * 2.5} fill="#94a3b8" />
+                <rect x="255" y={250 - (35 * 2.5)} width="25" height={35 * 2.5} fill="#3b82f6" />
+                <text x="390" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Gap</text>
+                <rect x="360" y={250 - (15 * 2.5)} width="25" height={15 * 2.5} fill="#94a3b8" />
+                <rect x="395" y={250 - (10 * 2.5)} width="25" height={10 * 2.5} fill="#3b82f6" />
+                <g transform="translate(190, 290)">
+                    <rect x="0" y="0" width="10" height="10" fill="#94a3b8" /><text x="14" y="9" fontSize="10" fill="#475569">2010</text>
+                    <rect x="60" y="0" width="10" height="10" fill="#3b82f6" /><text x="74" y="9" fontSize="10" fill="#475569">2020</text>
+                </g>
+            </g>
+            </svg>
+        </div>
+        );
+
+        // 8. Pie Chart 3 (School Budget)
+        const IeltsPieChart3 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto flex flex-col items-center">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">School Budget (2022)</h3>
+            <svg viewBox="0 0 200 200" className="w-40 h-40 my-4">
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#3b82f6" strokeWidth="90" strokeDasharray="113.1 282.7" strokeDashoffset="0" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#10b981" strokeWidth="90" strokeDasharray="84.8 282.7" strokeDashoffset="-113.1" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#f59e0b" strokeWidth="90" strokeDasharray="56.5 282.7" strokeDashoffset="-197.9" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#8b5cf6" strokeWidth="90" strokeDasharray="28.2 282.7" strokeDashoffset="-254.4" />
+            </svg>
+            <div className="flex flex-wrap justify-center gap-3 mt-2">
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#3b82f6] rounded mr-1"></div><span className="text-xs">Tech(40%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#10b981] rounded mr-1"></div><span className="text-xs">Sports(30%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#f59e0b] rounded mr-1"></div><span className="text-xs">Arts(20%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#8b5cf6] rounded mr-1"></div><span className="text-xs">Lib(10%)</span></div>
+            </div>
+        </div>
+        );
+
+        // 9. Pie Chart 4 (Weekend Activities)
+        const IeltsPieChart4 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto flex flex-col items-center">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Weekend Activities</h3>
+            <svg viewBox="0 0 200 200" className="w-40 h-40 my-4">
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#ec4899" strokeWidth="90" strokeDasharray="98.9 282.7" strokeDashoffset="0" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#3b82f6" strokeWidth="90" strokeDasharray="84.8 282.7" strokeDashoffset="-98.9" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#10b981" strokeWidth="90" strokeDasharray="70.6 282.7" strokeDashoffset="-183.7" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#f59e0b" strokeWidth="90" strokeDasharray="28.2 282.7" strokeDashoffset="-254.3" />
+            </svg>
+            <div className="flex flex-wrap justify-center gap-3 mt-2">
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#ec4899] rounded mr-1"></div><span className="text-xs">Social(35%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#3b82f6] rounded mr-1"></div><span className="text-xs">Game(30%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#10b981] rounded mr-1"></div><span className="text-xs">Sport(25%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#f59e0b] rounded mr-1"></div><span className="text-xs">Study(10%)</span></div>
+            </div>
+        </div>
+        );
+
+        // 10. Line Graph 2 (Library Checkouts)
+        const IeltsLineGraph2 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Library Book Checkouts</h3>
+            <svg viewBox="0 0 540 320" className="w-full h-auto font-sans mt-2">
+            <g transform="translate(30, 15)">
+                {[0, 100, 200, 300, 400].map(val => (
+                    <g key={val}>
+                    <line x1="40" y1={250 - (val * 0.5)} x2="480" y2={250 - (val * 0.5)} stroke="#e2e8f0" />
+                    <text x="30" y={250 - (val * 0.5) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}</text>
+                    </g>
+                ))}
+                <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                <line x1="40" y1="50" x2="40" y2="250" stroke="#475569" strokeWidth="2" />
+                {['Sep', 'Oct', 'Nov', 'Dec'].map((m, i) => <text key={m} x={100 + i*110} y="270" textAnchor="middle" fontSize="12">{m}</text>)}
+                <polyline points="100,150 210,130 320,100 430,70" fill="none" stroke="#3b82f6" strokeWidth="3" />
+                <polyline points="100,100 210,170 320,190 430,210" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="5,5" />
+                <g transform="translate(180, 290)">
+                    <line x1="0" y1="5" x2="15" y2="5" stroke="#3b82f6" strokeWidth="3" /><text x="20" y="9" fontSize="10">Fiction</text>
+                    <line x1="70" y1="5" x2="85" y2="5" stroke="#f59e0b" strokeWidth="3" strokeDasharray="4,2" /><text x="90" y="9" fontSize="10">Non-Fiction</text>
+                </g>
+            </g>
+            </svg>
+        </div>
+        );
+
+        // 11. Line Graph 3 (Attendance Rates)
+        const IeltsLineGraph3 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Attendance Rates (Fall Term)</h3>
+            <svg viewBox="0 0 540 320" className="w-full h-auto font-sans mt-2">
+            <g transform="translate(30, 15)">
+                {[80, 85, 90, 95, 100].map(val => (
+                    <g key={val}>
+                    <line x1="40" y1={250 - ((val-80) * 10)} x2="480" y2={250 - ((val-80) * 10)} stroke="#e2e8f0" />
+                    <text x="30" y={250 - ((val-80) * 10) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}%</text>
+                    </g>
+                ))}
+                <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                <line x1="40" y1="50" x2="40" y2="250" stroke="#475569" strokeWidth="2" />
+                {['Sep', 'Oct', 'Nov', 'Dec'].map((m, i) => <text key={m} x={100 + i*110} y="270" textAnchor="middle" fontSize="12">{m}</text>)}
+                <polyline points="100,70 210,80 320,60 430,90" fill="none" stroke="#10b981" strokeWidth="3" />
+                <polyline points="100,100 210,120 320,200 430,150" fill="none" stroke="#ec4899" strokeWidth="3" strokeDasharray="5,5" />
+                <g transform="translate(180, 290)">
+                    <line x1="0" y1="5" x2="15" y2="5" stroke="#10b981" strokeWidth="3" /><text x="20" y="9" fontSize="10">Gr 12</text>
+                    <line x1="70" y1="5" x2="85" y2="5" stroke="#ec4899" strokeWidth="3" strokeDasharray="4,2" /><text x="90" y="9" fontSize="10">Gr 10</text>
+                </g>
+            </g>
+            </svg>
+        </div>
+        );
+
+        // 12. Line Graph 4 (Screen Time)
+        const IeltsLineGraph4 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Daily Screen Time (Hours)</h3>
+            <svg viewBox="0 0 540 320" className="w-full h-auto font-sans mt-2">
+            <g transform="translate(30, 15)">
+                {[0, 1, 2, 3, 4, 5].map(val => (
+                    <g key={val}>
+                    <line x1="40" y1={250 - (val * 40)} x2="480" y2={250 - (val * 40)} stroke="#e2e8f0" />
+                    <text x="30" y={250 - (val * 40) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}h</text>
+                    </g>
+                ))}
+                <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                <line x1="40" y1="50" x2="40" y2="250" stroke="#475569" strokeWidth="2" />
+                {['2018', '2019', '2020', '2021', '2022'].map((m, i) => <text key={m} x={80 + i*95} y="270" textAnchor="middle" fontSize="12">{m}</text>)}
+                <polyline points="80,170 175,150 270,70 365,60 460,50" fill="none" stroke="#8b5cf6" strokeWidth="3" />
+                <polyline points="80,210 175,200 270,170 365,180 460,190" fill="none" stroke="#3b82f6" strokeWidth="3" strokeDasharray="5,5" />
+                <g transform="translate(160, 290)">
+                    <line x1="0" y1="5" x2="15" y2="5" stroke="#8b5cf6" strokeWidth="3" /><text x="20" y="9" fontSize="10">Social</text>
+                    <line x1="70" y1="5" x2="85" y2="5" stroke="#3b82f6" strokeWidth="3" strokeDasharray="4,2" /><text x="90" y="9" fontSize="10">Edu Apps</text>
+                </g>
+            </g>
+            </svg>
+        </div>
+        );
+
+        // 13. Bar Chart 5 (Study Hours)
+        const IeltsBarChart5 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Weekly Study Hours by Subject</h3>
+            <svg viewBox="0 0 540 320" className="w-full h-auto font-sans mt-2">
+            <g transform="translate(30, 15)">
+                {[0, 2, 4, 6, 8, 10].map(val => (
+                    <g key={val}>
+                    <line x1="40" y1={250 - (val * 20)} x2="480" y2={250 - (val * 20)} stroke="#e2e8f0" />
+                    <text x="30" y={250 - (val * 20) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}</text>
+                    </g>
+                ))}
+                <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                
+                <text x="120" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Math</text>
+                <rect x="90" y={250 - (8 * 20)} width="25" height={8 * 20} fill="#3b82f6" />
+                <rect x="125" y={250 - (7 * 20)} width="25" height={7 * 20} fill="#ec4899" />
+                
+                <text x="260" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">Science</text>
+                <rect x="230" y={250 - (6 * 20)} width="25" height={6 * 20} fill="#3b82f6" />
+                <rect x="265" y={250 - (6.5 * 20)} width="25" height={6.5 * 20} fill="#ec4899" />
+                
+                <text x="400" y="270" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#334155">English</text>
+                <rect x="370" y={250 - (4 * 20)} width="25" height={4 * 20} fill="#3b82f6" />
+                <rect x="405" y={250 - (9 * 20)} width="25" height={9 * 20} fill="#ec4899" />
+                
+                <g transform="translate(190, 290)">
+                    <rect x="0" y="0" width="10" height="10" fill="#3b82f6" /><text x="14" y="9" fontSize="10" fill="#475569">Boys</text>
+                    <rect x="60" y="0" width="10" height="10" fill="#ec4899" /><text x="74" y="9" fontSize="10" fill="#475569">Girls</text>
+                </g>
+            </g>
+            </svg>
+        </div>
+        );
+
+        // 14. Pie Chart 5 (Field Trips)
+        const IeltsPieChart5 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto flex flex-col items-center">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">Preferred Field Trip Destinations</h3>
+            <svg viewBox="0 0 200 200" className="w-40 h-40 my-4">
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#10b981" strokeWidth="90" strokeDasharray="141.35 282.7" strokeDashoffset="0" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#3b82f6" strokeWidth="90" strokeDasharray="70.67 282.7" strokeDashoffset="-141.35" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#f59e0b" strokeWidth="90" strokeDasharray="42.4 282.7" strokeDashoffset="-212.02" />
+            <circle r="45" cx="100" cy="100" fill="transparent" stroke="#ef4444" strokeWidth="90" strokeDasharray="28.27 282.7" strokeDashoffset="-254.42" />
+            </svg>
+            <div className="flex flex-wrap justify-center gap-3 mt-2">
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#10b981] rounded mr-1"></div><span className="text-xs">Museums(50%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#3b82f6] rounded mr-1"></div><span className="text-xs">Nature(25%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#f59e0b] rounded mr-1"></div><span className="text-xs">Theaters(15%)</span></div>
+            <div className="flex items-center"><div className="w-3 h-3 bg-[#ef4444] rounded mr-1"></div><span className="text-xs">History(10%)</span></div>
+            </div>
+        </div>
+        );
+
+        // 15. Line Graph 5 (Energy)
+        const IeltsLineGraph5 = () => (
+        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm w-full mx-auto">
+            <h3 className="text-center font-bold text-slate-800 mb-1 text-sm">School Energy Consumption (kWh)</h3>
+            <svg viewBox="0 0 540 320" className="w-full h-auto font-sans mt-2">
+            <g transform="translate(30, 15)">
+                {[0, 200, 400, 600, 800].map(val => (
+                    <g key={val}>
+                    <line x1="40" y1={250 - (val * 0.25)} x2="480" y2={250 - (val * 0.25)} stroke="#e2e8f0" />
+                    <text x="30" y={250 - (val * 0.25) + 4} textAnchor="end" fontSize="10" fill="#64748b">{val}</text>
+                    </g>
+                ))}
+                <line x1="40" y1="250" x2="480" y2="250" stroke="#475569" strokeWidth="2" />
+                <line x1="40" y1="50" x2="40" y2="250" stroke="#475569" strokeWidth="2" />
+                {['Jan', 'Feb', 'Mar', 'Apr', 'May'].map((m, i) => <text key={m} x={80 + i*95} y="270" textAnchor="middle" fontSize="12">{m}</text>)}
+                <polyline points="80,100 175,120 270,180 365,220 460,230" fill="none" stroke="#f59e0b" strokeWidth="3" />
+                <polyline points="80,200 175,190 270,170 365,130 460,80" fill="none" stroke="#3b82f6" strokeWidth="3" strokeDasharray="5,5" />
+                <g transform="translate(160, 290)">
+                    <line x1="0" y1="5" x2="15" y2="5" stroke="#f59e0b" strokeWidth="3" /><text x="20" y="9" fontSize="10">Gas (Heating)</text>
+                    <line x1="100" y1="5" x2="115" y2="5" stroke="#3b82f6" strokeWidth="3" strokeDasharray="4,2" /><text x="120" y="9" fontSize="10">Electricity (AC)</text>
+                </g>
+            </g>
+            </svg>
+        </div>
+        );
+
+        // --- Reusable Line-by-Line Builder Component ---
+        const LineBuilder = ({ lines, title }) => {
+            const [visibleLines, setVisibleLines] = useState(0);
+            const endOfListRef = useRef(null);
+
+            const revealNext = () => {
+                if (visibleLines < lines.length) {
+                    const nextLine = lines[visibleLines];
+                    speakText(nextLine.advanced);
+                    setVisibleLines(prev => prev + 1);
+                }
+            };
+
+            useEffect(() => {
+                if (visibleLines > 0 && endOfListRef.current) {
+                    endOfListRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                }
+            }, [visibleLines]);
+
+            return (
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 md:p-6 mb-4">
+                <div className="flex justify-between items-center mb-4 border-b border-slate-200 pb-3">
+                    <h2 className="text-xl font-bold text-indigo-800">{title}</h2>
+                    <button 
+                    onClick={revealNext}
+                    disabled={visibleLines === lines.length}
+                    className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm text-sm"
+                    >
+                    {visibleLines === lines.length ? "Complete" : "Next Line"}
+                    <Play className="w-4 h-4 ml-2" />
+                    </button>
+                </div>
+
+                <div className="space-y-4">
+                    {lines.slice(0, visibleLines).map((line, idx) => (
+                    <div 
+                        key={idx} 
+                        onClick={() => speakText(line.advanced)}
+                        className="animate-fade-in bg-white p-4 rounded-lg shadow-sm border-l-4 border-indigo-500 cursor-pointer hover:bg-indigo-50 transition"
+                        title="Click to listen"
+                    >
+                        <div className="flex items-start mb-2 text-amber-700 bg-amber-50 p-2 rounded">
+                        <Lightbulb className="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs"><strong>Thought Process:</strong> {line.thought}</p>
+                        </div>
+                        
+                        <div className="mb-2 text-slate-500 text-xs line-through decoration-red-400">
+                        Basic Draft: {line.basic}
+                        </div>
+
+                        <div className="flex items-start">
+                        <Award className="w-4 h-4 mr-2 text-indigo-600 flex-shrink-0 mt-1" />
+                        <p className="text-sm text-slate-800 font-medium leading-relaxed">
+                            {line.advanced}
+                        </p>
+                        </div>
+                    </div>
+                    ))}
+                    <div ref={endOfListRef} className="h-1" />
+                </div>
+
+                {visibleLines === 0 && (
+                    <div className="text-center py-6 text-slate-400 text-sm">
+                    Click "Next Line" to walk through the thought process.
+                    </div>
+                )}
+                </div>
+            );
+        };
+
+        // --- Content Steps Components ---
+        function Step1Blueprint() {
+            return (
+                <div className="animate-fade-in">
+                <h2 className="text-xl font-bold text-slate-800 mb-3">Step 1: Analyzing the Diagram</h2>
+                <p className="text-slate-600 text-sm mb-4 leading-relaxed">
+                    Look at the chart. You are a data reporter. Notice the <strong>Who</strong> (Secondary students), <strong>Where</strong> (Lincoln High School), <strong>When</strong> (2015 vs 2020), and <strong>What</strong> (Club memberships).
+                </p>
+                <div className="grid md:grid-cols-1 gap-3 mb-4">
+                    <div 
+                        onClick={() => speakText("Intro. Paraphrase the prompt. State what the chart represents without numbers.")}
+                        className="bg-blue-50 p-3 rounded-lg border border-blue-100 cursor-pointer hover:bg-blue-100 transition"
+                    >
+                    <h4 className="font-bold text-blue-800 text-sm mb-1">1. Intro</h4>
+                    <p className="text-xs text-blue-900">Paraphrase the prompt. State what the chart represents without numbers.</p>
+                    </div>
+                    <div 
+                        onClick={() => speakText("Overview. Find biggest trends like Sports up, Drama down. No specific data points here.")}
+                        className="bg-emerald-50 p-3 rounded-lg border border-emerald-100 cursor-pointer hover:bg-emerald-100 transition"
+                    >
+                    <h4 className="font-bold text-emerald-800 text-sm mb-1">2. Overview</h4>
+                    <p className="text-xs text-emerald-900">Find biggest trends (e.g. Sports up, Drama down). No specific data points here.</p>
+                    </div>
+                    <div 
+                        onClick={() => speakText("Body Paragraphs. Group data logically, such as growing versus shrinking, and use exact numbers.")}
+                        className="bg-purple-50 p-3 rounded-lg border border-purple-100 cursor-pointer hover:bg-purple-100 transition"
+                    >
+                    <h4 className="font-bold text-purple-800 text-sm mb-1">3. Body Paragraphs</h4>
+                    <p className="text-xs text-purple-900">Group data logically (growing vs shrinking) and use exact numbers.</p>
+                    </div>
+                </div>
+                </div>
+            );
+        }
+
+        function Step2Intro() {
+            const introData = [
+                {
+                thought: "Rewrite prompt. Change 'shows' to 'compares', and 'club memberships' to 'participation rates'.",
+                basic: "The chart shows the changes in club memberships among students from 2015 to 2020.",
+                advanced: "The provided bar chart compares participation rates across three distinct after-school activities (Sports, Drama, Coding) among secondary students over a five-year period, commencing in 2015."
+                }
+            ];
+            return <div className="animate-fade-in"><LineBuilder title="Building Intro" lines={introData} /></div>;
+        }
+
+        function Step3Overview() {
+            const overviewData = [
+                {
+                thought: "Capture general trend without numbers. Sports and Coding grew, Drama shrank.",
+                basic: "Overall, sports and coding went up. But drama went down.",
+                advanced: "Overall, it is clearly evident that while memberships in both the Sports and Coding clubs witnessed an upward trend, participation in the Drama club experienced a noticeable decline."
+                },
+                {
+                thought: "Point out most significant feature across the whole chart to secure Band 7+.",
+                basic: "Also, sports had the most students.",
+                advanced: "Notably, Sports consistently remained the most popular extracurricular choice among the teenagers throughout the recorded timeframe."
+                }
+            ];
+            return <div className="animate-fade-in"><LineBuilder title="Building Overview" lines={overviewData} /></div>;
+        }
+
+        function Step4Body() {
+            const bodyData = [
+                {
+                thought: "Focus on clubs that grew. Start with biggest numbers (Sports).",
+                basic: "In 2015, sports had 150 students.",
+                advanced: "Looking at the details, Sports began as the most preferred activity, attracting 150 students in 2015."
+                },
+                {
+                thought: "State what happened by 2020 using a high-band verb.",
+                basic: "Then it went up to 240.",
+                advanced: "This figure subsequently experienced a significant surge, reaching a peak of 240 memberships by 2020."
+                },
+                {
+                thought: "Compare growth to Coding. Coding growth was dramatic.",
+                basic: "Coding also went up a lot, from 40 to 210.",
+                advanced: "Similarly, Coding saw the most dramatic transformation, skyrocketing from a mere 40 participants to roughly 210 five years later."
+                },
+                {
+                thought: "Group remaining data (declining Drama) in new paragraph.",
+                basic: "Drama had 120 people but dropped to 70.",
+                advanced: "Conversely, the Drama club exhibited an opposing trend. While it initially held a healthy membership of 120, interest waned, resulting in a drop to just 70 members."
+                }
+            ];
+            return (
+                <div className="animate-fade-in">
+                <LineBuilder title="Building Body Paragraphs" lines={bodyData} />
+                </div>
+            );
+        }
+
+        function Step5Templates() {
+            const [activeTab, setActiveTab] = useState('intro');
+            const [copied, setCopied] = useState(false);
+
+            const handleCopy = (text) => {
+                fallbackCopyTextToClipboard(text, setCopied);
+            };
+
+            const templateData = {
+                intro: {
+                title: "Intro Formulas",
+                formula: "The provided [chart type] compares/illustrates [what is being measured] among [target demographic] across [timeframe].",
+                example: "The provided bar chart compares participation rates in three clubs among secondary students from 2015 to 2020.",
+                phrases: [
+                    "provides a comparative analysis of...",
+                    "the proportion of secondary students who...",
+                    "over a five-year period, commencing in..."
+                ]
+                },
+                overview: {
+                title: "Overview Formulas",
+                formula: "Overall, it is clearly evident that while [A & B] witnessed an upward trend, [C] experienced a decline. Notably, [Highest] remained the most popular.",
+                example: "Overall, it is clearly evident that while Sports and Coding witnessed an upward trend, Drama experienced a decline.",
+                phrases: [
+                    "witnessed an upward trajectory",
+                    "experienced a noticeable decline",
+                    "Notably, [X] consistently remained the most popular..."
+                ]
+                },
+                bodyUp: {
+                title: "Body 1 (Up Trends)",
+                formula: "Looking at the details, [A] began as the most preferred, attracting [Data] in [Year]. This figure subsequently experienced a significant surge, reaching [Data].",
+                example: "Looking at the details, Sports began as the most preferred, attracting 150 students in 2015.",
+                phrases: [
+                    "subsequently experienced a significant surge...",
+                    "skyrocketing from a mere [Data] to [Data]...",
+                    "saw the most dramatic transformation..."
+                ]
+                },
+                bodyDown: {
+                title: "Body 2 (Down Trends)",
+                formula: "Conversely, [C] exhibited an opposing trend. While it initially held a healthy [Data] in [Year], interest waned, resulting in a drop to just [Data].",
+                example: "Conversely, the Drama club exhibited an opposing trend, resulting in a drop to just 70 members.",
+                phrases: [
+                    "Conversely / On the contrary / In contrast...",
+                    "exhibited an opposing trend...",
+                    "interest waned / popularity dwindled..."
+                ]
+                }
+            };
+
+            const currentData = templateData[activeTab];
+
+            return (
+                <div className="animate-fade-in w-full">
+                <div className="flex items-center mb-4">
+                    <FileText className="w-6 h-6 text-indigo-600 mr-2" />
+                    <div>
+                    <h2 className="text-xl font-bold text-slate-800">Step 5: Phrase Bank</h2>
+                    </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="w-full md:w-1/3 flex flex-col gap-2">
+                    {Object.keys(templateData).map((key) => (
+                        <button
+                        key={key}
+                        onClick={() => {
+                            setActiveTab(key);
+                            setCopied(false);
+                        }}
+                        className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors border ${
+                            activeTab === key 
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' 
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }`}
+                        >
+                        {templateData[key].title}
+                        </button>
+                    ))}
+                    </div>
+
+                    <div className="w-full md:w-2/3 space-y-4">
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 relative">
+                        <button 
+                        onClick={() => handleCopy(currentData.formula)}
+                        className={`absolute top-2 right-2 p-1.5 rounded-md transition flex items-center text-[10px] font-bold ${
+                            copied ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-600 hover:text-amber-800'
+                        }`}
+                        title="Copy Template"
+                        >
+                        {copied ? <><CheckCircle className="w-3 h-3 mr-1" /> Copied!</> : <><Copy className="w-3 h-3 mr-1" /> Copy</>}
+                        </button>
+                        <h3 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Formula</h3>
+                        <p className="text-sm text-slate-800 font-medium leading-relaxed pr-16">{currentData.formula}</p>
+                    </div>
+
+                    <div 
+                        onClick={() => speakText(currentData.example)}
+                        className="bg-indigo-50 border border-indigo-100 rounded-lg p-4 relative cursor-pointer hover:bg-indigo-100 transition"
+                        title="Click to listen"
+                    >
+                        <h3 className="text-xs font-bold text-indigo-800 uppercase tracking-wider mb-1">Example in Action</h3>
+                        <p className="text-sm text-slate-700 leading-relaxed italic">"{currentData.example}"</p>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
+                        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">High-Band Phrases</h3>
+                        <ul className="space-y-2">
+                        {currentData.phrases.map((phrase, idx) => (
+                            <li key={idx} className="flex items-start">
+                            <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                            <span className="text-sm text-slate-700 font-medium">{phrase}</span>
+                            </li>
+                        ))}
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            );
+        }
+
+        function Step6Final() {
+            const fullEssay = `The provided bar chart compares participation rates across three distinct after-school activities (Sports, Drama, and Coding) among secondary students at Lincoln High School over a five-year period, commencing in 2015.\n\nOverall, it is clearly evident that while memberships in both the Sports and Coding clubs witnessed an upward trend, participation in the Drama club experienced a noticeable decline. Notably, Sports consistently remained the most popular extracurricular choice among the teenagers throughout the recorded timeframe.\n\nLooking at the details, Sports began as the most preferred activity, attracting 150 students in 2015. This figure subsequently experienced a significant surge, reaching a peak of 240 memberships by 2020. Similarly, the Coding club saw the most dramatic transformation, skyrocketing from a mere 40 participants in 2015 to roughly 210 students five years later.\n\nConversely, the Drama club exhibited an opposing trend. While it initially held a healthy membership of 120 students in 2015, interest waned, resulting in a drop to just 70 members by the end of the period.`;
+
+            return (
+                <div className="animate-fade-in w-full">
+                <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                    <CheckCircle className="text-green-500 w-6 h-6 mr-2" /> Step 6: Final Output
+                </h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                    <div 
+                        onClick={() => speakText(fullEssay)}
+                        className="bg-slate-50 p-4 rounded-lg border border-slate-200 shadow-inner text-slate-800 text-sm leading-loose whitespace-pre-wrap font-medium cursor-pointer hover:bg-slate-100 transition"
+                        title="Click to listen"
+                    >
+                        {fullEssay}
+                    </div>
+                    </div>
+                    <div>
+                    <h3 className="font-bold text-sm text-slate-800 mb-2">Examiner's Checklist</h3>
+                    <ul className="space-y-3">
+                        <li className="flex items-start bg-green-50 p-3 rounded border border-green-100">
+                        <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-slate-700"><strong>Word Count:</strong> 175 words. Safely above 150-word minimum.</p>
+                        </li>
+                        <li className="flex items-start bg-green-50 p-3 rounded border border-green-100">
+                        <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-slate-700"><strong>Clear Overview:</strong> Paragraph 2 outlines macro trends without numbers.</p>
+                        </li>
+                        <li className="flex items-start bg-green-50 p-3 rounded border border-green-100">
+                        <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-slate-700"><strong>Data Grouping:</strong> Body 1 covers growth. Body 2 covers shrink.</p>
+                        </li>
+                        <li className="flex items-start bg-green-50 p-3 rounded border border-green-100">
+                        <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-slate-700"><strong>Lexical Resource:</strong> Used words like <em>skyrocketing, waned, surge.</em></p>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+                </div>
+            );
+        }
+
+        function Step7Practice() {
+            const [activeMission, setActiveMission] = useState(0);
+            const [userText, setUserText] = useState("");
+            const [showScaffold, setShowScaffold] = useState(false);
+
+            const handleMissionChange = (index) => {
+                setActiveMission(index);
+                setShowScaffold(false);
+                setUserText(""); 
+            }
+
+            const missions = [
+                {
+                id: 0, title: "Bar 1: Clubs", type: "Bar Chart",
+                prompt: "The bar chart below shows the changes in extracurricular club memberships among secondary students at Lincoln High School from 2015 to 2020.",
+                visual: <IeltsBarChart />,
+                scaffoldText: "1. Introduction:\nThe provided bar chart compares participation rates in three distinct after-school activities among secondary students from 2015 to 2020.\n\n2. Overview:\nOverall, it is evident that Sports and Coding witnessed an upward trend, while participation in Drama experienced a decline.\n\n3. Body Paragraph 1 (Upward Trends):\nLooking at the details, Sports attracted 150 students in 2015, and this figure subsequently surged to 240 by 2020. Similarly, Coding skyrocketed from 40 to roughly 210.\n\n4. Body Paragraph 2 (Downward Trends):\nConversely, Drama exhibited an opposing trend. While it initially held a healthy 120 in 2015, interest waned, dropping to just 70 members."
+                },
+                {
+                id: 1, title: "Bar 2: Jobs", type: "Bar Chart",
+                prompt: "The chart below illustrates the percentage of high school students in grades 10, 11, and 12 who worked in different part-time sectors last year.",
+                visual: <IeltsBarChart2 />,
+                scaffoldText: "1. Introduction:\nThe provided bar chart illustrates the proportion of 10th, 11th, and 12th-grade students employed across three part-time sectors.\n\n2. Overview:\nOverall, it is clearly evident that older students have higher employment rates across all sectors.\n\n3. Body Paragraph 1 (Most Popular):\nTurning to specific data, Food Service participation climbs significantly with age. While only 15% of 10th graders work in this area, it reaches 45% for 12th graders.\n\n4. Body Paragraph 2 (Other Sectors):\nConversely, Tutoring remains the least common job, showing a minor upward trend. Retail sits in the middle, plateauing at roughly 25% for upperclassmen."
+                },
+                {
+                id: 2, title: "Bar 3: Volunteering", type: "Bar Chart",
+                prompt: "The bar chart compares the average number of monthly volunteer hours completed by male and female secondary students across three terms.",
+                visual: <IeltsBarChart3 />,
+                scaffoldText: "1. Introduction:\nThe provided bar chart compares the average monthly volunteer hours committed by male and female high school students across three academic terms.\n\n2. Overview:\nOverall, while female students consistently volunteered more hours initially, male participation witnessed a steady upward trajectory.\n\n3. Body Paragraph 1 (Female Trend):\nLooking at the details, females began strongly with 20 hours in the Fall, surged to a peak of 40 in Winter, before dropping to 30 in Spring.\n\n4. Body Paragraph 2 (Male Trend):\nConversely, males exhibited a consistent upward trend. Starting at 15 hours in the Fall, their participation climbed steadily, reaching a high of 35 hours in Spring."
+                },
+                {
+                id: 3, title: "Bar 4: Future Plans", type: "Bar Chart",
+                prompt: "The chart shows the post-graduation plans of graduating seniors at a high school in 2010 compared to 2020.",
+                visual: <IeltsBarChart4 />,
+                scaffoldText: "1. Introduction:\nThe provided bar chart compares the post-graduation trajectories chosen by senior students in the years 2010 and 2020.\n\n2. Overview:\nOverall, it is clearly evident that while University attendance experienced a decline, interest in Trade Schools witnessed a notable upward trend.\n\n3. Body Paragraph 1 (University & Gap):\nLooking at the specific data, University was the dominant choice at 65% in 2010, declining to 55% a decade later. Gap Year participation dipped from 15% to 10%.\n\n4. Body Paragraph 2 (Trade School):\nConversely, Trade Schools exhibited an opposing trend. While initially selected by only 20% in 2010, its popularity surged, reaching 35% by 2020."
+                },
+                {
+                id: 4, title: "Bar 5: Study Hrs", type: "Bar Chart",
+                prompt: "The bar chart compares the average weekly study hours of male and female secondary students across three subjects.",
+                visual: <IeltsBarChart5 />,
+                scaffoldText: "1. Introduction:\nThe provided bar chart compares the average weekly hours dedicated to studying Math, Science, and English by male and female secondary students.\n\n2. Overview:\nOverall, it is clearly evident that female students dedicate more time to English, whereas male students focus more heavily on Math.\n\n3. Body Paragraph 1 (Male Preferences):\nLooking at the details, male students spend their longest hours on Math, averaging roughly 8 hours per week. Science follows closely at 6 hours, while English receives only 4 hours.\n\n4. Body Paragraph 2 (Female Preferences):\nConversely, females exhibit a completely different focus. They commit 9 hours weekly to English, which is more than double the time boys spend. Math and Science receive 7 and 6.5 hours respectively."
+                },
+                {
+                id: 5, title: "Pie 1: Transport", type: "Pie Chart",
+                prompt: "The chart below illustrates the primary modes of transport used by senior students to travel to high school in the year 2023.",
+                visual: <IeltsDoughnutChart />,
+                scaffoldText: "1. Introduction:\nThe provided pie chart illustrates the primary modes of transportation utilized by senior high school students in 2023.\n\n2. Overview:\nOverall, it is clearly evident that walking is the most prevalent method of commuting, while relying on a car drop-off is the least common.\n\n3. Body Paragraph 1 (Major Modes):\nLooking at the details, walking accounts for the largest proportion at 45%. The school bus follows as the second most preferred option, capturing a significant 35% share.\n\n4. Body Paragraph 2 (Minor Modes):\nConversely, private vehicle transport represents a minority choice. Only 20% of senior students rely on a car drop-off to reach the campus."
+                },
+                {
+                id: 6, title: "Pie 2: Electives", type: "Pie Chart",
+                prompt: "The pie charts below show the favourite elective subjects of male and female secondary students at Oakwood Academy in 2022.",
+                visual: <IeltsPieCharts />,
+                scaffoldText: "1. Introduction:\nThe provided pie charts compare the elective subject preferences between male and female Year 10 students at Oakwood Academy in 2022.\n\n2. Overview:\nOverall, it is clearly evident that while Technology is the dominant choice for boys, Visual Arts is overwhelmingly preferred by girls.\n\n3. Body Paragraph 1 (Boys' Preferences):\nLooking at the details for male students, Technology is the most popular, attracting 45%. Physical Education follows at 30%, while Visual Arts is 25%.\n\n4. Body Paragraph 2 (Girls' Preferences):\nConversely, the female students exhibit a completely different trend. Visual Arts dominates with 50% of the vote. Technology and PE capture 30% and 20% respectively."
+                },
+                {
+                id: 7, title: "Pie 3: Budget", type: "Pie Chart",
+                prompt: "The pie chart outlines how a secondary school's annual budget was allocated across four different departments in 2022.",
+                visual: <IeltsPieChart3 />,
+                scaffoldText: "1. Introduction:\nThe provided pie chart illustrates the proportional distribution of a secondary school's annual financial budget across four distinct departments in 2022.\n\n2. Overview:\nOverall, it is clearly evident that Technology and Sports commanded the vast majority of the funding, while the Library received a comparatively marginal share.\n\n3. Body Paragraph 1 (Primary Spending):\nLooking at the details, Technology was the highest priority, absorbing 40% of the total budget. Sports followed closely behind, receiving 30%.\n\n4. Body Paragraph 2 (Secondary Spending):\nConversely, the Arts department was allocated exactly one-fifth (20%) of the funds. The Library received a mere 10% of the overall budget."
+                },
+                {
+                id: 8, title: "Pie 4: Weekends", type: "Pie Chart",
+                prompt: "The pie chart shows how high school students distribute their free time on weekends across four different activities.",
+                visual: <IeltsPieChart4 />,
+                scaffoldText: "1. Introduction:\nThe provided pie chart illustrates how secondary school students divide their weekend free time among four distinct activities.\n\n2. Overview:\nOverall, it is clearly evident that leisure activities dominate the students' schedules, whereas Studying occupies a minimal portion of their time.\n\n3. Body Paragraph 1 (Leisure Dominance):\nTurning to specific data, Socializing is the most prominent activity, taking up 35% of the weekend. Gaming is similarly popular, capturing a 30% share.\n\n4. Body Paragraph 2 (Sports & Study):\nMeanwhile, Sports participation accounts for exactly a quarter (25%) of their weekend hours. Conversely, Studying demands a mere 10% of their off-campus time."
+                },
+                {
+                id: 9, title: "Pie 5: Field Trips", type: "Pie Chart",
+                prompt: "The pie chart illustrates the percentage of students who voted for different field trip destinations.",
+                visual: <IeltsPieChart5 />,
+                scaffoldText: "1. Introduction:\nThe provided pie chart illustrates the proportional breakdown of secondary student votes regarding their preferred field trip destinations.\n\n2. Overview:\nOverall, it is clearly evident that Museums were overwhelmingly the most popular choice, while Historical Sites garnered the least interest.\n\n3. Body Paragraph 1 (Most Popular):\nLooking at the details, exactly half of the student body (50%) voted to visit Museums. Nature Reserves emerged as the second most preferred option, capturing a significant 25% share.\n\n4. Body Paragraph 2 (Least Popular):\nConversely, the remaining options proved far less appealing. Theaters attracted only 15% of the vote, and Historical Sites were chosen by a mere 10% of the students."
+                },
+                {
+                id: 10, title: "Line 1: Cafeteria", type: "Line Graph",
+                prompt: "The line graph compares the monthly sales of Pizza and Salad in a high school cafeteria between September and January.",
+                visual: <IeltsLineGraph />,
+                scaffoldText: "1. Introduction:\nThe provided line graph compares the volume of Pizza and Salad meals sold in a high school cafeteria over a five-month period.\n\n2. Overview:\nOverall, it is clearly evident that while Pizza sales witnessed a steady upward trend, the demand for Salad experienced a dramatic decline.\n\n3. Body Paragraph 1 (Upward Trend):\nLooking at the details, Pizza began as the less popular option (90 slices). This figure subsequently experienced a steady surge, reaching a peak of 210 sales by January.\n\n4. Body Paragraph 2 (Downward Trend):\nConversely, Salad exhibited an opposing trend. While it initially held a strong lead with 210 bowls sold in September, interest waned sharply, dropping to just 70 sales."
+                },
+                {
+                id: 11, title: "Line 2: Library", type: "Line Graph",
+                prompt: "The graph shows the number of Fiction and Non-Fiction books checked out from a secondary school library during the first semester.",
+                visual: <IeltsLineGraph2 />,
+                scaffoldText: "1. Introduction:\nThe provided line graph compares the borrowing rates of Fiction and Non-Fiction literature from a school library between September and December.\n\n2. Overview:\nOverall, it is clearly evident that while the borrowing of Non-Fiction books witnessed an upward trajectory, Fiction experienced a steady decline.\n\n3. Body Paragraph 1 (Upward Trend):\nTurning to specific data, Non-Fiction checkouts began at roughly 100 books. This figure subsequently experienced a significant surge, climbing steadily to peak at 210 checkouts by December.\n\n4. Body Paragraph 2 (Downward Trend):\nConversely, Fiction exhibited an opposing trend. While it initially held a healthy margin of 150 checkouts in September, interest dwindled, resulting in a drop to just 70 borrowings."
+                },
+                {
+                id: 12, title: "Line 3: Attendance", type: "Line Graph",
+                prompt: "The line graph compares the percentage of student attendance for Grade 10 and Grade 12 students during the Fall term.",
+                visual: <IeltsLineGraph3 />,
+                scaffoldText: "1. Introduction:\nThe provided line graph compares the attendance rates of Grade 10 and Grade 12 students over a four-month academic term.\n\n2. Overview:\nOverall, it is clearly evident that while Grade 12 attendance remained relatively stable, Grade 10 attendance experienced dramatic fluctuations, dipping in November.\n\n3. Body Paragraph 1 (Stable Trend):\nLooking at details, Grade 12 students maintained a high presence. Their attendance began at roughly 97%, dipped slightly, and recovered to 95% by December.\n\n4. Body Paragraph 2 (Volatile Trend):\nConversely, Grade 10 exhibited an erratic trend. Starting strong at 95% in September, the rate plummeted to a concerning low of 85% in November, before recovering sharply to 90%."
+                },
+                {
+                id: 13, title: "Line 4: Screen Time", type: "Line Graph",
+                prompt: "The graph illustrates the average daily hours spent on Social Media versus Educational Apps by teenagers between 2018 and 2022.",
+                visual: <IeltsLineGraph4 />,
+                scaffoldText: "1. Introduction:\nThe provided line graph compares the average daily hours teenagers dedicated to Social Media versus Educational Applications over a five-year period.\n\n2. Overview:\nOverall, it is clearly evident that while Social Media usage witnessed a dramatic upward trajectory, time spent on Educational Apps remained stagnant and low.\n\n3. Body Paragraph 1 (Upward Trend):\nLooking at details, Social Media consumption began at roughly 2 hours per day in 2018. This figure subsequently experienced a significant surge, skyrocketing to 5 hours daily by 2022.\n\n4. Body Paragraph 2 (Stagnant Trend):\nConversely, Educational App usage exhibited a flat trend. Starting at a mere 1 hour per day, the figure plateaued, settling at roughly 1.5 hours by the end of the period."
+                },
+                {
+                id: 14, title: "Line 5: Energy", type: "Line Graph",
+                prompt: "The line graph shows the monthly energy consumption of a high school in terms of electricity and gas over five months.",
+                visual: <IeltsLineGraph5 />,
+                scaffoldText: "1. Introduction:\nThe provided line graph compares the monthly consumption levels of electricity and gas in a high school from January to May.\n\n2. Overview:\nOverall, it is clearly evident that while electricity usage experienced a noticeable decline towards the spring, gas consumption for heating increased sharply.\n\n3. Body Paragraph 1 (Rising Gas Trend):\nLooking at the details, gas consumption began at a modest 200 kWh in January. This figure subsequently experienced a significant surge, peaking at nearly 800 kWh by May.\n\n4. Body Paragraph 2 (Falling Electricity):\nConversely, electricity usage exhibited an opposing trend. Starting at a high of 600 kWh in January, demand dwindled steadily over the months, dropping to just 100 kWh by May."
+                }
+            ];
+
+            const wordCount = userText.trim() === '' ? 0 : userText.trim().split(/\s+/).length;
+            const isUnderLength = wordCount < 150;
+            const basicWords = ['went up', 'goes up', 'going up', 'went down', 'goes down', 'going down', 'good', 'bad', 'big', 'small', 'a lot'];
+            const detectedBasicWords = basicWords.filter(word => userText.toLowerCase().includes(word));
+
+            // Calculate Scaffold Word Count for display
+            const scaffoldWordCount = missions[activeMission].scaffoldText.split(/\s+/).filter(w => w.trim().length > 0).length;
+
+            return (
+                <div className="animate-fade-in h-full flex flex-col w-full">
+                    <div className="flex flex-wrap gap-2 mb-4 border-b border-slate-200 pb-3">
+                        {missions.map((mission, index) => (
+                        <button
+                            key={mission.id}
+                            onClick={() => handleMissionChange(index)}
+                            className={`px-3 py-1.5 rounded text-[11px] md:text-xs font-bold transition-all ${
+                            activeMission === index 
+                                ? 'bg-indigo-600 text-white shadow-md' 
+                                : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'
+                            }`}
+                        >
+                            {mission.title}
+                        </button>
+                        ))}
+                    </div>
+
+                    <div className="grid lg:grid-cols-2 gap-6 flex-grow items-start w-full">
+                        
+                        {/* LEFT COLUMN: Visuals and Prompt */}
+                        <div className="flex flex-col gap-4">
+                            <div 
+                                onClick={() => speakText(missions[activeMission].prompt)}
+                                className="bg-slate-800 text-white p-4 rounded-lg shadow-inner cursor-pointer hover:bg-slate-700 transition"
+                                title="Click to listen"
+                            >
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center mb-2">
+                                    <BarChart2 className="w-4 h-4 mr-1" /> Exam Prompt
+                                </span>
+                                <p className="text-sm font-medium leading-relaxed">{missions[activeMission].prompt}</p>
+                            </div>
+                            
+                            <div className="w-full">
+                                {missions[activeMission].visual}
+                            </div>
+                        </div>
+
+                        {/* RIGHT COLUMN: Scaffold and Notepad */}
+                        <div className="flex flex-col h-full gap-4">
+                            
+                            {/* Toggleable Teacher Scaffold */}
+                            <button 
+                                onClick={() => setShowScaffold(!showScaffold)}
+                                className="w-full py-2 bg-indigo-50 text-indigo-700 font-bold border border-indigo-200 rounded-lg hover:bg-indigo-100 transition text-sm flex justify-center items-center"
+                            >
+                                {showScaffold ? "Hide Teacher's Scaffold" : <><Lightbulb className="w-5 h-5 mr-2"/> Need Help? Show Teacher's Scaffold</>}
+                            </button>
+
+                            {showScaffold && (
+                                <div 
+                                    onClick={() => speakText(missions[activeMission].scaffoldText)}
+                                    className="bg-amber-50 border border-amber-300 p-4 rounded-lg shadow-sm animate-fade-in max-h-56 overflow-y-auto custom-scroll cursor-pointer hover:bg-amber-100 transition"
+                                    title="Click to listen"
+                                >
+                                    <div className="flex justify-between items-start mb-2 border-b border-amber-200 pb-2">
+                                        <h4 className="font-bold text-amber-900 flex items-center text-xs uppercase tracking-wider">
+                                            Model Outline Guide
+                                        </h4>
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${scaffoldWordCount >= 150 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                            Word Count: {scaffoldWordCount} words
+                                        </span>
+                                    </div>
+                                    <div className="text-sm text-slate-800 space-y-1 whitespace-pre-wrap leading-relaxed font-medium">
+                                        {missions[activeMission].scaffoldText}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Notepad */}
+                            <div className="flex flex-col flex-grow border border-slate-300 rounded-lg overflow-hidden shadow-sm bg-white min-h-[300px]">
+                                <div className="bg-slate-50 p-3 flex justify-between items-center border-b border-slate-300">
+                                    <span className="font-bold text-slate-700 flex items-center text-sm">
+                                        <Edit3 className="w-5 h-5 mr-2 text-indigo-500"/> Writing Pad
+                                    </span>
+                                    <div className={`text-xs font-bold px-3 py-1 rounded-full ${isUnderLength ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
+                                        Words: {wordCount} {isUnderLength && '/ 150 (Strict IELTS Minimum)'}
+                                    </div>
+                                </div>
+                                
+                                <textarea 
+                                    className="w-full flex-grow p-4 focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none text-slate-800 leading-relaxed text-sm"
+                                    placeholder="Start typing your 3-paragraph report here...&#10;&#10;1. Introduction (Paraphrase the prompt)&#10;2. Overview (The big picture without numbers)&#10;3. Body Paragraphs (Specific numbers and comparisons)"
+                                    value={userText}
+                                    onChange={(e) => setUserText(e.target.value)}
+                                ></textarea>
+                            </div>
+
+                            {/* Real-time Feedback Engine */}
+                            <div>
+                                {detectedBasicWords.length > 0 && (
+                                <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg flex items-start animate-fade-in shadow-sm">
+                                    <AlertTriangle className="w-5 h-5 mr-2 flex-shrink-0 text-red-500 mt-0.5" />
+                                    <div>
+                                    <h4 className="font-bold text-xs mb-1 uppercase tracking-wider">Basic Vocab Detected</h4>
+                                    <p className="text-xs">You used: <strong>{detectedBasicWords.join(", ")}</strong>. See Step 5 for upgrades.</p>
+                                    </div>
+                                </div>
+                                )}
+
+                                {!isUnderLength && detectedBasicWords.length === 0 && wordCount > 0 && (
+                                <div className="bg-green-50 border border-green-200 text-green-800 p-3 rounded-lg flex items-center animate-fade-in shadow-sm">
+                                    <CheckCircle className="w-5 h-5 mr-2 text-green-500" />
+                                    <p className="font-medium text-xs">Great job! You've met the strict word count and avoided basic vocabulary traps.</p>
+                                </div>
+                                )}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Main App Component ---
+        const App = () => {
+            const [currentStep, setCurrentStep] = useState(1);
+            const totalSteps = 7; 
+
+            const nextStep = () => {
+                window.speechSynthesis.cancel();
+                setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+            }
+            const prevStep = () => {
+                window.speechSynthesis.cancel();
+                setCurrentStep(prev => Math.max(prev - 1, 1));
+            }
+            const goHome = () => {
+                window.speechSynthesis.cancel();
+                setCurrentStep(1);
+            }
+
+            const stepIcons = [
+                { id: 1, name: "Blueprint", icon: <BookOpen className="w-3 h-3" /> },
+                { id: 2, name: "Intro", icon: <Layers className="w-3 h-3" /> },
+                { id: 3, name: "Overview", icon: <Layers className="w-3 h-3" /> },
+                { id: 4, name: "Body", icon: <Layers className="w-3 h-3" /> },
+                { id: 5, name: "Templates", icon: <FileText className="w-3 h-3" /> },
+                { id: 6, name: "Final", icon: <ListChecks className="w-3 h-3" /> },
+                { id: 7, name: "Practice", icon: <Edit3 className="w-3 h-3" /> }
+            ];
+
+            return (
+                <div className="min-h-screen pb-10">
+                <div className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+                    {/* Expanded blank margin width - Using max-w-[98%] xl:max-w-[1600px] */}
+                    <div className="max-w-[98%] xl:max-w-[1600px] mx-auto px-4 py-3 flex justify-between items-center">
+                    <button 
+                        onClick={goHome}
+                        className="flex items-center text-slate-600 hover:text-indigo-600 font-medium transition-colors p-1"
+                    >
+                        <Home className="w-5 h-5 md:mr-2" />
+                        <span className="hidden md:inline text-sm font-bold">Home</span>
+                    </button>
+                    
+                    <div className="hidden md:flex space-x-2 lg:space-x-4 items-center">
+                        {stepIcons.map((step) => (
+                            <div key={step.id} className="flex items-center">
+                                <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all cursor-pointer ${
+                                    currentStep === step.id ? 'border-indigo-600 bg-indigo-600 text-white shadow-md' : 
+                                    currentStep > step.id ? 'border-indigo-400 bg-indigo-100 text-indigo-600 hover:bg-indigo-200' : 'border-slate-200 text-slate-400'
+                                }`} onClick={() => { window.speechSynthesis.cancel(); setCurrentStep(step.id); }}>
+                                    {currentStep > step.id ? <CheckCircle className="w-4 h-4" /> : <span className="text-xs font-bold">{step.id}</span>}
+                                </div>
+                                <span className={`ml-2 text-xs font-bold uppercase tracking-wider ${currentStep === step.id ? 'text-indigo-800' : 'text-slate-400 hidden lg:inline'}`}>
+                                    {step.name}
+                                </span>
+                                {step.id !== totalSteps && <div className="w-4 lg:w-8 border-b-2 border-slate-200 ml-2 lg:ml-4"></div>}
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="md:hidden text-sm font-bold text-slate-400 uppercase tracking-widest">
+                        Step {currentStep}/{totalSteps}
+                    </div>
+
+                    <div className="flex space-x-2">
+                        <button 
+                        onClick={prevStep}
+                        disabled={currentStep === 1}
+                        className="flex items-center px-3 py-1.5 bg-white border border-slate-300 rounded shadow-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition text-sm font-medium"
+                        >
+                        <ArrowLeft className="w-4 h-4 sm:mr-1" /> 
+                        <span className="hidden sm:inline">Back</span>
+                        </button>
+                        <button 
+                        onClick={nextStep}
+                        disabled={currentStep === totalSteps}
+                        className="flex items-center px-3 py-1.5 bg-indigo-600 border border-indigo-600 rounded shadow-sm text-white hover:bg-indigo-700 disabled:opacity-50 transition text-sm font-medium"
+                        >
+                        <span className="hidden sm:inline">Next</span> 
+                        <ArrowRight className="w-4 h-4 sm:ml-1" />
+                        </button>
+                    </div>
+                    </div>
+                </div>
+
+                {/* Main Content Area - Wide margins */}
+                <div className="max-w-[98%] xl:max-w-[1600px] mx-auto mt-6 px-4">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200 p-6 w-full">
+                    
+                    {/* Two-Column Layout for Steps 1-4 */}
+                    {currentStep < 5 && (
+                        <div className="grid lg:grid-cols-2 gap-8 animate-fade-in items-start w-full">
+                            
+                            {/* LEFT COLUMN: Prompt and 75% Graph */}
+                            <div className="flex flex-col items-center w-full gap-4">
+                                <div 
+                                    onClick={() => speakText("The bar chart below shows the changes in extracurricular club memberships (Sports, Drama, Coding) among secondary students at Lincoln High School from 2015 to 2020. Summarize the information by selecting and reporting the main features.")}
+                                    className="bg-slate-800 text-white p-4 rounded-lg shadow-inner w-full cursor-pointer hover:bg-slate-700 transition"
+                                    title="Click to listen"
+                                >
+                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center mb-2">
+                                    <BarChart2 className="w-4 h-4 mr-2" /> Exam Prompt
+                                    </span>
+                                    <p className="text-sm font-medium leading-relaxed">
+                                    "The bar chart below shows the changes in extracurricular club memberships (Sports, Drama, Coding) among secondary students at Lincoln High School from 2015 to 2020. Summarize the information by selecting and reporting the main features."
+                                    </p>
+                                </div>
+                                
+                                {/* 75% Width for the Bar Chart */}
+                                <div className="w-[75%] mt-2">
+                                    <IeltsBarChart />
+                                </div>
+                            </div>
+
+                            {/* RIGHT COLUMN: The Step Content */}
+                            <div className="w-full">
+                                {currentStep === 1 && <Step1Blueprint />}
+                                {currentStep === 2 && <Step2Intro />}
+                                {currentStep === 3 && <Step3Overview />}
+                                {currentStep === 4 && <Step4Body />}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Full Width for Later Steps */}
+                    {currentStep === 5 && <Step5Templates />}
+                    {currentStep === 6 && <Step6Final />}
+                    {currentStep === 7 && <Step7Practice />}
+                    
+                    </div>
+                </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
