@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Learning Dashboard - Complete 24 Units</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        .animate-pop-in { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .sentence-span { transition: all 0.2s ease-in-out; cursor: pointer; border-radius: 4px; padding: 2px 0; }
+        .sentence-span:hover { background-color: #e0e7ff; }
+        .sentence-span.active { background-color: #c7d2fe; color: #312e81; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const manualUnits = [
+          {
+            id: 1,
+            title: "Family",
+            icon: "fa-solid fa-heart",
+            skills: ["Listening", "Speaking", "Grammar", "Vocabulary"],
+            content: "Listening to presentations about family relationships and practicing speaking about relatives.",
+            secondaryExample: "Secondary Context: Discussing the evolution of family roles in modern society.",
+            outcomes: { listening: "Identify relationships.", reading: "Analyze family texts.", writing: "Describe family roles.", speaking: "Discuss relatives.", grammarVocab: "Present Simple & Family terms." },
+            vocabulary: [
+              { word: "Sibling", chinese: "兄弟姐妹", definition: "My sibling, who is my younger brother, always helps me when I struggle with schoolwork." },
+              { word: "Extended family", chinese: "大家庭", definition: "During the holidays, my extended family gathers to celebrate and share traditional meals." },
+              { word: "Adolescent", chinese: "青少年", definition: "As an adolescent, he often sought independence from his parents' strict rules." },
+              { word: "Supportive", chinese: "支持的", definition: "A supportive environment is crucial for children to develop confidence." },
+              { word: "Nuclear family", chinese: "核心家庭", definition: "The traditional nuclear family consists of two parents and their children living together." },
+              { word: "Upbringing", chinese: "教养", definition: "Her positive upbringing shaped her into a polite and responsible adult." }
+            ],
+            mcqs: [
+              { q: "Which word means 'a brother or sister'?", options: ["Adolescent", "Relative", "Sibling", "In-law"], answer: 2 },
+              { q: "A family with parents and their dependent children is a...", options: ["Extended family", "Nuclear family", "Single-parent family", "Generation gap"], answer: 1 },
+              { q: "What does 'supportive' mean?", options: ["Strict", "Friendly", "Providing encouragement", "Distant"], answer: 2 },
+              { q: "The difference in views between generations is a...", options: ["Family conflict", "Generation gap", "Age difference", "Cultural gap"], answer: 1 },
+              { q: "The way a child is raised is their...", options: ["Adolescence", "Upbringing", "Heritage", "Custom"], answer: 1 }
+            ],
+            speaking: [
+              {
+                type: "Part 1", questions: ["Do you have a large family?", "Who are you closest to in your family?"], stems: ["I come from a...", "I am closest to..."],
+                example: "I come from a small nuclear family. We are very supportive of each other, but I am closest to my sibling."
+              },
+              {
+                type: "Part 2", questions: ["Describe your upbringing.", "What role did your grandparents play?"], stems: ["My upbringing was...", "My grandparents helped by..."],
+                example: "My upbringing was very positive and structured. My grandparents lived with our extended family and helped raise me."
+              },
+              {
+                type: "Part 3", questions: ["How are family structures changing globally?", "Is it better to grow up in a nuclear or extended family?"], stems: ["Globally, we can see...", "There are benefits to both, but..."],
+                example: "Globally, families are becoming smaller due to urbanization. While nuclear families offer privacy, an extended family provides a built-in support system."
+              }
+            ],
+            reading: {
+              text: "Family Life in the Modern World\n\nToday, family structures are changing. In the past, the extended family was very common. Grandparents, aunts, and cousins all lived in the same house. This gave children a very supportive upbringing. However, modern life is different.\n\nMany teenagers now live in a nuclear family. This means they live only with their parents and siblings. Because of this, an adolescent often spends more time at school or online. Even so, family remains the most important part of a student's life.",
+              questions: [
+                "1. Short Answer: Who did children live with in the past?", 
+                "2. True / False / Not Given: Extended families are more common today than in the past.",
+                "3. Sentence Completion: Today, an adolescent spends more time at school or ________.",
+                "4. Matching: Match 'Nuclear family' to its meaning in the text.",
+                "5. Multiple Choice: What remains the most important part of a student's life? A) School B) Family C) Friends"
+              ]
+            },
+            listening: {
+              text: "Tutor: Tell me about your family structure. Has it changed since you were young?\nStudent: Yes, I have one sibling, and we currently live in a supportive nuclear family. \nTutor: How does that compare to your parents' upbringing?\nStudent: My parents grew up in a large extended family in the countryside. They lived with many relatives, which offered emotional support but little privacy. \nTutor: Do you think you would prefer that?\nStudent: No, I prefer my current situation because it gives me independence as an adolescent.",
+              questions: [
+                "1. How many siblings does the student have?", 
+                "2. What kind of family does the student currently describe?",
+                "3. True/False/Not Given: The student's parents grew up in a city.",
+                "4. Sentence Completion: The extended family offered support but lacked ________.",
+                "5. Why does the student prefer their current situation?"
+              ]
+            },
+            grammar: {
+              topic: "Present Simple", focus: "Use for facts and routines.",
+              examples: [
+                "I live with my parents in a large house.", 
+                "She has a supportive extended family.",
+                "My sibling studies at the university.",
+                "We visit our extended family every summer.",
+                "An adolescent often seeks more independence.",
+                "Nuclear families usually consist of two generations.",
+                "My mother works as a doctor in the city.",
+                "They always eat dinner together on Sundays.",
+                "My grandfather tells stories about his strict upbringing.",
+                "Most parents want a supportive environment for their children."
+              ],
+              model: "The nuclear family consists of parents and children."
+            },
+            tutorPrompts: [
+              { type: "Grammar Check", focus: "Subject-Verb", text: "My brother (live) far away.", questions: ["Fix the verb: My brother lives..."] },
+              { type: "Vocabulary Check", focus: "Synonyms", text: "My family is very helpful and kind.", questions: ["Can you replace 'helpful and kind' with 'supportive'?"] }
+            ],
+            practiceTests: [
+              { type: "Task 2", text: "Are family structures changing?", questions: [], modelAnswer: "In my country, the nuclear family is becoming more normal. Young people want to be independent, so they move to the city for work. This changes their upbringing because they don't see their extended family often. I think this is sad but necessary for modern life." }
+            ],
+            paragraphAnalysis: {
+              prompt: "Is the extended family structure still relevant today?",
+              versions: [
+                {
+                  version: "Version 1",
+                  text: "I really like having a big extended family. Grandparents have a lot of time to give a supportive upbringing. They teach us important life lessons. It makes everyone feel safe and loved.",
+                  sentences: [
+                    { text: "I really like having a big extended family.", breakdown: [{type: "marker", text: "Opinion", note: "Direct and natural"}], ieltsValue: "Clear B1 introduction." },
+                    { text: "Grandparents have a lot of time to give a supportive upbringing.", breakdown: [{type: "lexical", text: "supportive / upbringing", note: "Good vocab use"}], ieltsValue: "Strong supporting idea." },
+                    { text: "They teach us important life lessons.", breakdown: [{type: "grammar", text: "Present simple", note: "Accurate routine"}], ieltsValue: "Develops the point." },
+                    { text: "It makes everyone feel safe and loved.", breakdown: [{type: "marker", text: "Conclusion", note: "Emotional impact"}], ieltsValue: "Natural summary." }
+                  ]
+                },
+                {
+                  version: "Version 2",
+                  text: "Living in a nuclear family is much easier for young parents. Finding a big house for many relatives costs too much money. An adolescent also needs their own space to grow up. Small families are just more practical today.",
+                  sentences: [
+                    { text: "Living in a nuclear family is much easier for young parents.", breakdown: [{type: "lexical", text: "nuclear family", note: "Topic vocabulary"}], ieltsValue: "Clear B1 topic sentence." },
+                    { text: "Finding a big house for many relatives costs too much money.", breakdown: [{type: "grammar", text: "Gerund subject", note: "Good structure"}], ieltsValue: "Practical reasoning." },
+                    { text: "An adolescent also needs their own space to grow up.", breakdown: [{type: "lexical", text: "adolescent", note: "Target vocab"}], ieltsValue: "Adds another valid point." },
+                    { text: "Small families are just more practical today.", breakdown: [{type: "marker", text: "Conclusion", note: "Direct summary"}], ieltsValue: "Effective closing." }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            id: 2,
+            title: "Leisure",
+            icon: "fa-regular fa-circle-play",
+            skills: ["Reading", "Writing", "Listening", "Vocabulary"],
+            content: "Explores hobbies, sports, and recreational activities. Master vocabulary for pastimes.",
+            secondaryExample: "Secondary Context: Debating the importance of extracurricular activities.",
+            outcomes: { listening: "Understand hobby descriptions.", reading: "Read about sports.", writing: "Write an opinion essay.", speaking: "Discuss free time.", grammarVocab: "Gerunds vs Infinitives." },
+            vocabulary: [
+              { word: "Recreation", chinese: "娱乐", definition: "After a long week of school, playing football is my favorite form of recreation." },
+              { word: "Amateur", chinese: "业余爱好者", definition: "Although he is just an amateur, he plays the piano beautifully at school concerts." },
+              { word: "Tournament", chinese: "锦标赛", definition: "Our school practiced every day to prepare for the regional tennis tournament." },
+              { word: "Pastime", chinese: "消遣", definition: "Reading historical fiction is a relaxing pastime that I enjoy on weekends." },
+              { word: "Enthusiast", chinese: "爱好者", definition: "As a photography enthusiast, he always carries his camera to capture school events." },
+              { word: "Unwind", chinese: "放松", definition: "Listening to music helps me unwind after a stressful day of exams." }
+            ],
+            mcqs: [
+              { q: "Which word means 'to relax after work'?", options: ["Participate", "Indulge", "Unwind", "Fascinate"], answer: 2 },
+              { q: "An activity done regularly for enjoyment is a...", options: ["Pastime", "Tournament", "Amateur", "Recreation"], answer: 0 },
+              { q: "What is a tournament?", options: ["A hobby", "A sporting competition", "A club meeting", "A practice"], answer: 1 },
+              { q: "Someone very interested in photography is a...", options: ["Expert", "Enthusiast", "Professional", "Trainer"], answer: 1 },
+              { q: "An unpaid participant is an...", options: ["Amateur", "Expert", "Athlete", "Official"], answer: 0 }
+            ],
+            speaking: [
+              {
+                type: "Part 1", questions: ["What do you do to unwind?", "Do you prefer active or quiet hobbies?"], stems: ["My favorite pastime is...", "I generally prefer..."],
+                example: "My favorite pastime is painting. I prefer quiet recreation because it helps me unwind."
+              },
+              {
+                type: "Part 2", questions: ["Describe a leisurely excursion.", "Who did you go with?"], stems: ["A leisurely excursion I took was...", "I went accompanied by..."],
+                example: "I went to a local chess tournament. As an enthusiast, watching the amateur players compete was thrilling."
+              },
+              {
+                type: "Part 3", questions: ["Are hobbies important for mental health?", "Should governments fund amateur sports facilities?"], stems: ["Hobbies are crucial because...", "Yes, state funding helps..."],
+                example: "Recreation is crucial for mental health. Funding amateur facilities gives the community a healthy pastime."
+              }
+            ],
+            reading: {
+              text: "How Teenagers Relax\n\nHigh school students need a good pastime to relax after difficult exams. Many teenagers choose an active form of recreation, like joining a football tournament. Others are just amateur players who play casually in the park with friends.\n\nIf you are not an athlete, you can still be an enthusiast of quiet hobbies. For example, reading books or painting helps students unwind safely at home. Taking time to relax actually improves concentration when returning to class.",
+              questions: [
+                "1. Short Answer: What do high school students need after difficult exams?", 
+                "2. True / False / Not Given: All teenagers play football to relax.",
+                "3. Sentence Completion: Reading or painting helps students ________ safely at home.",
+                "4. Matching: Match 'Amateur' to its meaning in the text.",
+                "5. Multiple Choice: What does relaxing improve? A) Athletic skills B) Concentration C) Painting"
+              ]
+            },
+            listening: {
+              text: "Student: Are you still an enthusiast of playing chess?\nTutor: Yes, my favorite pastime is playing leisurely games on the weekends to unwind. \nStudent: That sounds relaxing. \nTutor: It is. In fact, I plan to join an amateur tournament next month to test my skills. \nStudent: Isn't a tournament stressful? \nTutor: Not for me. Focusing deeply on the game is my perfect form of recreation.",
+              questions: [
+                "1. What game is the tutor an enthusiast of?", 
+                "2. What does the tutor plan to join next month?",
+                "3. True/False/Not Given: The student thinks tournaments are relaxing.",
+                "4. Sentence Completion: My favorite pastime is playing ________ games.",
+                "5. Multiple Choice: How does focusing on the game help the tutor? A) Earns money B) Serves as recreation C) Causes stress"
+              ]
+            },
+            grammar: {
+              topic: "Gerunds vs Infinitives", focus: "Use gerunds (-ing) after certain verbs (enjoy); use infinitives (to + verb) after others (decide).",
+              examples: [
+                "I enjoy unwinding after work by reading a good book.", 
+                "He decided to join the amateur tournament next week.",
+                "She loves participating in recreation during her free time.",
+                "We plan to organize a sports tournament next month.",
+                "They avoid watching television when they want to be productive.",
+                "I need to find a new relaxing pastime for the holidays.",
+                "He practices playing the guitar every single day as an enthusiast.",
+                "The enthusiast wants to learn professional photography.",
+                "Many people prefer reading over playing sports.",
+                "He hopes to become a professional athlete instead of an amateur."
+              ],
+              model: "Many people enjoy participating in recreation to unwind."
+            },
+            tutorPrompts: [
+              { type: "Grammar Check", focus: "Gerunds", text: "I enjoy (read) books.", questions: ["Change to a gerund: I enjoy reading..."] },
+              { type: "Vocabulary Check", focus: "Accuracy", text: "I am a fan of tennis.", questions: ["Replace 'fan' with 'enthusiast'."] }
+            ],
+            practiceTests: [
+              { type: "Task 2", text: "Are passive leisure activities detrimental?", questions: [], modelAnswer: "I think everyone needs a good pastime to stay healthy. Life is very busy, so taking time to unwind with a sport or hobby is great for the mind. You do not need to be an expert in a tournament. Even an amateur can enjoy simple recreation." }
+            ],
+            paragraphAnalysis: {
+              prompt: "Should all leisure activities be educational?",
+              versions: [
+                {
+                  version: "Version 1",
+                  text: "Leisure time should be just for relaxing your mind. When people do a quiet pastime like reading, they forget their daily stress. Not every hobby needs to be a serious tournament. Simple recreation is enough.",
+                  sentences: [
+                    { text: "Leisure time should be just for relaxing your mind.", breakdown: [{type: "marker", text: "Opinion", note: "Clear stance"}], ieltsValue: "Strong B1 topic sentence." },
+                    { text: "When people do a quiet pastime like reading, they forget their daily stress.", breakdown: [{type: "lexical", text: "pastime", note: "Good contextual use"}], ieltsValue: "Solid supporting point." },
+                    { text: "Not every hobby needs to be a serious tournament.", breakdown: [{type: "lexical", text: "tournament", note: "Nice contrast"}], ieltsValue: "Develops the argument." },
+                    { text: "Simple recreation is enough.", breakdown: [{type: "marker", text: "Conclusion", note: "Direct wrap-up"}], ieltsValue: "Effective closing." }
+                  ]
+                },
+                {
+                  version: "Version 2",
+                  text: "I believe active hobbies are the best way to spend free time. Learning a new skill is a very educational pastime. A true enthusiast always wants to improve. Active recreation keeps the brain working hard.",
+                  sentences: [
+                    { text: "I believe active hobbies are the best way to spend free time.", breakdown: [{type: "marker", text: "I believe", note: "Direct opinion"}], ieltsValue: "Clear introduction." },
+                    { text: "Learning a new skill is a very educational pastime.", breakdown: [{type: "grammar", text: "Gerund subject", note: "Good grammar"}], ieltsValue: "Logical support." },
+                    { text: "A true enthusiast always wants to improve.", breakdown: [{type: "lexical", text: "enthusiast", note: "Target word"}], ieltsValue: "Good vocabulary use." },
+                    { text: "Active recreation keeps the brain working hard.", breakdown: [{type: "marker", text: "Conclusion", note: "Summarizes point"}], ieltsValue: "Strong final thought." }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            id: 3,
+            title: "Different Cultures",
+            icon: "fa-solid fa-globe",
+            skills: ["Speaking", "Reading", "Grammar", "Listening"],
+            content: "Compare cultures, traditions, and customs. Understand cultural diversity.",
+            secondaryExample: "Secondary Context: Writing a sociology report on global diversity in schools.",
+            outcomes: { listening: "Understand cultural documentaries.", reading: "Read sociology texts.", writing: "Write about globalization.", speaking: "Discuss local traditions.", grammarVocab: "Present Perfect." },
+            vocabulary: [
+              { word: "Custom", chinese: "风俗", definition: "Bowing when greeting a teacher is a respectful custom in Japan." },
+              { word: "Diverse", chinese: "多样的", definition: "Our high school is highly diverse, with students from all over the world." },
+              { word: "Heritage", chinese: "遗产", definition: "We must preserve our cultural heritage by learning our grandparents' languages." },
+              { word: "Tradition", chinese: "传统", definition: "Celebrating the Lunar New Year is an important tradition for my family." },
+              { word: "Etiquette", chinese: "礼仪", definition: "Learning proper classroom etiquette is essential before attending a new school." },
+              { word: "Integration", chinese: "融合", definition: "The successful integration of new immigrant students enriches our school culture." }
+            ],
+            mcqs: [
+              { q: "The customary code of polite behavior is called...", options: ["Heritage", "Stereotype", "Etiquette", "Integration"], answer: 2 },
+              { q: "Showing great variety means being...", options: ["Custom", "Diverse", "Traditional", "Values"], answer: 1 },
+              { q: "What is cultural heritage?", options: ["Money only", "Beliefs and traditions", "Technology", "Languages only"], answer: 1 },
+              { q: "A tradition is...", options: ["A modern invention", "Customs passed down", "A government law", "A business practice"], answer: 1 },
+              { q: "Combining different groups into society is...", options: ["Integration", "Separation", "Etiquette", "Custom"], answer: 0 }
+            ],
+            speaking: [
+              {
+                type: "Part 1", questions: ["Is your city diverse?", "What is a popular local dish?"], stems: ["My city has become very...", "A famous local dish is..."],
+                example: "My city is incredibly diverse. The integration of different cultures has introduced amazing new etiquette and foreign foods."
+              },
+              {
+                type: "Part 2", questions: ["Describe a traditional custom.", "Why is it important?"], stems: ["A unique custom is...", "It is important because..."],
+                example: "A beautiful custom involves wearing traditional clothing. It visibly honors our ancient heritage and connects the generations."
+              },
+              {
+                type: "Part 3", questions: ["Does globalization destroy local culture?", "How can we protect traditional customs?"], stems: ["Globalization can sometimes...", "We can protect customs by..."],
+                example: "Globalization can dilute local traditions. We must protect our heritage through public education and funding arts."
+              }
+            ],
+            reading: {
+              text: "Diversity in High Schools\n\nIn our modern world, high schools are becoming extremely diverse. Students from different countries bring their own cultural heritage directly into the classroom. For example, sharing a traditional custom or cooking a special food is a wonderful way for teenagers to learn about geography.\n\nGood etiquette is also very important when meeting peers from new backgrounds. By learning about other traditions, students show respect. Ultimately, this smooth integration makes the school environment much richer and more exciting for everyone.",
+              questions: [
+                "1. Short Answer: What do students from different countries bring to the classroom?", 
+                "2. True / False / Not Given: High schools are becoming less diverse today.",
+                "3. Sentence Completion: Good ________ is important when meeting peers from new backgrounds.",
+                "4. Matching: Match 'Integration' to its meaning in the text.",
+                "5. Multiple Choice: How do students show respect? A) By cooking B) By learning other traditions C) By taking exams"
+              ]
+            },
+            listening: {
+              text: "Guide: Welcome to the national heritage museum. \nTourist: Is that gold artifact part of a specific tradition? \nGuide: Yes, it represents our core values and diverse traditions from the 18th century. \nTourist: It must be hard to protect such items. \nGuide: Indeed. Protecting our custom and etiquette requires constant funding. Integration with modern preservation tech helps us keep these safe.",
+              questions: [
+                "1. Where are the speakers located?", 
+                "2. What century is the artifact from?",
+                "3. True/False/Not Given: The artifact is made of silver.",
+                "4. Sentence Completion: Protecting custom and etiquette requires constant ________.",
+                "5. What integration helps keep the heritage items safe today?"
+              ]
+            },
+            grammar: {
+              topic: "Present Perfect", focus: "Use 'has/have + past participle' for experiences and actions with present results.",
+              examples: [
+                "I have experienced a new cultural custom.", 
+                "They have preserved their ancestral heritage.",
+                "She has lived in a diverse community for many years.",
+                "We have integrated well into the new school.",
+                "He has never broken the rules of cultural etiquette.",
+                "The society has assimilated many foreign traditions.",
+                "I have visited that historical heritage museum twice.",
+                "Globalization has changed our local customs significantly.",
+                "They have forgotten some of their ancient traditions.",
+                "Have you ever participated in a traditional cultural festival?"
+              ],
+              model: "Globalization has changed local traditions across the world."
+            },
+            tutorPrompts: [
+              { type: "Grammar Check", focus: "Present Perfect", text: "I (never see) such a diverse city.", questions: ["Fix the verb: I have never seen..."] },
+              { type: "Vocabulary Check", focus: "Nuance", text: "Mixing cultures is good.", questions: ["Upgrade 'Mixing': The integration of cultures..."] }
+            ],
+            practiceTests: [
+              { type: "Task 2", text: "Does a diverse community bring benefits?", questions: [], modelAnswer: "When people from different countries live together, we get a diverse community. This integration allows us to try new foods and learn new etiquette. Sometimes old traditions get lost, but sharing our cultural heritage makes the city much more exciting and friendly for everyone." }
+            ],
+            paragraphAnalysis: {
+              prompt: "Does globalization destroy local cultures?",
+              versions: [
+                {
+                  version: "Version 1",
+                  text: "We must try hard to protect our ancient cultural heritage. A local custom tells the story of our grandfathers. Teaching traditional etiquette helps young people respect the past. Fast integration can sometimes erase these special things.",
+                  sentences: [
+                    { text: "We must try hard to protect our ancient cultural heritage.", breakdown: [{type: "lexical", text: "cultural heritage", note: "Strong opening vocab"}], ieltsValue: "Clear B1 topic sentence." },
+                    { text: "A local custom tells the story of our grandfathers.", breakdown: [{type: "lexical", text: "custom", note: "Good contextual use"}], ieltsValue: "Nice supporting detail." },
+                    { text: "Teaching traditional etiquette helps young people respect the past.", breakdown: [{type: "lexical", text: "etiquette", note: "Target word"}], ieltsValue: "Develops the argument well." },
+                    { text: "Fast integration can sometimes erase these special things.", breakdown: [{type: "lexical", text: "integration", note: "Good contrast"}], ieltsValue: "Effective closing thought." }
+                  ]
+                },
+                {
+                  version: "Version 2",
+                  text: "Globalization brings a lot of positive changes to our lives. Living in a diverse city means you can experience the whole world. Integration helps people understand each other better. Sharing a new tradition is always a fun experience.",
+                  sentences: [
+                    { text: "Globalization brings a lot of positive changes to our lives.", breakdown: [{type: "marker", text: "Opinion", note: "Direct stance"}], ieltsValue: "Clear B1 introduction." },
+                    { text: "Living in a diverse city means you can experience the whole world.", breakdown: [{type: "lexical", text: "diverse", note: "Topic vocabulary"}], ieltsValue: "Strong reasoning." },
+                    { text: "Integration helps people understand each other better.", breakdown: [{type: "lexical", text: "integration", note: "Good usage"}], ieltsValue: "Adds a social benefit." },
+                    { text: "Sharing a new tradition is always a fun experience.", breakdown: [{type: "marker", text: "Conclusion", note: "Happy summary"}], ieltsValue: "Natural wrap-up." }
+                  ]
+                }
+              ]
+            }
+          }
+        ];
+
+        const topicVocabMap = [
+          { id: 4, title: "Places to Live", icon: "fa-map",
+            task2Prompt: "Is it better to live in a city or the countryside?",
+            task2Model: "I prefer living in an urban area because it is very convenient. A big metropolis has amazing amenities like shopping malls and fast hospitals. The commute to work is usually short. The suburbs are definitely quieter, but the city gives young people much better jobs.",
+            analysisPrompt: "Why do many people move to the city?",
+            analysisV1: "People move to the metropolis to find a good job. The city has many modern amenities for daily life. A short commute makes working much easier. City life is fast but very exciting.",
+            analysisV2: "A quiet suburb is the best place to raise children. You can find cheap accommodation with a nice garden. The infrastructure is safe and clean. Many families hate the noisy urban areas.",
+            readT: "Choosing Where to Live\n\nMany teenagers dream of moving to a big metropolis after high school. An urban area has many fun amenities, like cinemas and shopping malls. However, the daily commute to a city school or university can take hours.\n\nBecause of this, some students prefer living in a quiet residential suburb. The infrastructure is usually safer for bicycles and pedestrians. Finding cheap accommodation near the campus is often the biggest challenge for new students.",
+            readQ: ["1. Short Answer: Where do many teenagers dream of moving?", "2. True / False / Not Given: A suburb has more amenities than a metropolis.", "3. Sentence Completion: The daily ________ to a city school can take hours.", "4. Matching: Match 'Accommodation' to its meaning in the text.", "5. Multiple Choice: What is safer in a suburb? A) The infrastructure B) The cinemas C) The campus"],
+            words: [
+              { word: "accommodation", chinese: "住宿", example: "Finding affordable accommodation is the first step when moving to a new city." },
+              { word: "campus", chinese: "校园", example: "The university campus has a massive library and several cafes." },
+              { word: "urban", chinese: "城市的", example: "Urban areas often suffer from heavy traffic during rush hour." },
+              { word: "suburb", chinese: "郊区", example: "Many families prefer living in a quiet suburb rather than the busy city center." },
+              { word: "amenities", chinese: "便利设施", example: "The hotel offers great amenities, including a pool and a gym." },
+              { word: "commute", chinese: "通勤", example: "My daily commute to school takes about forty minutes by train." },
+              { word: "residential", chinese: "住宅的", example: "This is a strictly residential neighborhood with no commercial factories." },
+              { word: "metropolis", chinese: "大都市", example: "Tokyo is a bustling metropolis with millions of residents." },
+              { word: "infrastructure", chinese: "基础设施", example: "The government is investing heavily in transport infrastructure." },
+              { word: "outskirts", chinese: "市郊", example: "They built their new house on the outskirts of the town for more privacy." }
+          ]},
+          { id: 5, title: "Education", icon: "fa-book",
+            task2Prompt: "Are exams the best way to test students?",
+            task2Model: "I do not think exams are the only way to test a student. Sometimes a student understands the academic discipline but gets too nervous during the test. Schools should use continuous assessment and a weekly tutorial. This helps the teacher see real comprehension.",
+            analysisPrompt: "Is university education important for success?",
+            analysisV1: "A university education gives you the best start in life. The academic curriculum teaches you exactly what companies need. Doing well on an assessment proves your hard work. Graduates always have better chances to succeed.",
+            analysisV2: "Practical skills are often more useful than university degrees. Not everyone needs an expensive academic tutorial. Working hard in a practical discipline teaches you real life lessons. Success depends on the person, not the school.",
+            readT: "Modern Schooling\n\nA good academic curriculum is very important for high school students. Today, many teachers use continuous assessment to check if students are learning, rather than one big exam. Modern pedagogy focuses on real skills, not just memorizing a syllabus.\n\nTaking a weekly tutorial helps teenagers understand difficult academic disciplines like math. If their reading comprehension improves, they can even win a scholarship for university. This makes hard work very rewarding.",
+            readQ: ["1. Short Answer: What do many teachers use to check if students are learning?", "2. True / False / Not Given: Modern pedagogy only focuses on memorizing a syllabus.", "3. Sentence Completion: Taking a weekly ________ helps teenagers understand math.", "4. Matching: Match 'Scholarship' to its meaning in the text.", "5. Multiple Choice: What happens if reading comprehension improves? A) Students take more exams B) Students can win a scholarship C) Students memorize more"],
+            words: [
+              { word: "curriculum", chinese: "课程", example: "The new school curriculum includes coding and digital literacy." },
+              { word: "assessment", chinese: "评估", example: "Continuous assessment is often fairer than a single final exam." },
+              { word: "tutorial", chinese: "辅导课", example: "I attended a math tutorial to get extra help with algebra." },
+              { word: "discipline", chinese: "学科", example: "Sociology is a fascinating academic discipline to study." },
+              { word: "comprehension", chinese: "理解", example: "Reading widely is the best way to improve your reading comprehension." },
+              { word: "academic", chinese: "学术的", example: "She has won several awards for her outstanding academic achievements." },
+              { word: "scholarship", chinese: "奖学金", example: "He received a full scholarship to study medicine abroad." },
+              { word: "pedagogy", chinese: "教学法", example: "Modern pedagogy focuses more on interactive learning than memorization." },
+              { word: "literacy", chinese: "读写能力", example: "The charity program aims to improve adult literacy in rural areas." },
+              { word: "syllabus", chinese: "教学大纲", example: "The professor handed out the course syllabus on the first day of class." }
+          ]},
+          { id: 6, title: "Environment", icon: "fa-leaf",
+            task2Prompt: "What is the biggest environmental problem today?",
+            task2Model: "Plastic pollution is a huge problem for our planet right now. Too much rubbish destroys the beautiful ecosystem and kills marine biodiversity. We really need to focus on conservation and start using renewable energy. If we do not change, our climate will get much worse.",
+            analysisPrompt: "Who should protect the environment?",
+            analysisV1: "The government has the power to protect our ecosystem. They must make strict laws to stop dangerous emissions. They can also spend money on renewable energy. Only leaders can make these big changes.",
+            analysisV2: "Every normal person must help with conservation. We can recycle our plastic to improve daily sustainability. Protecting local biodiversity starts in our own gardens. Small actions from everyone will save the climate.",
+            readT: "Protecting Our Planet\n\nHigh school students today care a lot about the planet's ecosystem. They learn about environmental sustainability in science class. Many schools are now trying to reduce plastic pollution and protect local biodiversity.\n\nFor example, students often plant trees to create a safe habitat for birds. Furthermore, using renewable energy, like solar panels on the school roof, lowers dangerous emissions. These small steps help fight climate change.",
+            readQ: ["1. Short Answer: What do students learn about in science class?", "2. True / False / Not Given: Schools want to increase plastic pollution.", "3. Sentence Completion: Students plant trees to create a safe ________ for birds.", "4. Matching: Match 'Emissions' to its meaning in the text.", "5. Multiple Choice: What lowers dangerous emissions? A) Birds B) Plastic C) Renewable energy"],
+            words: [
+              { word: "sustainability", chinese: "可持续性", example: "Environmental sustainability is crucial to protect the planet for future generations." },
+              { word: "pollution", chinese: "污染", example: "Strict laws have been passed to reduce industrial air pollution." },
+              { word: "biodiversity", chinese: "生物多样性", example: "The Amazon rainforest is famous for its incredible biodiversity." },
+              { word: "ecosystem", chinese: "生态系统", example: "Introducing a new predator can severely disrupt the local ecosystem." },
+              { word: "conservation", chinese: "保护", example: "Wildlife conservation programs help protect endangered species from extinction." },
+              { word: "renewable", chinese: "可再生的", example: "Solar and wind power are excellent sources of renewable energy." },
+              { word: "habitat", chinese: "栖息地", example: "Deforestation destroys the natural habitat of thousands of animals." },
+              { word: "emissions", chinese: "排放", example: "Electric vehicles help reduce greenhouse gas emissions in cities." },
+              { word: "climate", chinese: "气候", example: "Scientists warn that the global climate is changing rapidly." },
+              { word: "deforestation", chinese: "森林砍伐", example: "Massive deforestation is contributing to global warming." }
+          ]},
+          { id: 7, title: "Health & Fitness", icon: "fa-dumbbell",
+            task2Prompt: "How can people stay healthy in modern life?",
+            task2Model: "It is hard to stay healthy because many people sit at desks all day. This sedentary lifestyle makes people gain weight quickly. To fix this, we need good nutrition and fresh food. Also, a little cardiovascular exercise like walking helps our immune system stay strong.",
+            analysisPrompt: "Is fast food making us unhealthy?",
+            analysisV1: "Eating fast food every day causes severe obesity. It has terrible nutrition and too much salt. This kind of food slows down your natural metabolism. We must cook fresh meals at home instead.",
+            analysisV2: "A sedentary lifestyle is actually the biggest danger today. People simply do not do enough cardiovascular exercise. Sitting down all day destroys your physical stamina. We need to go outside and move more.",
+            readT: "Staying Fit at School\n\nTeenagers often have a sedentary lifestyle because they sit at desks all day studying. To improve their wellness, schools encourage cardiovascular exercise like running or swimming in gym class.\n\nGood nutrition is also important in the school cafeteria. Eating fresh food improves a student's immune system and speeds up their metabolism. Sadly, eating too much junk food leads to childhood obesity, so dietary habits are crucial.",
+            readQ: ["1. Short Answer: Why do teenagers often have a sedentary lifestyle?", "2. True / False / Not Given: Fresh food slows down metabolism.", "3. Sentence Completion: Schools encourage ________ exercise like running or swimming.", "4. Matching: Match 'Immune' to its meaning in the text.", "5. Multiple Choice: What does eating too much junk food lead to? A) Wellness B) Obesity C) Stamina"],
+            words: [
+              { word: "nutrition", chinese: "营养", example: "Good nutrition is just as important as exercise for staying fit." },
+              { word: "metabolism", chinese: "新陈代谢", example: "Drinking water can help speed up your resting metabolism." },
+              { word: "cardiovascular", chinese: "心血管的", example: "Running and swimming are excellent cardiovascular exercises." },
+              { word: "wellness", chinese: "健康", example: "The school promotes student wellness by offering free gym classes." },
+              { word: "immune", chinese: "免疫的", example: "Eating plenty of vitamins strengthens your immune system." },
+              { word: "sedentary", chinese: "久坐的", example: "A sedentary lifestyle can lead to severe health issues over time." },
+              { word: "stamina", chinese: "耐力", example: "You need a lot of physical stamina to run a full marathon." },
+              { word: "obesity", chinese: "肥胖", example: "Childhood obesity is becoming a major public health concern." },
+              { word: "hygiene", chinese: "卫生", example: "Maintaining good dental hygiene prevents tooth decay." },
+              { word: "dietary", chinese: "饮食的", example: "He had to make strict dietary changes to lower his cholesterol." }
+          ]},
+          { id: 8, title: "Technology", icon: "fa-microchip",
+            task2Prompt: "Does technology make our lives better?",
+            task2Model: "I love technology because it connects me with my friends easily. We can use a simple virtual interface to talk across the world. Also, saving photos in the cloud is very helpful. We just have to be careful with cybersecurity so our data stays safe.",
+            analysisPrompt: "Do computers isolate people?",
+            analysisV1: "New hardware helps people stay in touch easily. We can use a virtual app to call family in other countries. The software interface is simple enough for grandparents to use. Technology definitely brings us together.",
+            analysisV2: "Social media algorithms can make people feel very lonely. We spend hours looking at a device instead of talking. We automate everything and forget to meet friends. Cyber addiction is ruining real human relationships.",
+            readT: "Technology in the Classroom\n\nTechnology is a normal part of a secondary student's life. Schools use a secure network so students can safely research online. The software interface on school tablets is usually very easy for teenagers to use.\n\nHowever, students must learn about cybersecurity to protect their passwords. Saving homework in the cloud prevents data loss if the computer hardware breaks. This innovation helps everyone study better.",
+            readQ: ["1. Short Answer: What do schools use to help students safely research online?", "2. True / False / Not Given: Saving homework in the cloud is dangerous.", "3. Sentence Completion: Students must learn about ________ to protect their passwords.", "4. Matching: Match 'Hardware' to its meaning in the text.", "5. Multiple Choice: What prevents data loss? A) The cloud B) A broken computer C) An interface"],
+            words: [
+              { word: "innovation", chinese: "创新", example: "Technological innovation has completely transformed how we communicate." },
+              { word: "algorithm", chinese: "算法", example: "The social media algorithm determines which posts you see first." },
+              { word: "cybersecurity", chinese: "网络安全", example: "Schools spend money on cybersecurity to protect student data." },
+              { word: "cloud", chinese: "云端", example: "We store all our school files securely in the cloud." },
+              { word: "virtual", chinese: "虚拟的", example: "Virtual reality headsets let you explore digital worlds as if they were real." },
+              { word: "interface", chinese: "界面", example: "The app is very popular because it has a clean and intuitive user interface." },
+              { word: "automate", chinese: "自动化", example: "Factories use robots to automate repetitive manufacturing tasks." },
+              { word: "hardware", chinese: "硬件", example: "You will need powerful hardware to run this advanced software program." },
+              { word: "software", chinese: "软件", example: "Please make sure you update your antivirus software regularly." },
+              { word: "bandwidth", chinese: "带宽", example: "Streaming high-definition video requires an internet connection with high bandwidth." }
+          ]},
+          { id: 9, title: "Business", icon: "fa-briefcase",
+            task2Prompt: "What makes a small business successful?",
+            task2Model: "Starting a small business takes a lot of brave work. An entrepreneur needs some capital to buy materials and rent a shop. After that, they must find a good market to sell their items. If they have high revenue, they will finally make a profit.",
+            analysisPrompt: "Is profit the only goal of a company?",
+            analysisV1: "Making a high profit is the main goal of any company. An entrepreneur needs good revenue to stay open. A smart investment brings more capital for the future. Without money, the business will close.",
+            analysisV2: "A good company must care about its workers too. Fair corporate rules keep the employees happy and loyal. Honest commerce helps the whole local community grow. Success means more than just making money.",
+            readT: "Learning to Trade\n\nSome high schools now teach students how to be an entrepreneur. In these special commerce classes, teenagers learn how to start a small business. They practice doing market research to find out what people want to buy.\n\nTo make a profit, the students must earn more revenue than they spend. They also learn how to find capital for their investment. This teaches them important corporate skills for their future careers.",
+            readQ: ["1. Short Answer: What do high schools teach students to be?", "2. True / False / Not Given: Students must spend more than they earn to make a profit.", "3. Sentence Completion: Students practice doing ________ research.", "4. Matching: Match 'Capital' to its meaning in the text.", "5. Multiple Choice: What kind of skills do these classes teach? A) Medical B) Corporate C) Engineering"],
+            words: [
+              { word: "entrepreneur", chinese: "企业家", example: "The successful entrepreneur started three different companies before turning thirty." },
+              { word: "investment", chinese: "投资", example: "Buying property is generally considered a safe long-term investment." },
+              { word: "revenue", chinese: "收入", example: "The company's advertising revenue doubled during the holiday season." },
+              { word: "market", chinese: "市场", example: "They conducted extensive research to understand the target market." },
+              { word: "profit", chinese: "利润", example: "After paying all expenses, the business made a substantial profit." },
+              { word: "capital", chinese: "资本", example: "You need a significant amount of capital to start a restaurant." },
+              { word: "corporate", chinese: "公司的", example: "She climbed the corporate ladder to become the CEO." },
+              { word: "shareholder", chinese: "股东", example: "The CEO presented the annual financial report to the shareholder meeting." },
+              { word: "commerce", chinese: "商业", example: "E-commerce has completely revolutionized the retail industry." },
+              { word: "negotiation", chinese: "谈判", example: "Good negotiation skills are essential when signing a new business contract." }
+          ]},
+          { id: 10, title: "Travel", icon: "fa-plane",
+            task2Prompt: "Why do people like traveling abroad?",
+            task2Model: "Going on a holiday to a different country is an amazing adventure. When you reach your destination, you can try strange foods and meet new people. It is fun to plan an itinerary and go sightseeing. Buying a small souvenir helps you remember the special trip.",
+            analysisPrompt: "Is tourism good for a country?",
+            analysisV1: "Tourism brings a lot of money to poor countries. Visitors pay for nice accommodation and local food. This extra money helps the economy of the destination. Tourism creates many new jobs for local people.",
+            analysisV2: "Too many tourists can damage beautiful natural places. A massive expedition might leave rubbish in the environment. We need to strictly control the tourist itinerary. Traveling carefully protects our world for the future.",
+            readT: "School Trips Abroad\n\nGoing on a school trip to a foreign destination is very exciting for teenagers. Teachers give students a detailed itinerary so they know the daily schedule. The class might go sightseeing at famous museums or enjoy a short expedition.\n\nStaying in cheap accommodation like a youth hostel saves money for tourism. During their free time, students usually buy a small souvenir to remember the adventure. These trips broaden their minds.",
+            readQ: ["1. Short Answer: Who gives students a detailed itinerary?", "2. True / False / Not Given: A youth hostel is an expensive accommodation.", "3. Sentence Completion: The class might go ________ at famous museums.", "4. Matching: Match 'Souvenir' to its meaning in the text.", "5. Multiple Choice: Why do students stay in a youth hostel? A) To save money B) To go sightseeing C) To buy souvenirs"],
+            words: [
+              { word: "itinerary", chinese: "行程", example: "Our travel itinerary includes visits to three different historical museums." },
+              { word: "destination", chinese: "目的地", example: "Paris is a highly popular tourist destination during the spring." },
+              { word: "accommodation", chinese: "住宿", example: "We booked our hotel accommodation months in advance to get a good rate." },
+              { word: "souvenir", chinese: "纪念品", example: "I bought a small wooden statue as a souvenir of my trip." },
+              { word: "sightseeing", chinese: "观光", example: "We spent the whole afternoon sightseeing around the ancient ruins." },
+              { word: "adventure", chinese: "冒险", example: "Traveling through the Amazon jungle was an unforgettable adventure." },
+              { word: "expedition", chinese: "探险", example: "The scientific expedition spent weeks exploring the frozen landscape of Antarctica." },
+              { word: "tourism", chinese: "旅游业", example: "The local economy relies heavily on international tourism." },
+              { word: "passport", chinese: "护照", example: "You must make sure your passport is valid before booking international flights." },
+              { word: "transit", chinese: "中转", example: "We had a short layover in transit at the Dubai airport." }
+          ]},
+          { id: 11, title: "Arts", icon: "fa-palette",
+            task2Prompt: "Should art be taught in high schools?",
+            task2Model: "I think children should learn about art in primary school. When they paint on a canvas or build a sculpture, it helps them relax. Visiting a gallery shows them different genres of history. Art teaches aesthetics and helps students think in a very creative way.",
+            analysisPrompt: "Why do people visit art galleries?",
+            analysisV1: "Visiting an art gallery is a very relaxing experience. Looking at a beautiful sculpture calms the mind. The lovely aesthetic makes people feel happy and peaceful. Art is simply good for our mental health.",
+            analysisV2: "Museums help us understand different art genres. An exhibition shows us how people lived in the past. Looking at a classic masterpiece is a great cultural lesson. Galleries are wonderful educational tools.",
+            readT: "The Value of Art Class\n\nArt classes help secondary students express their feelings. A student can paint on a canvas or build a 3D sculpture out of clay. Studying different genres of art also teaches students about history and culture.\n\nSometimes, the school organizes an exhibition in the local gallery. This allows parents to see the beautiful aesthetics of their children's masterpieces. It is a very proud moment for the young artists.",
+            readQ: ["1. Short Answer: What can a student build out of clay?", "2. True / False / Not Given: Schools never organize exhibitions.", "3. Sentence Completion: A student can paint on a ________.", "4. Matching: Match 'Aesthetics' to its meaning in the text.", "5. Multiple Choice: What does studying art genres teach students? A) Math B) History and culture C) Science"],
+            words: [
+              { word: "sculpture", chinese: "雕塑", example: "The artist spent months carving the beautiful marble sculpture." },
+              { word: "canvas", chinese: "画布", example: "The painter applied bright colors directly onto the blank canvas." },
+              { word: "composition", chinese: "构图", example: "The photograph is famous for its perfect lighting and composition." },
+              { word: "genre", chinese: "流派", example: "Science fiction is my absolute favorite literary genre." },
+              { word: "exhibition", chinese: "展览", example: "The art gallery is hosting an exhibition of modern paintings." },
+              { word: "gallery", chinese: "画廊", example: "We visited a local gallery to view the new photography collection." },
+              { word: "aesthetics", chinese: "美学", example: "The building's architecture prioritizes functional utility over visual aesthetics." },
+              { word: "abstract", chinese: "抽象的", example: "Her abstract paintings use shapes and colors to express emotion." },
+              { word: "portrait", chinese: "肖像", example: "The classic portrait captures the king's serious expression perfectly." },
+              { word: "masterpiece", chinese: "杰作", example: "The Mona Lisa is widely considered to be Da Vinci's greatest masterpiece." }
+          ]},
+          { id: 12, title: "Social Issues", icon: "fa-people-arrows",
+            task2Prompt: "How can we help poor people in our society?",
+            task2Model: "There is still too much poverty in many cities today. The government needs to give better welfare to people who have no money. Also, we must stop discrimination against marginalized groups. Everyone deserves basic human rights and a fair chance to succeed in the community.",
+            analysisPrompt: "Should rich people give more to charity?",
+            analysisV1: "Rich people should definitely help their local community. They can reduce poverty by donating money to schools. This helps stop extreme inequality in the city. Sharing personal wealth is a moral duty.",
+            analysisV2: "The government must provide better social welfare. We cannot just rely on charity to stop discrimination. True justice only comes from strong national laws. The state is responsible for protecting everyone.",
+            readT: "Youth Activism\n\nMany teenagers volunteer to help their local community. They want to fight extreme poverty and stop unfair discrimination. In social studies class, students learn about human rights and the importance of justice.\n\nHelping marginalized groups makes the city a better place for everyone. This kind of youth activism shows that young people care about fixing social inequality and improving local welfare.",
+            readQ: ["1. Short Answer: Who volunteers to help the local community?", "2. True / False / Not Given: Students want to increase unfair discrimination.", "3. Sentence Completion: Students learn about human ________ and the importance of justice.", "4. Matching: Match 'Poverty' to its meaning in the text.", "5. Multiple Choice: What does youth activism show? A) Young people care about inequality B) Students are tired C) School is boring"],
+            words: [
+              { word: "inequality", chinese: "不平等", example: "Wealth inequality is a growing problem in many modern societies." },
+              { word: "community", chinese: "社区", example: "The local community organized a festival to raise money for charity." },
+              { word: "poverty", chinese: "贫困", example: "Millions of people around the world still live in extreme poverty." },
+              { word: "discrimination", chinese: "歧视", example: "Laws have been passed to prevent workplace discrimination based on gender." },
+              { word: "rights", chinese: "权利", example: "Everyone should be entitled to basic human rights like freedom of speech." },
+              { word: "justice", chinese: "正义", example: "The criminal justice system is designed to punish offenders and protect victims." },
+              { word: "welfare", chinese: "福利", example: "The government provides social welfare programs to support unemployed citizens." },
+              { word: "marginalized", chinese: "边缘化的", example: "The charity works to provide education for marginalized groups in society." },
+              { word: "activism", chinese: "行动主义", example: "Youth activism has brought significant attention to climate change." },
+              { word: "reform", chinese: "改革", example: "The education system needs major reform to meet modern standards." }
+          ]}
+        ];
+
+        const generatedUnits = topicVocabMap.map(t => {
+            const w = t.words;
+            const topic = t.title.toLowerCase();
+
+            const buildBreakdown = (text, type, note) => {
+                return text.split(/(?<=[.?!])\s+/).filter(s => s.trim().length > 0).map(s => ({
+                    text: s.trim(),
+                    breakdown: [{type: type, text: "B1 Concept", note: note}],
+                    ieltsValue: "Clear B1 sentence."
+                }));
+            };
+
+            return {
+                id: t.id,
+                title: t.title,
+                icon: `fa-solid ${t.icon}`,
+                skills: ["Listening", "Writing", "Speaking", "Reading"],
+                content: `Explore advanced vocabulary and academic concepts related to ${topic}, focusing on ${w[0].word} and ${w[1].word}.`,
+                secondaryExample: `Secondary Context: Writing a detailed report on ${topic} and its impact on ${w[2].word}.`,
+                outcomes: { listening: `Understand ${topic} lectures.`, reading: `Analyze texts on ${topic}.`, writing: `Write essays about ${topic}.`, speaking: `Discuss ${topic} fluently.`, grammarVocab: "Complex grammar structures." },
+                vocabulary: w.slice(0, 10).map((v) => ({ 
+                    word: v.word, 
+                    chinese: v.chinese, 
+                    definition: v.example 
+                })),
+                mcqs: [
+                    { q: `What plays a crucial role in ${topic}?`, options: [w[0].word, "Nothing", "Apathy", "Stagnation"], answer: 0 },
+                    { q: `Which term best relates to the study of ${topic}?`, options: ["Isolation", w[1].word, "Ignorance", "Decline"], answer: 1 },
+                    { q: `In the context of ${topic}, what is highly valued?`, options: ["Loss", "Harm", w[2].word, "Failure"], answer: 2 },
+                    { q: `What is a common challenge in ${topic}?`, options: ["Ease", w[3].word, "Simplicity", "Nothing"], answer: 1 },
+                    { q: `Experts in ${topic} often analyze...`, options: [w[4].word, "Silence", "Emptiness", "Void"], answer: 0 }
+                ],
+                speaking: [
+                    { type: "Part 1", questions: [`Do you like learning about ${topic}?`], stems: [`I find ${topic} very interesting...`], example: `I find ${topic} very interesting. The concept of ${w[0].word} is my favorite part to study.` },
+                    { type: "Part 2", questions: [`Describe a time you dealt with ${topic}.`], stems: [`I remember dealing with...`], example: `I dealt with ${topic} last year. The focus on ${w[1].word} and ${w[2].word} was absolutely fascinating.` },
+                    { type: "Part 3", questions: [`How will ${topic} change the future?`], stems: [`In the future, it will...`], example: `It will become more advanced. Society relies heavily on ${w[3].word} to progress forward globally.` }
+                ],
+                reading: {
+                    text: t.readT,
+                    questions: t.readQ
+                },
+                listening: {
+                    text: `Tutor: Let's discuss ${topic}. Have you reviewed the impact of ${w[0].word}?\nStudent: Yes, but I struggled to understand ${w[1].word}.\nTutor: That's common. Remember that ${w[2].word} provides the foundation for the theory. \nStudent: Ah, so ${w[3].word} builds upon it?\nTutor: Exactly. And the final element, ${w[4].word}, ties everything together perfectly.`,
+                    questions: ["1. What did the student struggle with?", "2. True/False/Not Given: The tutor said it's rare to struggle with this.", "3. Gap Fill: The third concept provides the ________.", "4. What builds upon the foundation?", "5. What ties everything together?"]
+                },
+                grammar: {
+                    topic: "High-Frequency Phrases", focus: "Use common B1 phrases to sound natural and fluent.",
+                    examples: [
+                        `It is very important to understand the ${w[0].word}.`,
+                        `Many people are interested in the new ${w[1].word}.`,
+                        `We need to find a better way to handle the ${w[2].word}.`,
+                        `The main advantage of this ${w[3].word} is its simplicity.`,
+                        `Students should spend more time focusing on their ${w[4].word}.`,
+                        `There is a growing demand for a reliable ${w[5].word}.`,
+                        `It is a good idea to invest in the local ${w[6].word}.`,
+                        `We are currently working on a project about ${w[7].word}.`,
+                        `This kind of ${w[8].word} is becoming very popular today.`,
+                        `It takes a lot of effort to develop a successful ${w[9].word}.`
+                    ],
+                    model: `It is very important to understand the role of ${w[0].word} in modern society.`
+                },
+                tutorPrompts: [
+                    { type: "Grammar Check", focus: "Conjunctions", text: `I like ${topic}. It is hard.`, questions: ["Combine using 'although': Although it is hard..."] },
+                    { type: "Vocabulary Check", focus: "Synonyms", text: "It is very good.", questions: ["Replace 'very good' with 'excellent'."] }
+                ],
+                practiceTests: [
+                    { type: "Task 2", text: t.task2Prompt, questions: [], modelAnswer: t.task2Model }
+                ],
+                paragraphAnalysis: {
+                    prompt: t.analysisPrompt,
+                    versions: [
+                        {
+                            version: "Version 1",
+                            text: t.analysisV1,
+                            sentences: buildBreakdown(t.analysisV1, "lexical", "Good B1 vocabulary")
+                        },
+                        {
+                            version: "Version 2",
+                            text: t.analysisV2,
+                            sentences: buildBreakdown(t.analysisV2, "grammar", "Simple B1 linking")
+                        }
+                    ]
+                }
+            };
+        });
+
+        // Combine manual top-tier units with the smart generated ones
+        const unitData = [...manualUnits, ...generatedUnits];
+
+        const InteractiveParagraph = ({ data, handleSpeak }) => {
+            const [activeVersionIdx, setActiveVersionIdx] = useState(0);
+            const [activeSentenceIdx, setActiveSentenceIdx] = useState(null);
+
+            if (!data || !data.versions || data.versions.length === 0) return null;
+
+            const activeData = data.versions[activeVersionIdx];
+
+            const getPillColor = (type) => {
+                switch(type) {
+                    case 'marker': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+                    case 'grammar': return 'bg-blue-100 text-blue-800 border-blue-300';
+                    case 'structure': return 'bg-green-100 text-green-800 border-green-300';
+                    case 'lexical': return 'bg-purple-100 text-purple-800 border-purple-300';
+                    default: return 'bg-slate-100 text-slate-800 border-slate-300';
+                }
+            };
+
+            const getIcon = (type) => {
+                switch(type) {
+                    case 'marker': return 'fa-link';
+                    case 'grammar': return 'fa-spell-check';
+                    case 'structure': return 'fa-sitemap';
+                    case 'lexical': return 'fa-book-open';
+                    default: return 'fa-check';
+                }
+            };
+
+            return (
+                <div className="bg-white p-3 md:p-5 rounded-xl shadow-sm border border-slate-200 animate-fade-in">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 pb-4 border-b border-slate-100">
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <div className="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                                    <i className="fa-solid fa-magnifying-glass-chart"></i>
+                                </div>
+                                Paragraph Analysis
+                            </h3>
+                            <p className="text-sm text-slate-500 mt-1">Click a sentence to see its grammar breakdown.</p>
+                        </div>
+                        {data.versions.length > 1 && (
+                            <div className="flex bg-slate-100 p-1.5 rounded-lg shrink-0">
+                                {data.versions.map((ver, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => { setActiveVersionIdx(idx); setActiveSentenceIdx(null); }}
+                                        className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-all ${activeVersionIdx === idx ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+                                    >
+                                        {ver.version}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    
+                    {data.prompt && (
+                        <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg mb-5 shadow-sm">
+                            <h4 className="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                <i className="fa-solid fa-pen-nib"></i> Prompt
+                            </h4>
+                            <p className="text-indigo-900 font-bold italic text-lg md:text-xl">"{data.prompt}"</p>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div className="bg-slate-50 p-5 rounded-lg border border-slate-200 shadow-inner">
+                            <div className="flex justify-between items-center mb-3">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Paragraph</h4>
+                                <button onClick={() => handleSpeak(activeData.text)} className="text-indigo-500 hover:text-indigo-700 text-sm font-bold transition-colors flex items-center gap-1">
+                                    <i className="fa-solid fa-volume-high"></i> Read All
+                                </button>
+                            </div>
+                            <p className="text-slate-700 leading-relaxed text-lg md:text-xl font-medium">
+                                {activeData.sentences.map((sentenceObj, idx) => (
+                                    <span key={idx}>
+                                        <span onClick={() => setActiveSentenceIdx(idx)} className={`sentence-span ${activeSentenceIdx === idx ? 'active' : ''}`}>
+                                            {sentenceObj.text}
+                                        </span>{" "}
+                                    </span>
+                                ))}
+                            </p>
+                        </div>
+
+                        <div>
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Breakdown</h4>
+                            {activeSentenceIdx !== null ? (
+                                <div className="space-y-3 animate-fade-in">
+                                    <button onClick={() => handleSpeak(activeData.sentences[activeSentenceIdx].text)} className="w-full text-left bg-indigo-50 border border-indigo-200 p-3 rounded-lg transition-colors hover:bg-indigo-100">
+                                        <p className="text-indigo-900 text-base md:text-lg font-bold italic">"{activeData.sentences[activeSentenceIdx].text}"</p>
+                                    </button>
+                                    <div className="space-y-2">
+                                        {activeData.sentences[activeSentenceIdx].breakdown.map((item, i) => (
+                                            <div key={i} className={`border p-2.5 rounded-md flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 ${getPillColor(item.type)}`}>
+                                                <div className="font-bold shrink-0 flex items-center gap-1.5 text-xs md:text-sm">
+                                                    <i className={`fa-solid ${getIcon(item.type)} opacity-70`}></i> {item.text}
+                                                </div>
+                                                <div className="hidden sm:block text-slate-300 text-sm">→</div>
+                                                <div className="text-xs md:text-sm font-medium opacity-90">{item.note}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="bg-slate-800 text-white p-3 rounded-lg mt-3 flex items-start gap-2.5">
+                                        <i className="fa-solid fa-award text-yellow-400 text-base mt-0.5"></i>
+                                        <div>
+                                            <h5 className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">IELTS Value</h5>
+                                            <p className="text-sm font-semibold">{activeData.sentences[activeSentenceIdx].ieltsValue}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-slate-400 border-2 border-dashed border-slate-200 rounded-lg p-4 text-center bg-slate-50">
+                                    <i className="fa-solid fa-hand-pointer text-3xl mb-3 text-slate-300"></i>
+                                    <p className="text-sm font-medium">Click a sentence to see breakdown.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const UnitQuiz = ({ mcqs, handleSpeak }) => {
+          const [selectedAnswers, setSelectedAnswers] = useState({});
+          const [feedback, setFeedback] = useState({});
+          const [showExtended, setShowExtended] = useState(false);
+
+          const handleOptionClick = (questionIndex, optionIndex, correctAnswerIndex) => {
+            setSelectedAnswers({ ...selectedAnswers, [questionIndex]: optionIndex });
+            setFeedback({ ...feedback, [questionIndex]: optionIndex === correctAnswerIndex });
+          };
+
+          if (!mcqs || mcqs.length === 0) return null;
+          const displayedMcqs = showExtended ? mcqs : mcqs.slice(0, 5);
+
+          return (
+            <div className="bg-slate-900 p-4 md:p-6 rounded-xl shadow-md border border-slate-800 mt-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-teal-500/20 p-2 rounded-md border border-teal-500/30">
+                  <i className="fa-regular fa-circle-question text-teal-400 text-xl"></i>
+                </div>
+                <h3 className="text-lg font-bold text-white">Unit Quiz</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {displayedMcqs.map((mcq, qIdx) => (
+                  <div key={qIdx} className="bg-slate-800 p-4 md:p-5 rounded-lg border border-slate-700 animate-fade-in">
+                    <h4 className="text-base md:text-lg font-semibold text-slate-200 mb-4">{qIdx + 1}. {mcq.q}</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {mcq.options.map((opt, optIdx) => {
+                        const isSelected = selectedAnswers[qIdx] === optIdx;
+                        const isCorrect = mcq.answer === optIdx;
+                        const hasAnswered = selectedAnswers[qIdx] !== undefined;
+                        let btnStyle = "bg-slate-700 text-slate-300 hover:bg-slate-600 border-transparent";
+                        if (hasAnswered) {
+                          if (isCorrect) btnStyle = "bg-green-900/40 text-green-400 border-green-500/50";
+                          else if (isSelected && !isCorrect) btnStyle = "bg-rose-900/40 text-rose-400 border-rose-500/50";
+                          else btnStyle = "bg-slate-800 text-slate-500 border-transparent opacity-50";
+                        }
+                        return (
+                          <button key={optIdx} disabled={hasAnswered} onClick={() => { handleSpeak(opt); handleOptionClick(qIdx, optIdx, mcq.answer); }} className={`w-full text-left px-4 py-3 rounded-lg border transition-all text-sm md:text-base font-medium ${btnStyle}`}>
+                            {String.fromCharCode(65 + optIdx)}. {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {feedback[qIdx] !== undefined && (
+                      <div className={`mt-3 p-3 rounded-md text-sm font-bold flex items-center gap-2 ${feedback[qIdx] ? 'bg-green-900/20 text-green-400' : 'bg-rose-900/20 text-rose-400'}`}>
+                        {feedback[qIdx] ? <i className="fa-regular fa-circle-check text-base"></i> : <i className="fa-solid fa-times text-base"></i>}
+                        {feedback[qIdx] ? 'Correct!' : 'Incorrect'}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              {mcqs.length > 5 && (
+                <div className="mt-5 pt-4 border-t border-slate-800 text-center">
+                  <button onClick={() => setShowExtended(!showExtended)} className="bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 px-6 rounded-md transition-colors text-sm">
+                    {showExtended ? "Show Fewer" : "Load 10 More"}
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        const PracticeGamePage = ({ vocabulary, unitTitle, onExit, handleSpeak }) => {
+          const itemsPerRound = 5;
+          const totalRounds = Math.ceil(vocabulary.length / itemsPerRound);
+          const [round, setRound] = useState(0);
+          const [selectedWord, setSelectedWord] = useState(null);
+          const [matchedPairs, setMatchedPairs] = useState([]);
+          const [definitions, setDefinitions] = useState([]);
+          const [roundComplete, setRoundComplete] = useState(false);
+
+          useEffect(() => {
+            const currentVocab = vocabulary.slice(round * itemsPerRound, (round + 1) * itemsPerRound);
+            setDefinitions([...currentVocab].sort(() => Math.random() - 0.5));
+            setMatchedPairs([]);
+            setSelectedWord(null);
+            setRoundComplete(false);
+          }, [round, vocabulary]);
+
+          const currentVocab = vocabulary.slice(round * itemsPerRound, (round + 1) * itemsPerRound);
+
+          const handleWordClick = (word) => {
+            if (matchedPairs.includes(word)) return;
+            handleSpeak(word);
+            setSelectedWord(word);
+          };
+
+          const handleDefClick = (defObj) => {
+            if (!selectedWord) return;
+            handleSpeak(defObj.definition);
+            if (defObj.word === selectedWord) {
+              const newMatches = [...matchedPairs, selectedWord];
+              setMatchedPairs(newMatches);
+              
+              try {
+                  confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 }, colors: ['#166534', '#22c55e', '#facc15'] });
+                  const audio = new Audio('https://actions.google.com/sounds/v1/ui/proxima_spacious_correct.ogg');
+                  audio.volume = 0.5;
+                  audio.play();
+              } catch(e) { console.log('Audio/Confetti error blocked', e); }
+
+              if (newMatches.length === currentVocab.length) setTimeout(() => setRoundComplete(true), 800); 
+            }
+            setSelectedWord(null);
+          };
+
+          return (
+            <div className="fixed inset-0 z-[100] bg-slate-900 flex flex-col font-sans text-slate-800 overflow-hidden animate-fade-in">
+                <div className="bg-slate-800 text-white px-5 py-4 flex justify-between items-center shadow-md shrink-0">
+                    <button onClick={onExit} className="flex items-center gap-2 hover:text-teal-400 transition-colors font-bold bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm md:text-base">
+                        <i className="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <h2 className="text-lg md:text-xl font-bold text-teal-400 flex items-center gap-2">
+                        <i className="fa-solid fa-gamepad"></i> {unitTitle} Match
+                    </h2>
+                    <div className="text-slate-300 font-bold bg-slate-900 px-4 py-2 rounded-lg border border-slate-700 text-sm md:text-base">
+                        Round {round + 1}/{totalRounds}
+                    </div>
+                </div>
+
+                <div className="flex-1 flex flex-col items-center justify-center p-5 bg-slate-50 relative">
+                    <div className="w-full max-w-5xl h-full flex flex-col">
+                        {!roundComplete ? (
+                            <div className="flex gap-3 md:gap-6 h-full pb-3 pt-2">
+                                <div className="flex-1 flex flex-col gap-3 md:gap-4">
+                                    <h4 className="font-bold text-slate-400 uppercase tracking-wider text-center shrink-0 text-xs">Terms</h4>
+                                    {currentVocab.map((v) => (
+                                        <button key={v.word} onClick={() => handleWordClick(v.word)} disabled={matchedPairs.includes(v.word)}
+                                          className={`flex-1 flex items-center justify-center px-3 py-3 md:py-4 rounded-xl border-2 transition-all text-sm md:text-lg font-bold shadow-sm ${
+                                            matchedPairs.includes(v.word) ? 'bg-green-800 border-green-900 text-white cursor-not-allowed opacity-90 shadow-inner' : selectedWord === v.word ? 'bg-indigo-50 border-indigo-500 text-indigo-800 scale-[1.02] shadow-md' : 'bg-white border-slate-200 text-slate-700 hover:border-indigo-300'
+                                          }`}>
+                                          {v.word.toLowerCase()}
+                                        </button>
+                                      ))}
+                                </div>
+                                <div className="flex-[2] flex flex-col gap-3 md:gap-4">
+                                    <h4 className="font-bold text-slate-400 uppercase tracking-wider text-center shrink-0 text-xs">Definitions</h4>
+                                    {definitions.map((v, i) => (
+                                        <button key={i} onClick={() => handleDefClick(v)} disabled={matchedPairs.includes(v.word)}
+                                          className={`flex-1 flex items-center justify-start px-4 py-3 md:py-4 rounded-xl border-2 transition-all text-sm md:text-base font-medium leading-snug shadow-sm ${
+                                            matchedPairs.includes(v.word) ? 'bg-green-800 border-green-900 text-white cursor-not-allowed opacity-90 shadow-inner' : 'bg-white border-slate-200 text-slate-700 hover:border-indigo-300 hover:bg-slate-50'
+                                          }`}>
+                                          {v.definition}
+                                        </button>
+                                      ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center animate-pop-in">
+                                <div className="bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-slate-200 flex flex-col items-center max-w-md text-center">
+                                    <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-4">
+                                        <i className="fa-solid fa-check text-4xl"></i>
+                                    </div>
+                                    <h2 className="text-2xl font-extrabold text-slate-800 mb-3">
+                                        {round < totalRounds - 1 ? 'Round Complete!' : 'Unit Complete!'}
+                                    </h2>
+                                    <p className="text-slate-500 text-sm mb-6">
+                                        {round < totalRounds - 1 ? "Great job. Ready for the next set?" : "You've matched all vocabulary for this unit."}
+                                    </p>
+                                    {round < totalRounds - 1 ? (
+                                        <button onClick={() => setRound(round + 1)} className="bg-indigo-600 hover:bg-indigo-700 text-white text-base font-bold py-3 px-8 rounded-lg shadow-sm transition-transform hover:scale-105">
+                                            Next Round <i className="fa-solid fa-arrow-right ml-2"></i>
+                                        </button>
+                                    ) : (
+                                        <div className="flex gap-3 w-full">
+                                            <button onClick={() => setRound(0)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold py-3 px-4 rounded-lg transition-colors">Play Again</button>
+                                            <button onClick={onExit} className="flex-1 bg-teal-500 hover:bg-teal-600 text-white text-sm font-bold py-3 px-4 rounded-lg shadow-sm transition-transform hover:scale-105">Dashboard</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+          );
+        };
+
+        function App() {
+          const [activeUnit, setActiveUnit] = useState(unitData[0]);
+          const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+          const [activeTab, setActiveTab] = useState("overview");
+          const [showModelAnswer, setShowModelAnswer] = useState({});
+          const voiceIndexRef = useRef(0);
+
+          useEffect(() => {
+            return () => {
+              if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            };
+          }, []);
+
+          const handleSpeak = (text, isConversation = false) => {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            
+            // Clean text: Replace underscores with "blank", and strip out IELTS answer markers.
+            let cleanText = text.replace(/_+/g, "blank").replace(/\s*\((True|False|Not Given)\)/gi, "");
+
+            const loadVoices = () => {
+              const voices = window.speechSynthesis.getVoices();
+              
+              // Define allowed Microsoft Online voices
+              const allowedVoices = ["Remy", "Giuseppe", "Vivienne", "Florian", "Seraphina", "Emma", "Brian", "Ava", "Andrew", "William"];
+              
+              // Filter for high-quality Microsoft Online voices from the allowed list
+              const validVoices = voices.filter(v => 
+                allowedVoices.some(name => v.name.includes(name)) &&
+                v.name.includes("Microsoft") &&
+                v.name.includes("Online") &&
+                v.lang.startsWith("en")
+              );
+
+              const defaultVoices = validVoices.length > 0 ? validVoices : voices;
+
+              if (isConversation && cleanText.includes(":")) {
+                  // Conversation Mode: Split by newlines and assign voices to speakers
+                  const lines = cleanText.split('\n');
+                  const speakers = [...new Set(lines.filter(line => line.includes(':')).map(line => line.split(':')[0].trim()).filter(s => s))];
+                  
+                  const voiceMap = {};
+                  const emmaVoice = defaultVoices.find(v => v.name.includes("Emma")) || defaultVoices[0];
+                  const andrewVoice = defaultVoices.find(v => v.name.includes("Andrew")) || defaultVoices[1] || defaultVoices[0];
+
+                  speakers.forEach((speaker, index) => {
+                      voiceMap[speaker] = index % 2 === 0 ? emmaVoice : andrewVoice;
+                  });
+
+                  lines.forEach(line => {
+                      const match = line.match(/^(.*?):\s*(.*)$/);
+                      if (match) {
+                          const speaker = match[1].trim();
+                          const spokenText = match[2];
+                          const utter = new SpeechSynthesisUtterance(spokenText);
+                          utter.rate = 0.85;
+                          utter.voice = voiceMap[speaker];
+                          window.speechSynthesis.speak(utter);
+                      } else if (line.trim().length > 0) {
+                          const utter = new SpeechSynthesisUtterance(line);
+                          utter.rate = 0.85;
+                          utter.voice = emmaVoice;
+                          window.speechSynthesis.speak(utter);
+                      }
+                  });
+              } else {
+                  // Standard Single-Voice Mode
+                  const utter = new SpeechSynthesisUtterance(cleanText);
+                  utter.rate = 0.85; 
+
+                  if (defaultVoices.length === 0) {
+                    console.warn("TTS: No suitable voices found.");
+                    return;
+                  }
+
+                  const selected = defaultVoices[voiceIndexRef.current % defaultVoices.length];
+                  voiceIndexRef.current += 1;
+
+                  utter.voice = selected;
+                  window.speechSynthesis.speak(utter);
+              }
+            };
+
+            if (window.speechSynthesis.getVoices().length === 0) {
+              window.speechSynthesis.onvoiceschanged = loadVoices;
+            } else {
+              loadVoices();
+            }
+          };
+
+          const selectUnit = (unit) => {
+            setActiveUnit(unit);
+            setIsSidebarOpen(false);
+            setActiveTab("overview");
+            setShowModelAnswer({});
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+          };
+
+          const toggleModelAnswer = (idx) => setShowModelAnswer(prev => ({ ...prev, [idx]: !prev[idx] }));
+
+          const tabs = [
+            { id: "overview", label: "Overview", icon: "fa-solid fa-book-open" },
+            { id: "vocab", label: "Vocabulary", icon: "fa-solid fa-book" },
+            { id: "speaking", label: "Speaking", icon: "fa-solid fa-microphone" },
+            { id: "reading", label: "Reading", icon: "fa-solid fa-book" },
+            { id: "listening", label: "Listening", icon: "fa-solid fa-headphones" },
+            { id: "grammar", label: "Writing & Grammar", icon: "fa-solid fa-pen-to-square" },
+            { id: "analysis", label: "Paragraph Analysis", icon: "fa-solid fa-magnifying-glass-chart" },
+            { id: "testing", label: "Practice Tests", icon: "fa-solid fa-clipboard-list" },
+            { id: "game", label: "Game", icon: "fa-solid fa-gamepad" }
+          ];
+
+          if (activeTab === "game") {
+            return <PracticeGamePage vocabulary={activeUnit.vocabulary} unitTitle={activeUnit.title} onExit={() => setActiveTab("overview")} handleSpeak={handleSpeak} />;
+          }
+
+          return (
+            <div className="flex h-screen bg-slate-50 font-sans text-slate-800 overflow-hidden">
+              
+              {isSidebarOpen && <div className="fixed inset-0 bg-slate-900/50 z-20" onClick={() => setIsSidebarOpen(false)} />}
+
+              <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-slate-300 transform transition-transform duration-300 ease-in-out flex flex-col ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center shrink-0">
+                  <div>
+                    <h1 className="text-base font-bold text-white flex items-center gap-2">
+                      <i className="fa-solid fa-book-open text-teal-400"></i> IELTS Prep 
+                    </h1>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Units 1 - 24</p>
+                  </div>
+                  <button className="text-slate-400 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
+                    <i className="fa-solid fa-times text-lg"></i>
+                  </button>
+                </div>
+                <div className="p-2 overflow-y-auto flex-1">
+                  <ul className="space-y-1 pb-10">
+                    {unitData.map((unit) => (
+                      <li key={unit.id}>
+                        <button onClick={() => selectUnit(unit)} className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${activeUnit.id === unit.id ? 'bg-teal-500/10 text-teal-400 font-bold border border-teal-500/20' : 'hover:bg-slate-800 hover:text-white border border-transparent font-medium'}`}>
+                          <i className={`${unit.icon} ${activeUnit.id === unit.id ? 'text-teal-400' : 'text-slate-500'} w-5 text-center text-lg`}></i>
+                          Unit {unit.id}: {unit.title}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex-1 flex flex-col h-full relative w-full">
+                
+                <header className="bg-white border-b border-slate-200 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm shrink-0">
+                  <div className="flex items-center gap-3">
+                    <button className="text-slate-500 hover:text-indigo-600 bg-slate-100 p-2 rounded-lg transition-colors flex items-center gap-2" onClick={() => setIsSidebarOpen(true)}>
+                      <i className="fa-solid fa-list text-base"></i><span className="font-bold text-sm hidden sm:inline">Units</span>
+                    </button>
+                    <div className="h-5 w-px bg-slate-200 hidden md:block"></div>
+                    <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
+                      <span className="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider w-fit">Unit {activeUnit.id}</span>
+                      <h2 className="text-lg md:text-xl font-extrabold text-slate-800">{activeUnit.title}</h2>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-bold border border-indigo-100 uppercase tracking-wide shadow-sm">
+                    <i className="fa-solid fa-graduation-cap text-sm shrink-0"></i><span className="hidden sm:inline">Secondary Student Mode</span>
+                  </div>
+                </header>
+
+                <main className="flex-1 overflow-y-auto bg-slate-50 p-3 md:p-5 scroll-smooth">
+                  <div className="max-w-6xl mx-auto flex flex-col h-full">
+                    
+                    <div className="flex flex-wrap gap-2 pb-3 mb-4 border-b border-slate-200">
+                      {tabs.map(tab => (
+                        <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                          className={`flex-grow sm:flex-grow-0 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-all border ${activeTab === tab.id ? 'border-indigo-600 text-indigo-700 bg-indigo-50 shadow-sm' : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}>
+                          <i className={`${tab.icon} text-base`}></i> <span className="whitespace-nowrap">{tab.label}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="flex-1 animate-fade-in pb-10">
+                      
+                      {/* OVERVIEW */}
+                      {activeTab === "overview" && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button onClick={() => handleSpeak(activeUnit.content)} className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 text-left hover:border-teal-300 transition-all">
+                              <h3 className="text-sm md:text-base font-bold text-slate-800 mb-2 flex items-center gap-2"><i className="fa-solid fa-book-open text-indigo-500"></i> Academic Focus</h3>
+                              <p className="text-slate-600 text-base md:text-lg font-medium leading-relaxed">{activeUnit.content}</p>
+                            </button>
+                            <button onClick={() => handleSpeak(activeUnit.secondaryExample)} className="bg-indigo-50 p-5 md:p-6 rounded-2xl border border-indigo-200 shadow-sm text-left hover:border-indigo-400 transition-all">
+                              <h3 className="text-sm md:text-base font-bold text-indigo-900 mb-2 flex items-center gap-2"><i className="fa-solid fa-graduation-cap text-indigo-600"></i> High School Scenario</h3>
+                              <p className="text-indigo-800 text-base md:text-lg font-bold leading-relaxed">{activeUnit.secondaryExample}</p>
+                            </button>
+                          </div>
+                          <button onClick={() => handleSpeak(`Learning Outcomes: Listening: ${activeUnit.outcomes.listening} Reading: ${activeUnit.outcomes.reading} Writing: ${activeUnit.outcomes.writing} Speaking: ${activeUnit.outcomes.speaking} Grammar and Vocabulary: ${activeUnit.outcomes.grammarVocab}`)} className="w-full bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 mt-2 text-left hover:border-teal-300 transition-all">
+                            <h3 className="text-sm md:text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i className="fa-solid fa-bullseye text-rose-500"></i> Learning Outcomes</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                              {Object.entries(activeUnit.outcomes).map(([key, val]) => (
+                                <div key={key} className={`flex items-start gap-3 ${key === 'grammarVocab' ? 'md:col-span-2 pt-3 border-t border-slate-100' : ''}`}>
+                                   <i className={`fa-solid ${key==='listening'?'fa-headphones':key==='reading'?'fa-book':key==='writing'?'fa-pen-to-square':key==='speaking'?'fa-microphone':'fa-check-circle'} text-slate-400 text-lg mt-0.5 shrink-0`}></i>
+                                   <div>
+                                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{key}</span>
+                                     <p className="text-base md:text-lg font-medium text-slate-700 leading-snug mt-1">{val}</p>
+                                   </div>
+                                </div>
+                              ))}
+                            </div>
+                          </button>
+                        </div>
+                      )}
+
+                      {/* VOCABULARY */}
+                      {activeTab === "vocab" && (
+                        <div className="space-y-5">
+                          <div className="bg-slate-900 p-4 md:p-5 rounded-2xl text-slate-300 border border-slate-800 shadow-sm flex items-start gap-4">
+                            <i className="fa-solid fa-book text-teal-400 text-2xl shrink-0 mt-1"></i>
+                            <div>
+                              <h4 className="text-base font-bold text-white mb-1">Key Vocabulary Groups</h4>
+                              <p className="text-sm leading-relaxed">Core vocabulary seamlessly embedded into contextual example sentences.</p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {activeUnit.vocabulary.map((v, i) => (
+                              <div key={i} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between transition-all hover:border-teal-400">
+                                <button onClick={() => handleSpeak(v.word)} className="p-4 text-left hover:bg-slate-50 transition-colors active:bg-slate-100 flex-1">
+                                    <h4 className="text-lg md:text-xl font-extrabold text-slate-800 mb-2 lowercase">{v.word}</h4>
+                                    <span className="inline-block bg-slate-100 text-slate-700 px-2 py-1 rounded text-[115%] font-bold border border-slate-200 shadow-sm">{v.chinese}</span>
+                                </button>
+                                <button onClick={() => handleSpeak(v.definition)} className="p-4 text-left border-t border-slate-100 bg-slate-50 hover:bg-indigo-50 transition-colors active:bg-indigo-100 group">
+                                    <p className="text-slate-700 group-hover:text-indigo-800 text-sm md:text-base leading-relaxed font-medium font-sans">
+                                        {v.definition}
+                                    </p>
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <UnitQuiz key={`quiz-${activeUnit.id}`} mcqs={activeUnit.mcqs} handleSpeak={handleSpeak} />
+                        </div>
+                      )}
+
+                      {/* SPEAKING */}
+                      {activeTab === "speaking" && (
+                        <div className="space-y-6">
+                          {activeUnit.speaking.map((section, idx) => (
+                            <div key={idx} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                              <div className="bg-indigo-50 border-b border-indigo-100 p-4 flex items-center">
+                                <h3 className="text-base md:text-lg font-bold text-indigo-900 flex items-center gap-2"><i className="fa-solid fa-microphone text-indigo-600"></i> {section.type}</h3>
+                              </div>
+                              <div className="p-5">
+                                <button onClick={() => handleSpeak(section.questions.join(' '))} className="w-full text-left bg-white border border-slate-200 hover:border-teal-300 hover:bg-slate-50 p-5 rounded-xl transition-all shadow-sm mb-5 relative overflow-hidden">
+                                  <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+                                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Examiner Prompts</h4>
+                                  <ul className="space-y-2 pl-4">
+                                    {section.questions.map((q, qIdx) => <li key={qIdx} className="text-lg md:text-xl leading-relaxed text-slate-800 font-bold list-disc ml-2">{q}</li>)}
+                                  </ul>
+                                </button>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i className="fa-solid fa-pen-nib"></i> Useful Stems</h4>
+                                    <ul className="space-y-2">
+                                      {section.stems.map((stem, i) => (
+                                        <li key={i}><button onClick={() => handleSpeak(stem)} className="text-left w-full bg-white border border-slate-200 p-3 rounded-lg text-base font-semibold text-slate-700 hover:border-teal-400 transition-colors shadow-sm">{stem}</button></li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                  <button onClick={() => handleSpeak(section.example)} className="text-left bg-indigo-50 border border-indigo-100 hover:border-indigo-300 rounded-xl p-5 transition-all shadow-sm">
+                                    <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i className="fa-regular fa-circle-check text-indigo-500"></i> Model Answer</h4>
+                                    <p className="text-lg md:text-xl text-indigo-900 leading-relaxed font-bold italic">"{section.example}"</p>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* READING & LISTENING */}
+                      {(activeTab === "reading" || activeTab === "listening") && (() => {
+                        const tabData = activeTab === "reading" ? activeUnit.reading : activeUnit.listening;
+                        const icon = activeTab === "reading" ? "fa-book" : "fa-headphones";
+                        const title = activeTab === "reading" ? "Reading Passage" : "Listening Transcript";
+                        const bgClass = activeTab === "reading" ? "bg-white border-slate-200 text-slate-800" : "bg-slate-900 border-slate-800 text-white";
+                        const innerBg = activeTab === "reading" ? "bg-slate-50 hover:bg-teal-50 border-slate-200" : "bg-slate-800 hover:bg-slate-700 border-slate-700";
+                        const headClass = activeTab === "reading" ? "bg-slate-50 border-slate-200 text-slate-800" : "bg-slate-800 border-slate-700 text-white";
+                        
+                        return (
+                          <div className={`rounded-2xl shadow-sm border overflow-hidden ${bgClass}`}>
+                            <div className={`p-5 border-b ${headClass}`}>
+                              <h3 className="text-lg font-bold flex items-center gap-2"><i className={`fa-solid ${icon} text-teal-500 text-xl`}></i> {title}</h3>
+                            </div>
+                            <div className="p-5">
+                              <button onClick={() => handleSpeak(tabData.text, activeTab === "listening")} className={`w-full text-left p-5 rounded-xl transition-all shadow-sm border ${innerBg}`}>
+                                <p className={`text-lg md:text-xl leading-relaxed font-semibold whitespace-pre-wrap ${activeTab === 'listening' ? 'text-slate-300' : 'text-slate-700'}`}>{tabData.text}</p>
+                              </button>
+                            </div>
+                            {tabData.questions && tabData.questions.length > 0 && (
+                                <div className={`p-5 border-t ${headClass}`}>
+                                <h4 className={`text-xs font-bold uppercase tracking-wider mb-4 flex items-center gap-1.5 ${activeTab==='listening'?'text-slate-400':'text-slate-500'}`}>
+                                    <i className="fa-regular fa-circle-question text-base"></i> Comprehension Check
+                                </h4>
+                                <ul className="space-y-3">
+                                    {tabData.questions.map((q, i) => {
+                                        const cleanQ = q.replace(/\s*\((True|False|Not Given)\)/i, '');
+                                        return (
+                                        <li key={i}>
+                                            <button onClick={() => handleSpeak(cleanQ)} className={`w-full text-left p-4 rounded-lg text-base md:text-lg font-bold shadow-sm transition-colors border ${activeTab==='reading'?'bg-white hover:bg-slate-100 border-slate-200 text-slate-700':'bg-slate-900 hover:bg-slate-700 border-slate-700 text-slate-300'}`}>
+                                                {cleanQ}
+                                            </button>
+                                        </li>
+                                    )})}
+                                </ul>
+                                </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+
+                      {/* GRAMMAR */}
+                      {activeTab === "grammar" && (
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                          <h3 className="text-lg md:text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2"><i className="fa-solid fa-pen-to-square text-indigo-500"></i> Grammar Focus: {activeUnit.grammar.topic}</h3>
+                          <div className="mb-6">
+                            <button onClick={() => handleSpeak(activeUnit.grammar.focus)} className="w-full text-left transition-colors rounded-xl mb-5">
+                              <p className="text-base md:text-lg font-bold text-slate-800 bg-slate-100 p-4 rounded-xl border border-slate-200 leading-relaxed">{activeUnit.grammar.focus}</p>
+                            </button>
+                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 mb-3">Example Sentences</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {activeUnit.grammar.examples.map((ex, idx) => (
+                                 <button key={idx} onClick={() => handleSpeak(ex)} className="text-left bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 p-4 rounded-xl transition-all text-base md:text-lg font-medium text-slate-700 shadow-sm font-sans">
+                                 {ex}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          <button onClick={() => handleSpeak(activeUnit.grammar.model)} className="w-full text-left bg-indigo-50 border border-indigo-200 p-5 rounded-xl transition-all shadow-sm relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+                            <div className="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-2">Usage Model</div>
+                            <p className="text-lg md:text-xl text-indigo-900 font-bold font-sans">{activeUnit.grammar.model}</p>
+                          </button>
+                        </div>
+                      )}
+
+                      {/* ANALYSIS */}
+                      {activeTab === "analysis" && (
+                          <InteractiveParagraph data={activeUnit.paragraphAnalysis} handleSpeak={handleSpeak} /> 
+                      )}
+
+                      {/* TESTING */}
+                      {activeTab === "testing" && (
+                        <div className="space-y-5">
+                          {activeUnit.tutorPrompts && activeUnit.tutorPrompts.length > 0 && (
+                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                              <div className="space-y-4">
+                                {activeUnit.tutorPrompts.map((prompt, idx) => (
+                                  <div key={idx} className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden mb-3 shadow-sm">
+                                    <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                                      <span className="font-bold text-slate-800 text-sm">{prompt.type}</span>
+                                      <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-2 py-1 rounded-md">{prompt.focus}</span>
+                                    </div>
+                                    <div className="p-4">
+                                      <button onClick={() => handleSpeak(prompt.text)} className="w-full text-left bg-white border border-slate-200 p-4 rounded-lg shadow-sm hover:border-teal-300 transition-colors mb-4">
+                                        <p className="text-lg md:text-xl text-slate-800 font-bold italic">"{prompt.text}"</p>
+                                      </button>
+                                      <div className="space-y-2 pl-3 border-l-2 border-slate-300 mt-2">
+                                        {prompt.questions.map((q, qIdx) => (
+                                          <button key={qIdx} onClick={() => handleSpeak(q)} className="w-full text-left text-base font-bold text-slate-600 hover:text-slate-900 transition-colors">• {q}</button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-800 text-slate-300">
+                            <h3 className="text-lg md:text-xl font-bold text-white mb-3 flex items-center gap-2"><i className="fa-solid fa-bullseye text-rose-400"></i> Practice for the Test</h3>
+                            <div className="grid grid-cols-1 gap-5 mt-4">
+                              {activeUnit.practiceTests.map((test, idx) => (
+                                <div key={idx} className="bg-slate-800 border border-slate-700 rounded-xl shadow-inner flex flex-col p-5">
+                                  <span className="font-bold text-teal-400 text-xs mb-3 block border-b border-slate-700 pb-2">{test.type}</span>
+                                  <button onClick={() => handleSpeak(test.text)} className="text-left text-xl md:text-2xl font-bold text-slate-200 mb-4 hover:text-white transition-colors">{test.text}</button>
+                                  {test.modelAnswer && (
+                                    <div className="mt-3 border-t border-slate-700 pt-4">
+                                      <button onClick={() => toggleModelAnswer(idx)} className="flex items-center gap-2 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors bg-indigo-900/30 px-3 py-1.5 rounded-lg border border-indigo-500/20">
+                                        <i className="fa-solid fa-eye"></i> {showModelAnswer[idx] ? "Hide Answer" : "Show Answer"}
+                                      </button>
+                                      {showModelAnswer[idx] && (
+                                        <button onClick={() => handleSpeak(test.modelAnswer)} className="w-full text-left mt-4 p-5 bg-indigo-900/20 border border-indigo-500/30 rounded-xl text-lg md:text-xl font-medium text-slate-200 leading-relaxed italic animate-fade-in shadow-inner">{test.modelAnswer}</button>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+                  </div>
+                </main>
+              </div>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
