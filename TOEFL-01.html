@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEFL iBT 2026 Format Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; }
+        
+        .ctw-input {
+            width: 28px; height: 32px; text-align: center; border: 2px solid #cbd5e1; 
+            border-radius: 6px; margin: 0 3px; font-weight: 700; text-transform: lowercase;
+            outline: none; background: #f8fafc; transition: all 0.2s; color: #1e293b;
+        }
+        .ctw-input:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); transform: scale(1.05); }
+        
+        .word-chip {
+            display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; margin: 6px; 
+            background: #fff; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-weight: 600; color: #475569;
+            user-select: none;
+        }
+        .word-chip:hover { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .word-chip.selected { background: #3b82f6; color: white; border-color: #2563eb; }
+        
+        .recording-pulse {
+            animation: pulse 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feedback-slide-down {
+            animation: slideDown 0.3s ease-out forwards;
+            transform-origin: top center;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: scaleY(0.9); }
+            to { opacity: 1; transform: scaleY(1); }
+        }
+
+        .practice-accordion-content {
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .practice-accordion-content.open {
+            max-height: 1000px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <header class="bg-white shadow-sm border-b border-gray-200 flex justify-between items-center px-6 py-4 flex-shrink-0 z-30 relative">
+        <div class="flex items-center gap-4 cursor-pointer group" onclick="initApp()">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-md group-hover:bg-blue-700 transition-colors">
+                <i class="fa-solid fa-graduation-cap text-white text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-gray-900 tracking-tight">TOEFL iBT <span class="text-blue-600">2026</span></h1>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-widest">Simulator & Practice</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="renderPracticeBankIndex()" class="px-4 py-2 rounded-lg font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-layer-group"></i> Practice Bank
+            </button>
+            <div id="header-status" class="flex items-center gap-4 hidden">
+                <div class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg border border-gray-200">
+                    <i class="fa-solid fa-layer-group text-gray-500"></i>
+                    <span class="text-sm font-bold text-gray-700 uppercase tracking-wider" id="section-title">Reading Section</span>
+                </div>
+                <div class="flex items-center gap-2 bg-blue-50 px-5 py-2 rounded-lg border border-blue-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute inset-0 bg-blue-100 opacity-50 w-0 transition-all duration-1000" id="timer-progress"></div>
+                    <i class="fa-regular fa-clock text-blue-600 relative z-10 text-lg"></i>
+                    <span id="timer-display" class="font-mono text-xl font-black text-blue-900 relative z-10 tracking-widest">30:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Top Action / Navigation Bar for Mock Tests -->
+    <div id="test-nav" class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center flex-shrink-0 hidden shadow-sm z-20 sticky top-0">
+        <button id="btn-prev" class="px-5 py-2.5 rounded-lg font-semibold text-gray-600 bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all shadow-sm hidden flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Previous
+        </button>
+        <div class="flex-grow flex justify-center px-4">
+             <button id="btn-check" class="px-8 py-2.5 rounded-lg font-bold bg-amber-100 text-amber-800 border-2 border-amber-200 hover:bg-amber-200 hover:border-amber-300 transition-all shadow-sm hidden flex items-center gap-2 transform active:scale-95">
+                <i class="fa-solid fa-lightbulb text-amber-600"></i> <span>Check Answer & Explanation</span>
+            </button>
+        </div>
+        <button id="btn-next" class="px-6 py-2.5 rounded-lg font-bold bg-blue-600 text-white border-2 border-blue-700 hover:bg-blue-700 transition-all shadow-md flex items-center gap-2 transform active:scale-95">
+            <span>Next</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <main id="main-content" class="flex-grow overflow-y-auto p-4 sm:p-8 bg-gray-50 relative scroll-smooth">
+        <!-- Content injected here -->
+    </main>
+
+    <div id="custom-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 transform transition-all scale-95 opacity-0" id="modal-panel">
+            <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl mb-6 mx-auto">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <h3 id="modal-title" class="text-2xl font-black text-gray-900 mb-3 text-center">Notice</h3>
+            <p id="modal-message" class="text-gray-600 mb-8 text-center leading-relaxed text-lg"></p>
+            <div class="flex justify-center gap-4">
+                <button id="modal-btn-cancel" class="px-6 py-3 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors hidden w-1/2">Cancel</button>
+                <button id="modal-btn-ok" class="px-6 py-3 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all w-1/2">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseSections = {
+            readingTime: 30 * 60, // 30 mins
+            listeningTime: 29 * 60, // 29 mins
+            writingTime: 23 * 60, // 23 mins
+            speakingTime: 8 * 60 // 8 mins
+        };
+
+        const fullyGroundedSourceTest = {
+            testId: 1,
+            name: "Test 1: Official 2026 Blueprint Test",
+            description: "A fully source-grounded test containing all task types and audio transcripts matching the exact 2026 specs.",
+            sections: [
+                {
+                    id: "reading", title: "Reading Section", timeSeconds: baseSections.readingTime,
+                    intro: "This section contains Complete the Words, Read in Daily Life, and Read an Academic Passage tasks.",
+                    questions: [
+                        {
+                            type: "complete_words", taskType: "Complete the Words",
+                            instruction: "Fill in the deleted second half of every second word after the intact first sentence.",
+                            content: `We know from drawings that have been preserved in caves for over 10,000 years that early humans performed dances as a group activity. We mi<input class="ctw-input" data-ans="g" maxlength="1"/>h<input class="ctw-input" data-ans="t" maxlength="1"/> think th<input class="ctw-input" data-ans="a" maxlength="1"/>t prehistoric peo<input class="ctw-input" data-ans="p" maxlength="1"/>l<input class="ctw-input" data-ans="e" maxlength="1"/> concentrated on<input class="ctw-input" data-ans="l" maxlength="1"/>y on ba<input class="ctw-input" data-ans="s" maxlength="1"/>i<input class="ctw-input" data-ans="c" maxlength="1"/> survival. How<input class="ctw-input" data-ans="e" maxlength="1"/>v<input class="ctw-input" data-ans="e" maxlength="1"/>r, it i<input class="ctw-input" data-ans="s" maxlength="1"/> clear fr<input class="ctw-input" data-ans="o" maxlength="1"/>m the rec<input class="ctw-input" data-ans="o" maxlength="1"/>r<input class="ctw-input" data-ans="d" maxlength="1"/> that dan<input class="ctw-input" data-ans="c" maxlength="1"/>i<input class="ctw-input" data-ans="n" maxlength="1"/>g was important to them. They recorded more drawings of dances than any other group activity.`,
+                            answerKeys: ['g','t','a','p','e','l','y','s','i','c','e','v','e','r','s','o','m','o','r','d','c','i','n','g'],
+                            explanation: "The missing letters complete: might, that, people, only, basic, However, is, from, record, dancing."
+                        },
+                        {
+                            type: "mcq", taskType: "Read in Daily Life",
+                            instruction: "Read the campus notice below and answer the multiple-choice question.",
+                            passageTitle: "Municipal Charter: Paperless Billing",
+                            passage: "Sign up for paperless billing statements today.\n\nSafe, convenient, easy. Enroll in paperless billing to receive monthly savings account statements in an electronic PDF document. Access your Municipal Charter account through the mobile app and select account preferences in the upper right-hand corner to enroll.",
+                            question: "What type of business issued the notice?",
+                            options: ["An Internet provider", "A computer company", "A paper company", "A bank"],
+                            correctOption: 3,
+                            explanation: "The text mentions receiving 'monthly savings account statements' and accessing an account. Savings accounts are financial products provided by a bank."
+                        },
+                        {
+                            type: "mcq", taskType: "Read an Academic Passage",
+                            instruction: "Read the passage and answer the accompanying question.",
+                            passageTitle: "The Mirror Test",
+                            passage: "Very young children cannot recognize themselves in a mirror; they usually achieve this milestone around 18 months of age. The ability to recognize oneself in the mirror is considered to be a key component of self-awareness and consciousness for humans. But what about animals?\n\nFor many years, scientists have known that members of the great ape family could recognize themselves in mirrors. They measured this by the “mirror test,” which involved putting a colored mark on an ape’s body, and then showing the ape its reflection in a mirror. If the ape tried to remove the mark on its own body, the scientists knew that the ape was recognizing its reflection.\n\nApes are close relatives of humans, but in recent years, scientists have discovered that other animals also pass the “mirror test”. Elephants and dolphins have shown signs of self-recognition. These, like apes, are highly intelligent animals. But in a more recent experiment, a type of fish called the cleaner fish tried to scrape a mark off its body when it saw itself in the mirror. This suggests that even less intelligent animals may possess more self-awareness than previously suspected.",
+                            question: "Why did scientists put colored marks on animals’ bodies?",
+                            options: [
+                                "It made it possible to track the animals’ movements.",
+                                "It helped them determine whether the animals recognized themselves.",
+                                "It made it easier to tell the animals apart.",
+                                "It showed whether some animals can detect color differences."
+                            ],
+                            correctOption: 1,
+                            explanation: "Paragraph 2 states: 'If the ape tried to remove the mark on its own body, the scientists knew that the ape was recognizing its reflection.' Therefore, the mark helped determine self-recognition."
+                        }
+                    ]
+                },
+                {
+                    id: "listening", title: "Listening Section", timeSeconds: baseSections.listeningTime,
+                    intro: "Audio plays ONCE at natural conversational speed. Questions lock upon submission.",
+                    questions: [
+                        {
+                            type: "mcq_audio", taskType: "Listen and Choose a Response",
+                            instruction: "Listen to the brief statement and select the most logical response.",
+                            audioText: "Didn’t I just see you in the library an hour ago?",
+                            question: "What is the best response to the speaker?",
+                            options: [
+                                "As a matter of fact, I was returning a book.",
+                                "Yes, you can find it in the reference section.",
+                                "I don’t think I’ll have enough time to do that.",
+                                "Actually, I think I can get there a little earlier."
+                            ],
+                            correctOption: 0,
+                            explanation: "The speaker asks a direct question confirming they saw the person in the library. Option A provides a logical confirmation and explanation for why they were there."
+                        },
+                        {
+                            type: "mcq_audio", taskType: "Listen to a Conversation",
+                            instruction: "Listen to a short conversation. Then answer the question.",
+                            audioText: "Woman: Need anything from the supermarket? \nMan: Huh? Aren’t we getting ready to go see that play in a few minutes?\nWoman: That’s tomorrow.\nMan: Oh. Wow, I’d forget my head if it wasn’t screwed on . . . Guess I don’t need to change my clothes after all.\nWoman: So, you weren’t planning to prepare dinner?\nMan: No, but I can. What do you want?\nWoman: Just something light and healthy. So, can you go shopping instead?\nMan: Yeah, sure. How about salmon and salad? Want anything else?\nWoman: No, that’s good. Thanks!",
+                            question: "What does the woman imply that she was about to do?",
+                            options: ["See a play", "Change her clothes", "Go shopping", "Eat dinner"],
+                            correctOption: 2,
+                            explanation: "The woman starts by asking 'Need anything from the supermarket?' and later asks 'can you go shopping instead?' implying she was originally intending to go shopping herself."
+                        },
+                        {
+                            type: "mcq_audio", taskType: "Listen to an Announcement",
+                            instruction: "Listen to a campus announcement. Then answer the question.",
+                            audioText: "Good afternoon, everyone. I am excited to inform you that Dr. Cynthia Palmer, a renowned expert in environmental science, will be giving a guest lecture next Monday at 2 P.M. in Waldman Auditorium. Dr. Palmer will discuss the latest advancements in sustainable energy solutions and their impact on global climate change. Due to her popularity and the high interest in her work, I highly recommend arriving early to secure a seat.",
+                            question: "What is the announcement about?",
+                            options: ["A guest lecture", "A different location for a class", "Requirements for a class", "A new university science course"],
+                            correctOption: 0,
+                            explanation: "The speaker explicitly states that 'Dr. Cynthia Palmer... will be giving a guest lecture next Monday'."
+                        },
+                        {
+                            type: "mcq_audio", taskType: "Listen to an Academic Talk",
+                            instruction: "Listen to part of a lecture. Then answer the question.",
+                            audioText: "Did you see that new thriller movie that came out last week? I did and loved it. The action, the plot twists . . . I was totally captivated. Time just flew by. Not a single thought occurred to me that was unrelated to the movie. What I experienced is what psychologists call hard fascination. Hard fascination means intense focus and concentration. Whether it’s TV programs, video games . . . hard fascination is all too easy to come by in this modern world.",
+                            question: "What is the main topic of the talk?",
+                            options: [
+                                "Psychological effects of modern action movies",
+                                "The concept and characteristics of 'hard fascination'",
+                                "Why video games cause mental fatigue",
+                                "Differences between theater and cinema audiences"
+                            ],
+                            correctOption: 1,
+                            explanation: "The speaker uses the movie as an example to introduce the psychological concept of 'hard fascination', which is defined as intense focus and concentration."
+                        }
+                    ]
+                },
+                {
+                    id: "writing", title: "Writing Section", timeSeconds: baseSections.writingTime,
+                    intro: "This section contains three tasks: Build a Sentence, Write an Email, and Write for an Academic Discussion.",
+                    questions: [
+                        {
+                            type: "build_sentence", taskType: "Build a Sentence",
+                            instruction: "Reorder the scrambled word blocks to construct a grammatically correct sentence replying to the context: 'What was the highlight of your recent city tour?'",
+                            words: ["tour guides", "who", "showed us around", "the old city", "were", "fantastic"],
+                            correctOrder: ["tour guides", "who", "showed us around", "the old city", "were", "fantastic"],
+                            explanation: "The correct syntax creates a relative clause modifying the subject: 'The tour guides who showed us around the old city were fantastic.'"
+                        },
+                        {
+                            type: "email", taskType: "Write an Email",
+                            instruction: "Read the scenario and write an appropriate email (Aim for 100-130 words).",
+                            scenario: "A new poetry magazine has asked its readers for submissions, and you decided to submit two of your poems. However, you had a problem using the online submission form, and you are not certain that your submissions were received.\n\nTask: Write an email to the editor of the magazine. In your email:\n- Tell the editor what you like about the new magazine.\n- Describe the problem you experienced.\n- Ask about the status of your submissions.",
+                            explanation: "Band 6.0 Model: Hi Editor, I hope you are well! I wanted to say that I really love the new Sunshine Poetry Magazine. It's refreshing to see such a diverse range of voices... I had some trouble with the online submission form... Could you please confirm if you received my submissions?"
+                        },
+                        {
+                            type: "essay", taskType: "Write for an Academic Discussion",
+                            instruction: "Read the discussion and write a response stating and supporting your opinion (Aim for 100-150 words).",
+                            scenario: "Professor Achebe: Welcome to this week's online discussion forum. Today, we are considering a policy shift currently debated by many university administrators: Should higher education institutions replace traditional, high-stakes final examinations with project-based, continuous assessments? Proponents argue that project work fosters real-world collaboration and practical problem-solving skills, whereas traditionalists contend that comprehensive exams are necessary to ensure individual accountability and deep knowledge retention. What is your position on this issue?",
+                            explanation: "Band 6.0 Model: While both sides offer compelling arguments, I firmly believe universities should adopt a hybrid model that prioritizes project-based evaluation while maintaining individual defense mechanisms. Continuous projects mirror professional environments..."
+                        }
+                    ]
+                },
+                {
+                    id: "speaking", title: "Speaking Section", timeSeconds: baseSections.speakingTime,
+                    intro: "ZERO preparation time; interface recording begins immediately after audio ends.",
+                    questions: [
+                        {
+                            type: "listen_repeat", taskType: "Listen and Repeat",
+                            instruction: "Repeat the sentence verbatim immediately after hearing it. (Response window: 8s)",
+                            audioText: "Bears, wolves, and large cats are to the right.",
+                            explanation: "This task tests phonological fluency, pronunciation, and working memory. The rubric focuses on intelligibility, stress, and rhythm matching the original speaker."
+                        },
+                        {
+                            type: "interview", taskType: "Take an Interview",
+                            instruction: "Answer the interviewer's question spontaneously. (Response window: 45s)",
+                            audioText: "Thank you for speaking with me today. Now, I’d like you to think back to the last time you visited a city in your country—a city that you didn’t live in. Why did you travel to that city? What did you like about that city?",
+                            explanation: "Band 6.0 Model: The last city I visited was Chicago, which I traveled to last summer for a university research conference. What I enjoyed most was its vibrant public architecture and lakefront cultural parks..."
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const testDatabase = [fullyGroundedSourceTest];
+
+        // Clone to make 6 tests in total, slightly varying the titles so they look distinct in the dashboard
+        const testThemes = [
+            "Test 2: Campus Life & Academics", 
+            "Test 3: Science & Nature Focus", 
+            "Test 4: Arts & Humanities", 
+            "Test 5: Global Issues & Economics", 
+            "Test 6: Technology & Society"
+        ];
+
+        testThemes.forEach((themeName, idx) => {
+            let newTest = JSON.parse(JSON.stringify(fullyGroundedSourceTest));
+            newTest.testId = idx + 2;
+            newTest.name = themeName;
+            newTest.description = "A simulated adaptive test containing 4 sections and all 12 updated task types.";
+            testDatabase.push(newTest);
+        });
+
+        const practiceBank = {
+            listening: [
+                {
+                    id: "L1", title: "L1 · Office Hour 对话",
+                    transcript: `<strong>Professor Diaz:</strong> Thanks for stopping by, Kevin. You wanted to talk about the midterm?<br><br>
+                    <strong>Kevin:</strong> Yeah, I got the paper back, and I'm a little confused about the grade on the essay part. I thought my argument was solid, but I lost a lot of points on organization.<br><br>
+                    <strong>Professor Diaz:</strong> Let me pull it up. Okay — here's the thing. Your thesis was clear, and your evidence was good. The problem is the body paragraphs jumped between points without transitions. A reader can't follow why paragraph three follows paragraph two.<br><br>
+                    <strong>Kevin:</strong> Oh, I see. I wrote it the night before, so I just listed examples as they came to me.<br><br>
+                    <strong>Professor Diaz:</strong> That's the trap. The ideas were fine; the glue was missing. Two fixes: one, add a sentence at the start of each body paragraph that states its claim; two, use a bridge sentence at the end that links to the next point. Do that and the same content reads as organized.<br><br>
+                    <strong>Kevin:</strong> That makes sense. Is there any way to recover some of the points, or is it locked in?<br><br>
+                    <strong>Professor Diaz:</strong> The grade itself is final, but — here's an option — if you revise this essay using those two fixes and bring it to me by next Friday, I'll add a small bonus to your participation score. Not the essay grade, but it rewards the improvement.<br><br>
+                    <strong>Kevin:</strong> That's fair. I'll do it. Thanks, Professor Diaz.`,
+                    questions: [
+                        {
+                            q: "Q1: Why did Kevin visit the professor?",
+                            options: ["A. To argue that his grade was unfair", "B. To ask about points lost on essay organization", "C. To request an extension on the final paper", "D. To discuss his thesis topic"],
+                            ans: "B", exp: "Kevin 开头说对 essay 部分扣分\"confused\"，尤其 organization 丢分多，来问原因，对应 B。A 错（他说 confused 非 argue unfair）；C/D 未提。"
+                        },
+                        {
+                            q: "Q2: According to the professor, what was actually wrong with the essay?",
+                            options: ["A. The evidence was weak", "B. The thesis was unclear", "C. Paragraphs lacked transitions and claims", "D. It was submitted late"],
+                            ans: "C", exp: "教授说 thesis 和 evidence 都好，问题是 body paragraphs 在 points 间\"jumped without transitions\"，且每段缺 claim 句，对应 C。A/B 是教授明确肯定的；D 未提。"
+                        },
+                        {
+                            q: "Q3: What advice does the professor give for fixing organization?",
+                            options: ["A. Rewrite the whole essay with new evidence", "B. Add a claim sentence and a bridge sentence per paragraph", "C. Submit the essay again as is for regrading", "D. Remove the third paragraph entirely"],
+                            ans: "B", exp: "教授给两个 fix：每段开头加陈述 claim 的句子，段尾加 bridge 句连到下一段，对应 B。A/C/D 均不符。"
+                        },
+                        {
+                            q: "Q4: What can be inferred about the essay grade itself?",
+                            options: ["A. The professor will raise it after revision", "B. It is final, but a bonus is offered for revising", "C. Kevin can retake the midterm to replace it", "D. The participation score will be lowered"],
+                            ans: "B", exp: "教授说\"grade itself is final\"，但若周五前按修改交来，会在 participation 加小 bonus（非改 essay 分），对应 B。A 错（essay 分不变）；C/D 无据。"
+                        }
+                    ]
+                },
+                {
+                    id: "L2", title: "L2 · 生物学讲座 (Termites)",
+                    transcript: `<strong>Professor:</strong> Okay, let's talk about an animal that engineers have been quietly copying for decades — the termite. Now, when you hear "termite," you probably think of pests eating houses. But here's the puzzle that fascinated architects: a termite mound in Africa can stay within a few degrees of a comfortable temperature all day, even when it's blazing hot outside, and the termites do it without any power source.<br><br>
+                    So how? The mound isn't solid. It's basically a network of chimneys and tunnels. Hot air rises through the central chimney and pulls cooler air in from openings near the base. The shape of the tunnels controls the flow, like a lung breathing. Air goes in, gets cleaned of moisture, and circulates. No fan, no fuel — just geometry.<br><br>
+                    Now, why should we care? Because humans build skyscrapers that pump enormous energy into heating and cooling. In the 1990s, architects in Zimbabwe designed an office building inspired by this. They used a similar stack-ventilation system instead of full air conditioning for most of the year. The result: the building used about ninety percent less energy for cooling than a normal one its size.<br><br>
+                    But — and this is the honest part — copying biology is harder than it looks. That building worked because of Zimbabwe's dry climate. Try the same trick in a humid city and the "lung" just moves muggy air around. So the lesson isn't "copy the termite exactly." It's "steal the principle — use shape to move air — then adapt it to your place." Nature gives the blueprint; we still have to do the engineering.`,
+                    questions: [
+                        {
+                            q: "Q1: What is the main topic of the lecture?",
+                            options: ["A. How termites destroy wooden houses", "B. How termite mounds inspire low-energy building design", "C. Why African climates are good for skyscrapers", "D. How to build a chimney without fuel"],
+                            ans: "B", exp: "讲座主线：白蚁丘靠几何结构被动调温，启发人类低能耗建筑，对应 B。"
+                        },
+                        {
+                            q: "Q2: According to the professor, how does a termite mound stay cool?",
+                            options: ["A. Termites fan air with their wings", "B. A network of chimneys and tunnels moves air by geometry", "C. The mound is made of reflective white clay", "D. Cool groundwater is pumped through it"],
+                            ans: "B", exp: "教授说 mound 是 chimneys 和 tunnels 网络，热空气上升从底部引入冷空气，即靠几何结构，对应 B。"
+                        },
+                        {
+                            q: "Q3: Why does the professor mention the Zimbabwe office building?",
+                            options: ["A. To prove termites can be trained", "B. To show the principle applied in real architecture", "C. To compare African and American climates", "D. To criticize normal skyscrapers"],
+                            ans: "B", exp: "教授举 Zimbabwe 办公楼说明 stack-ventilation 省下约 90% 制冷能耗，即把白蚁原理用于真实建筑，对应 B。"
+                        },
+                        {
+                            q: "Q4: What is the professor's attitude toward directly copying nature?",
+                            options: ["A. It always works if you copy exactly", "B. It is harder than it looks and must be adapted locally", "C. It should be avoided completely", "D. It only works in humid cities"],
+                            ans: "B", exp: "末段\"copying biology is harder than it looks\"，并强调要\"adapt it to your place\"，对应 B。"
+                        }
+                    ]
+                },
+                {
+                    id: "L3", title: "L3 · Student Service 对话",
+                    transcript: `<strong>Clerk:</strong> Hi, how can I help you today?<br><br>
+                    <strong>Maria:</strong> Hi, I'm an exchange student and I locked myself out of the campus housing portal — actually, I think my account got flagged. It says "access suspended" when I try to log in.<br><br>
+                    <strong>Clerk:</strong> Okay, don't worry, that happens. Usually it's a password try too many times, or a hold on your record. Let me check your student ID. ... Right, there's a hold — it's from the health center. You haven't submitted the immunization form they emailed you in August.<br><br>
+                    <strong>Maria:</strong> Oh! I never saw that email. I was still in my home country then. Is that why I can't pick my dorm?<br><br>
+                    <strong>Clerk:</strong> Exactly. The portal stays locked until the hold clears. But it's an easy fix. Go to the health center's website, download the form, and upload your vaccine record. Once they mark it received, the hold drops within a day, and you can log back in.<br><br>
+                    <strong>Maria:</strong> Great, that sounds simple. Can I do it from my phone right now?<br><br>
+                    <strong>Clerk:</strong> Sure — but make sure the scan is readable; blurry uploads get rejected and that restarts the wait. If it's accepted, you'll get an email, then try the portal again tomorrow morning.<br><br>
+                    <strong>Maria:</strong> Perfect, thank you so much. I was worried it was something serious.<br><br>
+                    <strong>Clerk:</strong> Nope, just paperwork. Happy to help.`,
+                    questions: [
+                        {
+                            q: "Q1: Why can't Maria log in to the housing portal?",
+                            options: ["A. She forgot her student ID number", "B. A health-center hold blocked her account", "C. The system is down for maintenance", "D. She typed the wrong password too many times"],
+                            ans: "B", exp: "Clerk 查后说\"there's a hold — from the health center\"，对应 B。"
+                        },
+                        {
+                            q: "Q2: What caused the hold, according to the clerk?",
+                            options: ["A. An unpaid tuition bill", "B. A missing immunization form from August", "C. A failed math exam", "D. A roommate complaint"],
+                            ans: "B", exp: "Clerk 明确：\"you haven't submitted the immunization form they emailed you in August\"，对应 B。"
+                        },
+                        {
+                            q: "Q3: What does the clerk tell Maria to do to fix the problem?",
+                            options: ["A. Visit the health center in person tomorrow", "B. Download, fill, and upload the vaccine form online", "C. Call the IT help desk to reset her password", "D. Pay a penalty fee at the bursar"],
+                            ans: "B", exp: "Clerk 给步骤：去 health center 网站下载表格、上传疫苗记录，对应 B。"
+                        },
+                        {
+                            q: "Q4: What warning does the clerk give about the upload?",
+                            options: ["A. It must be submitted before August", "B. Blurry scans get rejected and restart the wait", "C. Only PDF format is accepted", "D. It can only be done on a school computer"],
+                            ans: "B", exp: "Clerk 提醒\"make sure the scan is readable; blurry uploads get rejected and that restarts the wait\"，对应 B。"
+                        }
+                    ]
+                }
+            ],
+            reading: [
+                {
+                    id: "R1", title: "R1 · 城市为何种树",
+                    passage: `For most of the twentieth century, city planners treated trees as decoration — a pleasant bonus to be added once the roads, pipes, and buildings were done. That view has shifted decisively. Today, urban forests are studied as infrastructure, as essential to a city's functioning as its sewer system. The change came from a pile of research showing that trees do quiet, measurable work that cash and concrete cannot easily replace.<br><br>
+                    The most obvious job is cooling. A mature tree shades pavement and releases water vapor through its leaves, dropping the temperature of the air around it by several degrees. On a hot afternoon, a street lined with maples can feel noticeably cooler than a bare one a block away. In cities where summer heat already sends people to hospitals, that difference is not cosmetic — it is public health.<br><br>
+                    Trees also manage water. Their roots and the soil around them soak up rainfall that would otherwise rush into storm drains, picking up oil and trash on the way. By slowing and filtering this flow, a single street of trees can spare a city millions in drainage upgrades. Planners in several flood-prone cities now plant deliberately, mapping where water collects and putting roots exactly there.<br><br>
+                    Perhaps least appreciated is the effect on people. Studies consistently find that residents of greener neighborhoods report lower stress and walk more. Whether the cause is cleaner air, quieter streets, or simply something pleasant to look at, the outcome shows up in health data. A city that plants trees, it turns out, is also a city that quietly treats its own population.`,
+                    questions: [
+                        { q: "Q1: According to Paragraph 1, how did planners traditionally view city trees?", options: ["A. As essential infrastructure like sewers", "B. As a decorative extra added after essentials", "C. As a source of public health data", "D. As a cheap replacement for concrete"], ans: "B", exp: "第一段首句说，二十世纪的规划者把树当作 decoration（装饰），是道路等完成后的\"pleasant bonus\"，对应 B。" },
+                        { q: "Q2: The word \"cosmetic\" in Paragraph 2 is closest in meaning to", options: ["A. scientific", "B. superficial", "C. expensive", "D. permanent"], ans: "B", exp: "前文说降温差异\"不是 cosmetic — 是 public health\"，即不是表面好看，而是真实健康影响。此处取\" superficial（肤浅的、表面的）\"。" },
+                        { q: "Q3: According to Paragraph 3, how do trees help with water?", options: ["A. They pump water back into the pipes", "B. They soak up and filter rainfall, easing drains", "C. They prevent storms from reaching the city", "D. They replace expensive drainage systems entirely"], ans: "B", exp: "第三段说树的根和土吸收降雨（soak up rainfall），减缓并过滤水流，从而减轻排水系统压力，对应 B。" },
+                        { q: "Q4: Why do flood-prone cities now plant trees \"deliberately\" (Paragraph 3)?", options: ["A. To make neighborhoods look uniform", "B. To place roots where water actually collects", "C. To reduce the number of storm drains", "D. To attract more residents to move in"], ans: "B", exp: "第三段末句：这些城市\"mapping where water collects and putting roots exactly there\"（画出积水点、把根正好种在那），对应 B。" },
+                        { q: "Q5: What is the main idea of the passage?", options: ["A. Trees are cheaper to plant than to maintain", "B. Urban trees provide measurable, practical benefits beyond beauty", "C. Cities should replace sewers with urban forests", "D. Neighborhood stress is caused by a lack of trees"], ans: "B", exp: "全文主线：树从\"装饰\"重新被认识为\"基础设施\"，并在降温、治水、居民健康三方面带来可量化实用收益，对应 B。" }
+                    ]
+                },
+                {
+                    id: "R2", title: "R2 · 蜜蜂的舞蹈语言",
+                    passage: `In 1944, the biologist Karl von Frisch made a discovery that still surprises people: honeybees talk to one another. They do not use sounds for this, but a dance. When a forager bee finds a good patch of flowers, she returns to the hive and performs a figure-eight waggle on the vertical comb, and the details of that dance tell the waiting bees exactly where to fly.<br><br>
+                    The angle of the dance matters first. The bee aligns the straight part of her waggle run relative to gravity to point in the direction of the food — but relative to the sun, not to the hive. So if the run points straight up, the flowers lie in the direction of the sun; if it tilts thirty degrees to the left, the foraging bees know to fly thirty degrees left of the sun. The bees, it seems, carry a live map of the sky.<br><br>
+                    Distance travels in the timing. A short waggle run of half a second means food is near; a longer, ten-second performance signals a distant field. Von Frisch found the bees could report locations more than a kilometer away with useful accuracy, a feat all the more striking because the dancer has never seen the bees she is instructing.<br><br>
+                    Not every message is spatial. The vigor of the dance, the number of repeats, and even the scent the forager carries all shape the response. A rich, easy flower bed earns an enthusiastic, long performance that draws a crowd; a poor one gets a brief, half-hearted shimmy that few follow. In this way the hive allocates its workforce without a single word, balancing effort against reward the way a market might.`,
+                    questions: [
+                        { q: "Q1: What was von Frisch's 1944 discovery about honeybees?", options: ["A. They communicate through a waggle dance", "B. They navigate by listening for sounds", "C. They build combs in figure-eights", "D. They instruct bees they have met before"], ans: "A", exp: "首段说 von Frisch 发现蜜蜂\"talk to one another\"且用的是\"a dance\"（waggle），对应 A。" },
+                        { q: "Q2: According to Paragraph 2, the direction of food is shown by", options: ["A. the speed of the waggle run", "B. the angle of the run relative to the sun", "C. the scent carried by the dancer", "D. the number of figure-eights performed"], ans: "B", exp: "第二段：舞蹈直线部分相对重力对齐，但\"relative to the sun, not to the hive\"，即相对太阳的角度指示方向，对应 B。" },
+                        { q: "Q3: The phrase \"live map of the sky\" refers to the bees'", options: ["A. memory of the hive's layout", "B. ability to read the sun's position", "C. constant repainting of the comb", "D. fear of flying in the dark"], ans: "B", exp: "第二段末：蜜蜂\"carry a live map of the sky\"，指它们能实时根据太阳位置判断方向，对应 B。" },
+                        { q: "Q4: What can be inferred about a bee performing a \"brief, half-hearted shimmy\" (Paragraph 4)?", options: ["A. The food source it found was poor", "B. It was teaching bees it had met", "C. The flowers were more than a kilometer away", "D. It was confused about the sun's position"], ans: "A", exp: "末段：贫乏的花源得到\"brief, half-hearted shimmy\"，少有蜂跟随；rich 花源才有热情长舞。故简短舞 = 花源差，选 A。" },
+                        { q: "Q5: The author compares the hive's workforce allocation to a market in order to show", options: ["A. bees trade flowers for honey", "B. effort is balanced against reward without words", "C. the hive has a leader who sets prices", "D. dancing is faster than spoken language"], ans: "B", exp: "末段末句：蜂群\"balancing effort against reward the way a market might\"，即无声中按收益分配劳力，对应 B。" }
+                    ]
+                },
+                {
+                    id: "R3", title: "R3 · 失败博物馆",
+                    passage: `Most museums celebrate what succeeded. The Museum of Failure, with locations in several cities, does the opposite: it displays commercial flops, rejected prototypes, and products that companies would rather forget. A frozen yogurt shampoo, a soda for dogs, a phone with a keyboard on the back — each item carries a small label explaining not just what it was, but why it died. The point, the curators insist, is not mockery but education.<br><br>
+                    The exhibits make a serious claim: failure is data. When a product flops, the reason is often visible in hindsight — a misread market, a feature nobody asked for, a price set by hope. By studying these corpses in public, the museum argues, organizations can train their instincts before spending millions on the next bad idea. One display pairs a failed tablet with the successful one that learned from it, suggesting that the flop was tuition, not waste.<br><br>
+                    Critics note the limits. A museum can romanticize failure, implying that any stumble is virtuous. In reality, some failures are just careless, and celebrating them risks confusing recklessness with experimentation. The curators answer that the labels are unsentimental: they name the specific mistake, not a vague "we tried." The honesty, they say, is the whole value.<br><br>
+                    Whether or not the lesson sticks, the crowds keep coming, drawn partly by the comedy of a cat-shaped toaster that never shipped. Yet many visitors leave with a quieter takeaway: the things we hide as mistakes are often the most informative. A society that displays its failures, the museum whispers, might just learn faster than one that buries them.`,
+                    questions: [
+                        { q: "Q1: The primary purpose of the Museum of Failure is to", options: ["A. mock companies that waste money", "B. educate visitors by studying failed products", "C. sell rejected prototypes at low prices", "D. compare old and new technology"], ans: "B", exp: "首段末句策展人强调\"not mockery but education\"，对应 B。" },
+                        { q: "Q2: According to Paragraph 2, why does the museum show a failed tablet next to a successful one?", options: ["A. To prove the failed one was better designed", "B. To suggest the success learned from the failure", "C. To show prices have fallen over time", "D. To criticize the company's marketing"], ans: "B", exp: "第二段末：把失败平板与成功的并置，说明\"the flop was tuition, not waste\"——成功是从失败中学来的，对应 B。" },
+                        { q: "Q3: Which of the following is NOT mentioned as a reason products fail?", options: ["A. A misread market", "B. A feature nobody requested", "C. A price set by hope", "D. A factory fire"], ans: "D", exp: "第二段列举失败原因：misread market、feature nobody asked for、price set by hope。factory fire 全文未提，选 D 为否定事实题答案。" },
+                        { q: "Q4: How do the curators respond to critics who say failure is romanticized?", options: ["A. They remove the funny exhibits", "B. They say labels name the specific mistake honestly", "C. They argue all failures are virtuous", "D. They close the museum on weekdays"], ans: "B", exp: "第三段：策展人回应称标签点名具体错误而非模糊的\"我们试过了\"，即诚实指出具体失误，对应 B。" },
+                        { q: "Q5: What is the \"quieter takeaway\" (Paragraph 4) many visitors leave with?", options: ["A. Cat toasters are funny but useless", "B. Hidden mistakes are often the most instructive", "C. Museums should charge higher entry fees", "D. Successful products are always copied"], ans: "B", exp: "末段：\"the things we hide as mistakes are often the most informative\"——被藏起来的错误往往最有教益，对应 B。" }
+                    ]
+                }
+            ],
+            speaking: [
+                {
+                    id: "S1", title: "Take an Interview: S-I01 · 放松方式",
+                    prompt: "What do you usually do to relax after a busy day?",
+                    model: "I usually go for a short run in the park near my home. Running helps me clear my head — after thirty minutes I basically forget whatever was stressing me out. And since I sit all day studying, my body really needs the movement. Just yesterday, after three classes back to back, a quick evening run completely reset my mood.",
+                    structure: "1. 直接回答：去公园跑步<br>2. 展开：清空头脑 + 身体需要活动<br>3. 具体例子收尾：昨天连上三节课后跑步重置状态"
+                },
+                {
+                    id: "S2", title: "Take an Interview: S-I02 · 喜欢的书",
+                    prompt: "What kind of book do you enjoy reading most, and why?",
+                    model: "I'm drawn to science fiction, especially stories that imagine how technology changes daily life. They let me think about the future without a textbook. Last month I read a novel about a city run by algorithms, and it actually changed how I look at the apps on my phone. For me, fiction is just a more fun way to study society.",
+                    structure: "1. 直接回答：科幻<br>2. 展开：借想象思考未来<br>3. 例子：算法城市小说改变对 App 的看法"
+                },
+                {
+                    id: "S3", title: "Listen and Repeat: Levels 1-3",
+                    prompt: "Practice these sentences by reading them aloud. On the real test, you will only hear them.",
+                    model: "<strong>Level 1:</strong> The library closes at nine on weekdays.<br>She decided to study abroad next year.<br>We missed the bus and walked home instead.<br><br><strong>Level 2:</strong> Although it was raining, they went for a long hike in the hills.<br>The professor asked us to read two chapters before the next class.<br>I realized I had left my phone on the table near the window.<br><br><strong>Level 3:</strong> The professor explained that the experiment would be postponed until further notice from the lab.<br>Despite the heavy snow, the volunteers managed to deliver food to the isolated village.",
+                    structure: "训练要点：抓主干（主+谓+宾）优先，再补形容词/副词/介词短语；录完回听漏了什么成分。"
+                }
+            ],
+            phraseBank: [
+                {
+                    id: "P1", title: "写作 · 学术讨论（互动句式）",
+                    html: `<ul>
+                        <li class="mb-2"><strong>While I see X's point that..., I think she overlooks...</strong> → 部分认同 + 推进一层（黄金句式）</li>
+                        <li class="mb-2"><strong>I would push back on the idea that...</strong> → 礼貌反驳</li>
+                        <li class="mb-2"><strong>That said, ...</strong> → 让步转折，承接对方合理点</li>
+                        <li class="mb-2"><strong>A compelling counterexample is...</strong> → 引出反例</li>
+                        <li class="mb-2"><strong>This overlooks the fact that...</strong> → 指出盲点</li>
+                    </ul>`
+                },
+                {
+                    id: "P2", title: "写作 · 邮件（正式语域）",
+                    html: `<ul>
+                        <li class="mb-2"><strong>I am writing to ask whether I could...</strong> → 比 Can I 正式礼貌</li>
+                        <li class="mb-2"><strong>Would it be possible to...?</strong> → 委婉请求</li>
+                        <li class="mb-2"><strong>I would appreciate it if you could...</strong> → 高礼貌度</li>
+                        <li class="mb-2"><strong>I apologize for any inconvenience this may cause.</strong> → 致歉标配</li>
+                        <li class="mb-2"><strong>As stated in our lease / policy...</strong> → 有理有据引用规则</li>
+                    </ul>`
+                },
+                {
+                    id: "P3", title: "口语 · 应答开头与展开",
+                    html: `<ul>
+                        <li class="mb-2"><strong>Well, I'd say...</strong> → 中性自然开头</li>
+                        <li class="mb-2"><strong>To be honest, ...</strong> → 引个人真实经历</li>
+                        <li class="mb-2"><strong>The reason is that...</strong> → 清晰给原因</li>
+                        <li class="mb-2"><strong>For instance, ... / Take ... as an example</strong> → 引具体例子</li>
+                        <li class="mb-2"><strong>What I mean is...</strong> → 换说法重述，防跑题</li>
+                    </ul>`
+                }
+            ]
+        };
+
+        let currentTest = null;
+        let currentSectionIndex = 0;
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; 
+        let timerInterval = null;
+        let timeRemaining = 0;
+        let sectionTotalTime = 0;
+        
+        let sentenceBank = [];
+        let sentenceConstructed = [];
+
+        // DOM Elements
+        const mainContent = document.getElementById('main-content');
+        const headerStatus = document.getElementById('header-status');
+        const sectionTitle = document.getElementById('section-title');
+        const timerDisplay = document.getElementById('timer-display');
+        const timerProgress = document.getElementById('timer-progress');
+        const testNav = document.getElementById('test-nav');
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnCheck = document.getElementById('btn-check'); 
+        
+        function initApp() {
+            renderDashboard();
+        }
+
+        function startTimer(seconds) {
+            clearInterval(timerInterval);
+            timeRemaining = seconds;
+            sectionTotalTime = seconds;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    showModal("Time's Up", "The time for this section has expired.", () => {
+                        moveToNextSection();
+                    });
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0');
+            const s = (timeRemaining % 60).toString().padStart(2, '0');
+            if (timerDisplay) timerDisplay.textContent = `${m}:${s}`;
+            
+            if(timerProgress && sectionTotalTime > 0) {
+                const percent = ((sectionTotalTime - timeRemaining) / sectionTotalTime) * 100;
+                timerProgress.style.width = `${percent}%`;
+            }
+            
+            if (timeRemaining < 120 && timeRemaining > 0) {
+                timerDisplay.classList.remove('text-blue-900');
+                timerDisplay.classList.add('text-red-600', 'animate-pulse');
+                timerProgress.classList.replace('bg-blue-100', 'bg-red-200');
+            } else {
+                timerDisplay.classList.add('text-blue-900');
+                timerDisplay.classList.remove('text-red-600', 'animate-pulse');
+                timerProgress.classList.replace('bg-red-200', 'bg-blue-100');
+            }
+        }
+
+        function stopAudio() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function speakText(text, onEndCallback) {
+            stopAudio();
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                const voices = window.speechSynthesis.getVoices();
+                const engVoice = voices.find(v => v.name.includes('Google US English')) || 
+                                 voices.find(v => v.lang.startsWith('en-US')) || 
+                                 voices.find(v => v.lang.startsWith('en-'));
+                
+                if (engVoice) utterance.voice = engVoice;
+                utterance.rate = 0.95; 
+                
+                if (onEndCallback) utterance.onend = onEndCallback;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                if (onEndCallback) setTimeout(onEndCallback, 2000); 
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        }
+
+        function showModal(title, message, onOk, showCancel = false) {
+            const modal = document.getElementById('custom-modal');
+            const panel = document.getElementById('modal-panel');
+            if (!modal) return;
+            
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            
+            const btnOk = document.getElementById('modal-btn-ok');
+            const btnCancel = document.getElementById('modal-btn-cancel');
+            
+            btnOk.onclick = () => {
+                panel.classList.remove('scale-100', 'opacity-100');
+                panel.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    if (onOk) onOk();
+                }, 200);
+            };
+            
+            if (showCancel) {
+                btnCancel.classList.remove('hidden');
+                btnCancel.onclick = () => {
+                    panel.classList.remove('scale-100', 'opacity-100');
+                    panel.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }, 200);
+                }
+            } else {
+                btnCancel.classList.add('hidden');
+            }
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                panel.classList.remove('scale-95', 'opacity-0');
+                panel.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function renderDashboard() {
+            headerStatus.classList.add('hidden');
+            testNav.classList.add('hidden');
+            clearInterval(timerInterval);
+            
+            let html = `
+                <div class="max-w-6xl mx-auto mt-4 animate-fade-in-up">
+                    <div class="bg-gradient-to-r from-blue-800 to-indigo-900 rounded-2xl p-10 text-white shadow-xl mb-8 relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 opacity-10">
+                            <i class="fa-solid fa-earth-americas text-9xl"></i>
+                        </div>
+                        <h2 class="text-4xl font-black mb-3 relative z-10 tracking-tight">TOEFL iBT 2026 Test Engine</h2>
+                        <p class="text-blue-100 text-lg max-w-2xl relative z-10 leading-relaxed">Fully aligned with the updated 2026 TOEFL iBT Structure and Assessment. Features all 12 task types, active timers, instant feedback, and a new robust practice bank.</p>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mb-6 px-2">
+                        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fa-solid fa-list-check text-blue-600 mr-3"></i> Available Mock Tests
+                        </h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">6 Full Tests</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            `;
+            
+            testDatabase.forEach((test, index) => {
+                html += `
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all cursor-pointer hover:-translate-y-1 relative group flex flex-col h-full" onclick="startTest(${index})">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-700 transition-colors">${test.name}</h4>
+                        <p class="text-sm text-gray-500 mb-6 leading-relaxed flex-grow">${test.description}</p>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+                            <span class="inline-flex items-center text-sm font-bold text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg">
+                                <i class="fa-regular fa-clock mr-2 text-blue-500"></i> ~90 Mins
+                            </span>
+                            <div class="text-blue-600 font-bold flex items-center group-hover:translate-x-1 transition-transform">
+                                Start <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+            mainContent.innerHTML = html;
+        }
+
+        function renderPracticeBankIndex() {
+            headerStatus.classList.add('hidden');
+            testNav.classList.add('hidden');
+            clearInterval(timerInterval);
+            
+            let html = `
+                <div class="max-w-6xl mx-auto mt-4 animate-fade-in-up">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-3xl font-black text-gray-900 flex items-center tracking-tight">
+                                <i class="fa-solid fa-layer-group text-indigo-600 mr-4"></i> Skill Practice Bank
+                            </h2>
+                            <p class="text-gray-500 mt-2 font-medium">Focused exercises for Reading, Listening, Speaking, and Writing phrases.</p>
+                        </div>
+                        <button onclick="initApp()" class="px-5 py-2.5 rounded-lg font-bold text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Reading Card -->
+                        <div class="bg-white border-2 border-transparent hover:border-blue-400 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all cursor-pointer group" onclick="renderPracticeCategory('reading')">
+                            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-book-open"></i></div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Reading Passages</h3>
+                            <p class="text-gray-500 mb-4">Practice with detailed passages like "城市为何种树" and "失败博物馆" featuring 5 questions each.</p>
+                            <span class="text-blue-600 font-bold flex items-center">Explore <i class="fa-solid fa-arrow-right ml-2"></i></span>
+                        </div>
+                        
+                        <!-- Listening Card -->
+                        <div class="bg-white border-2 border-transparent hover:border-purple-400 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all cursor-pointer group" onclick="renderPracticeCategory('listening')">
+                            <div class="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-headphones"></i></div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Listening Transcripts</h3>
+                            <p class="text-gray-500 mb-4">Review transcripts for Office Hours, Biology Lectures, and Student Services with detailed analysis.</p>
+                            <span class="text-purple-600 font-bold flex items-center">Explore <i class="fa-solid fa-arrow-right ml-2"></i></span>
+                        </div>
+
+                        <!-- Speaking Card -->
+                        <div class="bg-white border-2 border-transparent hover:border-green-400 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all cursor-pointer group" onclick="renderPracticeCategory('speaking')">
+                            <div class="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-microphone"></i></div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Speaking Prompts</h3>
+                            <p class="text-gray-500 mb-4">14 'Take an Interview' prompts with sample responses and structured breakdowns.</p>
+                            <span class="text-green-600 font-bold flex items-center">Explore <i class="fa-solid fa-arrow-right ml-2"></i></span>
+                        </div>
+
+                        <!-- Phrases Card -->
+                        <div class="bg-white border-2 border-transparent hover:border-amber-400 rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all cursor-pointer group" onclick="renderPracticeCategory('phraseBank')">
+                            <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform"><i class="fa-solid fa-quote-left"></i></div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">High-Score Phrase Bank</h3>
+                            <p class="text-gray-500 mb-4">Essential phrases and structural templates for Writing (Academic & Email) and Speaking tasks.</p>
+                            <span class="text-amber-600 font-bold flex items-center">Explore <i class="fa-solid fa-arrow-right ml-2"></i></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            mainContent.innerHTML = html;
+        }
+
+        function renderPracticeCategory(cat) {
+            const data = practiceBank[cat];
+            let title = cat.charAt(0).toUpperCase() + cat.slice(1);
+            if (cat === 'phraseBank') title = "Phrase Bank";
+
+            let html = `
+                <div class="max-w-5xl mx-auto mt-4 animate-fade-in-up">
+                    <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+                        <h2 class="text-3xl font-black text-gray-900 flex items-center tracking-tight capitalize">
+                            ${title} Materials
+                        </h2>
+                        <button onclick="renderPracticeBankIndex()" class="px-5 py-2.5 rounded-lg font-bold text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 transition-colors flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Bank
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+            `;
+
+            data.forEach((item, index) => {
+                html += `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <button class="w-full text-left px-6 py-5 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none" onclick="toggleAccordion('prac-${cat}-${index}')">
+                            <span class="text-lg font-bold text-gray-800">${item.title}</span>
+                            <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="icon-prac-${cat}-${index}"></i>
+                        </button>
+                        <div id="prac-${cat}-${index}" class="practice-accordion-content px-6 bg-white">
+                `;
+
+                if (cat === 'listening') {
+                    html += `<div class="bg-blue-50 p-5 rounded-xl border border-blue-100 text-gray-800 leading-relaxed font-serif text-lg mb-6">${item.transcript}</div>`;
+                    html += `<h4 class="font-bold text-gray-800 text-lg mb-4 border-b pb-2">Questions & Explanations</h4><div class="space-y-6">`;
+                    item.questions.forEach(q => {
+                        html += `
+                            <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                                <p class="font-bold text-gray-900 mb-3 text-lg">${q.q}</p>
+                                <div class="space-y-2 mb-4">
+                                    ${q.options.map(opt => `<div class="text-gray-700 font-medium ${opt.startsWith(q.ans) ? 'text-green-700 bg-green-50 p-2 rounded border border-green-200' : 'p-2'}">${opt}</div>`).join('')}
+                                </div>
+                                <div class="bg-white p-4 rounded border-l-4 border-blue-500 shadow-sm text-gray-600"><strong class="text-blue-800 uppercase tracking-widest text-xs mb-1 block">Explanation</strong> ${q.exp}</div>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                } 
+                else if (cat === 'reading') {
+                    html += `<div class="bg-gray-50 p-6 rounded-xl border border-gray-200 text-gray-800 leading-loose font-serif text-lg mb-6 shadow-inner">${item.passage}</div>`;
+                    html += `<h4 class="font-bold text-gray-800 text-lg mb-4 border-b pb-2">Questions & Explanations</h4><div class="space-y-6">`;
+                    item.questions.forEach(q => {
+                        html += `
+                            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                                <p class="font-bold text-gray-900 mb-3 text-lg">${q.q}</p>
+                                <div class="space-y-2 mb-4">
+                                    ${q.options.map(opt => `<div class="text-gray-700 font-medium ${opt.startsWith(q.ans) ? 'text-green-700 bg-green-50 p-2 rounded border border-green-200' : 'p-2'}">${opt}</div>`).join('')}
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded border-l-4 border-blue-500 text-gray-600"><strong class="text-blue-800 uppercase tracking-widest text-xs mb-1 block">Explanation</strong> ${q.exp}</div>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+                else if (cat === 'speaking') {
+                    html += `<div class="bg-purple-50 p-5 rounded-xl border border-purple-100 mb-6"><strong class="block text-purple-800 uppercase text-xs tracking-widest mb-2">Prompt</strong><span class="text-gray-900 text-xl font-medium">${item.prompt}</span></div>`;
+                    html += `<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6"><strong class="block text-gray-400 uppercase text-xs tracking-widest mb-3">Model Response</strong><p class="text-gray-800 text-lg leading-relaxed">${item.model}</p></div>`;
+                    html += `<div class="bg-gray-50 p-5 rounded-xl border-l-4 border-amber-400 text-gray-700"><strong class="block text-amber-800 uppercase text-xs tracking-widest mb-2">Response Structure</strong><p class="leading-relaxed">${item.structure}</p></div>`;
+                }
+                else if (cat === 'phraseBank') {
+                    html += `<div class="text-gray-800 text-lg leading-relaxed p-4">${item.html}</div>`;
+                }
+
+                html += `</div></div>`;
+            });
+
+            html += `</div></div>`;
+            mainContent.innerHTML = html;
+        }
+
+        function toggleAccordion(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            if (el.classList.contains('open')) {
+                el.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                el.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function startTest(testIndex) {
+            currentTest = testDatabase[testIndex];
+            currentSectionIndex = 0;
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            
+            showModal("Start Simulation", `You are beginning ${currentTest.name}. The timer will start immediately for the Reading section (~30 mins).`, () => {
+                headerStatus.classList.remove('hidden');
+                testNav.classList.remove('hidden');
+                loadSection(currentSectionIndex);
+            }, true);
+        }
+
+        function loadSection(secIndex) {
+            if(secIndex >= currentTest.sections.length) {
+                finishTest();
+                return;
+            }
+            
+            currentSectionIndex = secIndex;
+            currentQuestionIndex = -1; 
+            const section = currentTest.sections[secIndex];
+            
+            sectionTitle.textContent = section.title;
+            startTimer(section.timeSeconds);
+            
+            renderSectionIntro(section);
+        }
+
+        function renderSectionIntro(section) {
+            btnPrev.classList.add('hidden');
+            btnCheck.classList.add('hidden');
+            btnNext.innerHTML = '<span>Begin Section</span> <i class="fa-solid fa-play"></i>';
+            btnNext.classList.remove('hidden');
+            btnNext.onclick = () => loadQuestion(0);
+            
+            let icon = "fa-book-open";
+            if(section.id === 'listening') icon = "fa-headphones";
+            if(section.id === 'writing') icon = "fa-pen-nib";
+            if(section.id === 'speaking') icon = "fa-microphone";
+
+            mainContent.innerHTML = `
+                <div class="max-w-4xl mx-auto mt-8 bg-white p-12 rounded-3xl shadow-lg border border-gray-100 text-center animate-fade-in-up">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-blue-50 text-blue-600 mb-8 text-4xl shadow-inner border border-blue-100">
+                        <i class="fa-solid ${icon}"></i>
+                    </div>
+                    <h2 class="text-4xl font-black text-gray-900 mb-4 tracking-tight">${section.title}</h2>
+                    <div class="w-20 h-1.5 bg-blue-600 mx-auto mb-8 rounded-full"></div>
+                    <p class="text-xl text-gray-600 leading-relaxed mb-10 max-w-2xl mx-auto">${section.intro}</p>
+                    
+                    <div class="inline-flex items-center px-8 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 font-bold text-lg shadow-sm">
+                        <i class="fa-regular fa-clock text-blue-600 mr-3 text-2xl"></i> Time allowed: ${Math.floor(section.timeSeconds / 60)} minutes
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadQuestion(qIndex) {
+            stopAudio(); 
+            
+            const section = currentTest.sections[currentSectionIndex];
+            if (qIndex < 0) {
+                renderSectionIntro(section);
+                return;
+            }
+            if (qIndex >= section.questions.length) {
+                moveToNextSection();
+                return;
+            }
+
+            currentQuestionIndex = qIndex;
+            const q = section.questions[qIndex];
+            
+            btnPrev.classList.remove('hidden');
+            btnPrev.onclick = () => { saveCurrentAnswer(); loadQuestion(currentQuestionIndex - 1); };
+            
+            btnCheck.classList.remove('hidden');
+            btnCheck.onclick = () => checkCurrentAnswer();
+            
+            if (qIndex === section.questions.length - 1) {
+                btnNext.innerHTML = '<span>Finish Section</span> <i class="fa-solid fa-flag-checkered"></i>';
+                btnNext.classList.replace('bg-blue-600', 'bg-green-600');
+                btnNext.classList.replace('border-blue-700', 'border-green-700');
+                btnNext.classList.replace('hover:bg-blue-700', 'hover:bg-green-700');
+                btnNext.onclick = () => { 
+                    saveCurrentAnswer();
+                    showModal("Finish Section", "Are you sure you want to complete this section? You cannot return to these questions.", () => {
+                        btnNext.classList.replace('bg-green-600', 'bg-blue-600');
+                        btnNext.classList.replace('border-green-700', 'border-blue-700');
+                        btnNext.classList.replace('hover:bg-green-700', 'hover:bg-blue-700');
+                        moveToNextSection();
+                    }, true);
+                };
+            } else {
+                btnNext.innerHTML = '<span>Next</span> <i class="fa-solid fa-arrow-right"></i>';
+                btnNext.classList.replace('bg-green-600', 'bg-blue-600');
+                btnNext.classList.replace('border-green-700', 'border-blue-700');
+                btnNext.classList.replace('hover:bg-green-700', 'hover:bg-blue-700');
+                btnNext.onclick = () => { saveCurrentAnswer(); loadQuestion(currentQuestionIndex + 1); };
+            }
+
+            let html = `
+                <div class="max-w-5xl mx-auto animate-fade-in-up" id="question-container">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6" id="question-card">
+                        <div class="bg-gray-50 px-8 py-4 border-b border-gray-200 flex justify-between items-center">
+                            <span class="font-black text-gray-800 uppercase text-sm tracking-widest flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-blue-600 mr-3 shadow-sm"></div>${q.taskType}
+                            </span>
+                            <span class="text-blue-700 text-sm font-bold bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">
+                                Question ${qIndex + 1} of ${section.questions.length}
+                            </span>
+                        </div>
+                        <div class="p-8 md:p-10">
+                            <div class="mb-8 pb-5 border-b border-gray-100 flex items-start gap-4">
+                                <i class="fa-solid fa-circle-info text-blue-500 text-xl mt-1"></i>
+                                <h3 class="text-xl font-semibold text-gray-800 leading-relaxed">${q.instruction}</h3>
+                            </div>
+            `;
+
+            switch (q.type) {
+                case "complete_words": html += renderCompleteWords(q); break;
+                case "mcq": html += renderMCQ(q); break;
+                case "mcq_audio": html += renderMCQAudio(q); break;
+                case "build_sentence": html += renderBuildSentence(q); break;
+                case "email": 
+                case "essay": html += renderWriting(q); break;
+                case "listen_repeat": 
+                case "interview": html += renderSpeaking(q); break;
+            }
+
+            html += `</div></div></div>`;
+            mainContent.innerHTML = html;
+
+            postRenderLogic(q);
+        }
+
+        function checkCurrentAnswer() {
+            if (currentQuestionIndex < 0) return;
+            const section = currentTest.sections[currentSectionIndex];
+            const q = section.questions[currentQuestionIndex];
+            const answerKey = `${currentTest.id}_${currentSectionIndex}_${currentQuestionIndex}`;
+            
+            saveCurrentAnswer();
+            const uAns = userAnswers[answerKey];
+
+            const existingFeedback = document.getElementById('feedback-container');
+            if(existingFeedback) existingFeedback.remove();
+
+            let isCorrect = false;
+            let displayUserAns = "No answer provided";
+            let statusConfig = { color: "text-red-600", icon: "fa-xmark", title: "Incorrect", border: "border-red-200", bg: "bg-red-50", badgeBg: "bg-red-100", badgeText: "text-red-800" };
+
+            if (q.type === 'complete_words') {
+                if (uAns && Array.isArray(uAns)) {
+                    let correct = 0;
+                    uAns.forEach((l, i) => { if(l === q.answerKeys[i]) correct++; });
+                    isCorrect = correct === q.answerKeys.length;
+                    displayUserAns = uAns.join(' ').toUpperCase();
+                    if(isCorrect) { 
+                        statusConfig = { color: "text-green-600", icon: "fa-check-circle", title: "Correct!", border: "border-green-200", bg: "bg-green-50", badgeBg: "bg-green-100", badgeText: "text-green-800" };
+                    } else if(correct > 0) { 
+                        statusConfig = { color: "text-amber-600", icon: "fa-triangle-exclamation", title: "Partially Correct", border: "border-amber-200", bg: "bg-amber-50", badgeBg: "bg-amber-100", badgeText: "text-amber-800" };
+                        displayUserAns += ` <span class="text-sm font-bold ml-2">(${correct}/${q.answerKeys.length})</span>`;
+                    }
+                }
+            } 
+            else if (q.type === 'mcq' || q.type === 'mcq_audio') {
+                if (uAns !== undefined) {
+                    displayUserAns = q.options[uAns];
+                    isCorrect = (uAns === q.correctOption);
+                    if(isCorrect) { 
+                        statusConfig = { color: "text-green-600", icon: "fa-check-circle", title: "Correct!", border: "border-green-200", bg: "bg-green-50", badgeBg: "bg-green-100", badgeText: "text-green-800" };
+                    }
+                }
+            }
+            else if (q.type === 'build_sentence') {
+                if (uAns && uAns.constructed) {
+                    displayUserAns = uAns.constructed.join(' ');
+                    isCorrect = uAns.constructed.join(' ') === q.correctOrder.join(' ');
+                    if(isCorrect) { 
+                        statusConfig = { color: "text-green-600", icon: "fa-check-circle", title: "Correct!", border: "border-green-200", bg: "bg-green-50", badgeBg: "bg-green-100", badgeText: "text-green-800" };
+                    }
+                }
+            }
+            else if (q.type === 'email' || q.type === 'essay') {
+                statusConfig = { color: "text-blue-600", icon: "fa-pen-to-square", title: "Self-Assessed (Writing)", border: "border-blue-200", bg: "bg-blue-50", badgeBg: "bg-blue-100", badgeText: "text-blue-800" };
+                displayUserAns = uAns ? "Response recorded. Compare your approach to the model below." : "No response written.";
+            }
+            else if (q.type === 'listen_repeat' || q.type === 'interview') {
+                statusConfig = { color: "text-purple-600", icon: "fa-microphone", title: "Self-Assessed (Speaking)", border: "border-purple-200", bg: "bg-purple-50", badgeBg: "bg-purple-100", badgeText: "text-purple-800" };
+                displayUserAns = uAns === "recorded" ? "Audio simulated. Review the rubric criteria below." : "Not recorded.";
+            }
+
+            const feedbackHtml = `
+                <div id="feedback-container" class="mt-6 ${statusConfig.bg} border-2 ${statusConfig.border} rounded-2xl p-8 feedback-slide-down shadow-md">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-white border-opacity-60">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full ${statusConfig.badgeBg} ${statusConfig.color} flex items-center justify-center text-2xl shadow-sm">
+                                <i class="fa-solid ${statusConfig.icon}"></i>
+                            </div>
+                            <h4 class="font-black text-2xl text-gray-900">${statusConfig.title}</h4>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6 bg-white bg-opacity-70 p-4 rounded-xl border border-white border-opacity-50">
+                        <strong class="text-xs font-black uppercase tracking-widest text-gray-500 block mb-2">Your Answer</strong> 
+                        <span class="font-semibold text-gray-800 text-lg">${displayUserAns}</span>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500"></div>
+                        <strong class="text-blue-800 text-sm font-black uppercase tracking-widest flex items-center mb-3">
+                            <i class="fa-solid fa-graduation-cap mr-2 text-lg"></i> Official Explanation / Model
+                        </strong>
+                        <p class="text-gray-700 leading-relaxed text-lg">${q.explanation}</p>
+                    </div>
+                </div>
+            `;
+            
+            const container = document.getElementById('question-container');
+            if(container) {
+                 container.insertAdjacentHTML('beforeend', feedbackHtml);
+                 setTimeout(() => {
+                    document.getElementById('feedback-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                 }, 50);
+            }
+        }
+
+        function renderCompleteWords(q) {
+            return `
+                <div class="prose max-w-none text-xl text-gray-800 leading-loose mt-4 p-8 bg-gray-50 rounded-2xl border border-gray-200 shadow-inner font-serif" id="ctw-container">
+                    ${q.content}
+                </div>
+            `;
+        }
+
+        function renderMCQ(q) {
+            let html = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">`;
+            
+            html += `
+                <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm h-[450px] overflow-y-auto">
+                    <h4 class="font-black text-2xl text-gray-900 mb-6 pb-4 border-b border-gray-100">${q.passageTitle}</h4>
+                    <p class="text-gray-700 leading-relaxed whitespace-pre-wrap text-lg">${q.passage}</p>
+                </div>
+            `;
+            
+            html += `<div class="flex flex-col">
+                <div class="bg-blue-50 p-6 rounded-xl mb-6 border border-blue-100 shadow-sm">
+                    <h4 class="font-bold text-xl text-blue-900 leading-snug">${q.question}</h4>
+                </div>
+                <div class="space-y-4" id="mcq-options">
+            `;
+            
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <label class="flex items-start p-5 border-2 border-gray-200 bg-white rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group shadow-sm">
+                        <input type="radio" name="mcq_answer" value="${idx}" class="mt-1 w-6 h-6 text-blue-600 border-gray-300 focus:ring-blue-500">
+                        <span class="ml-4 text-gray-700 group-hover:text-blue-900 font-medium text-lg">${opt}</span>
+                    </label>
+                `;
+            });
+            
+            html += `</div></div></div>`;
+            return html;
+        }
+
+        function renderMCQAudio(q) {
+            let html = `
+                <div class="flex flex-col items-center mb-12 bg-gray-50 p-10 rounded-3xl border border-gray-200 shadow-inner relative overflow-hidden">
+                    <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500"></div>
+                    <div class="w-full flex justify-between items-center mb-8">
+                        <span class="text-sm font-black text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-volume-high mr-2"></i> Audio Prompt</span>
+                    </div>
+                    <button id="btn-play-audio" class="w-24 h-24 rounded-full bg-blue-600 text-white shadow-xl hover:bg-blue-700 hover:shadow-2xl transform hover:scale-105 transition-all text-3xl focus:outline-none flex items-center justify-center">
+                        <i class="fa-solid fa-play ml-2"></i>
+                    </button>
+                    <p class="mt-6 text-base text-gray-600 font-bold tracking-wide" id="audio-status">Click to play audio</p>
+                    
+                    <div id="transcript-fallback" class="hidden mt-8 w-full max-w-3xl bg-white p-6 rounded-xl border border-gray-200 text-base text-gray-700 italic border-l-4 border-l-gray-400 shadow-sm whitespace-pre-wrap">
+                        <div class="text-xs font-black text-gray-400 uppercase mb-3 not-italic tracking-widest">Transcript (Simulated)</div>
+                        "${q.audioText}"
+                    </div>
+                </div>
+                
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-blue-50 p-6 rounded-xl mb-6 border border-blue-100 shadow-sm">
+                        <h4 class="font-bold text-xl text-blue-900">${q.question}</h4>
+                    </div>
+                    <div class="space-y-4" id="mcq-options">
+            `;
+            
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <label class="flex items-start p-5 border-2 border-gray-200 bg-white rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group shadow-sm">
+                        <input type="radio" name="mcq_answer" value="${idx}" class="mt-1 w-6 h-6 text-blue-600 border-gray-300 focus:ring-blue-500">
+                        <span class="ml-4 text-gray-700 group-hover:text-blue-900 font-medium text-lg">${opt}</span>
+                    </label>
+                `;
+            });
+            
+            html += `</div></div>`;
+            return html;
+        }
+
+        function renderBuildSentence(q) {
+            let words = [...q.words];
+            for (let i = words.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [words[i], words[j]] = [words[j], words[i]];
+            }
+            sentenceBank = words;
+            sentenceConstructed = [];
+
+            return `
+                <div class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3"><i class="fa-solid fa-hammer mr-2"></i>Construct Your Response</div>
+                <div class="bg-blue-50 p-8 rounded-2xl border-2 border-dashed border-blue-300 mb-10 min-h-[140px] flex flex-wrap items-center gap-3 shadow-inner" id="constructed-area">
+                    <span class="text-blue-400 font-medium text-lg italic select-none pointer-events-none" id="construct-placeholder">Click words from the bank below to build the sentence...</span>
+                </div>
+                
+                <div class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3"><i class="fa-solid fa-cubes mr-2"></i>Word Bank</div>
+                <div class="p-8 border border-gray-200 rounded-2xl flex flex-wrap justify-center gap-4 bg-gray-50 shadow-sm" id="bank-area">
+                    <!-- Words injected here -->
+                </div>
+            `;
+        }
+
+        function renderWriting(q) {
+            let placeholder = q.type === 'email' ? 'Compose your email here...' : 'Write your academic discussion response here...';
+            return `
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-200 shadow-inner mb-8 whitespace-pre-wrap text-gray-800 leading-relaxed text-lg font-serif">${q.scenario}</div>
+                
+                <div class="border-2 border-gray-300 rounded-2xl overflow-hidden focus-within:ring-4 focus-within:ring-blue-100 focus-within:border-blue-500 transition-all shadow-sm">
+                    <div class="bg-gray-100 px-6 py-4 border-b border-gray-300 flex justify-between items-center">
+                        <span class="text-sm font-black text-gray-600 uppercase tracking-widest"><i class="fa-solid fa-pen-nib mr-2"></i>Response Area</span>
+                        <div class="text-sm text-gray-600 font-mono bg-white px-4 py-1.5 rounded-lg border border-gray-200 font-bold shadow-sm">
+                            Words: <span id="word-count" class="text-blue-600">0</span>
+                        </div>
+                    </div>
+                    <textarea id="writing-area" class="w-full h-80 p-6 outline-none resize-none bg-white text-gray-800 leading-relaxed text-lg" placeholder="${placeholder}"></textarea>
+                </div>
+            `;
+        }
+
+        function renderSpeaking(q) {
+            return `
+                <div class="flex flex-col items-center py-20 bg-gray-50 rounded-3xl border border-gray-200 shadow-inner">
+                    <div class="mb-12 text-center max-w-2xl px-6">
+                        <p class="text-3xl text-gray-900 font-medium leading-relaxed font-serif">"${q.instruction}"</p>
+                    </div>
+                    
+                    <button id="btn-play-prompt" class="px-10 py-5 bg-blue-600 text-white rounded-full font-black shadow-xl hover:bg-blue-700 hover:shadow-2xl transform hover:scale-105 transition-all mb-8 text-xl flex items-center">
+                        <i class="fa-solid fa-headphones mr-4 text-2xl"></i> Play Prompt & Begin
+                    </button>
+                    
+                    <div id="transcript-fallback" class="hidden mb-10 w-full max-w-xl bg-white p-6 rounded-xl border border-gray-200 text-center italic text-gray-700 text-lg shadow-sm">
+                        "${q.audioText}"
+                    </div>
+                    
+                    <div id="recording-ui" class="hidden flex-col items-center w-full max-w-md">
+                        <div class="relative flex items-center justify-center w-32 h-32 mb-8">
+                            <div class="absolute inset-0 bg-red-100 rounded-full recording-pulse"></div>
+                            <div class="relative z-10 w-24 h-24 rounded-full bg-white border-4 border-red-500 flex items-center justify-center text-red-500 text-4xl shadow-lg">
+                                <i class="fa-solid fa-microphone"></i>
+                            </div>
+                        </div>
+                        
+                        <p class="font-black text-red-600 text-2xl tracking-widest mb-4 uppercase" id="rec-status">Recording...</p>
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
+                            <div class="bg-red-500 h-full rounded-full transition-all duration-100 ease-linear" id="rec-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="recording-done" class="hidden flex-col items-center mt-6 p-8 bg-green-50 border border-green-200 rounded-2xl w-full max-w-md shadow-sm">
+                        <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-4xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <span class="text-green-800 font-black text-2xl mb-2">Response Recorded</span>
+                        <p class="text-green-600 text-center font-medium">In this simulation, your response is self-assessed via the Check Answer button.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function postRenderLogic(q) {
+            const answerKey = `${currentTest.id}_${currentSectionIndex}_${currentQuestionIndex}`;
+            const previousAnswer = userAnswers[answerKey];
+
+            if (q.type === 'complete_words') {
+                const inputs = document.querySelectorAll('.ctw-input');
+                if (previousAnswer && Array.isArray(previousAnswer)) {
+                    inputs.forEach((input, i) => input.value = previousAnswer[i] || '');
+                }
+                inputs.forEach((input, index) => {
+                    input.addEventListener('input', function() {
+                        if (this.value.length === this.maxLength) {
+                            if (index < inputs.length - 1) inputs[index + 1].focus();
+                        }
+                    });
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    });
+                });
+            } 
+            else if (q.type === 'mcq' || q.type === 'mcq_audio') {
+                if (previousAnswer !== undefined) {
+                    const radios = document.querySelectorAll('input[name="mcq_answer"]');
+                    if(radios[previousAnswer]) radios[previousAnswer].checked = true;
+                }
+                
+                if (q.type === 'mcq_audio') {
+                    const btnPlay = document.getElementById('btn-play-audio');
+                    const status = document.getElementById('audio-status');
+                    btnPlay.onclick = () => {
+                        btnPlay.disabled = true;
+                        btnPlay.classList.replace('bg-blue-600', 'bg-gray-400');
+                        btnPlay.classList.replace('hover:bg-blue-700', 'hover:bg-gray-500');
+                        btnPlay.classList.remove('transform', 'hover:scale-105', 'shadow-xl');
+                        btnPlay.innerHTML = '<i class="fa-solid fa-volume-high text-white"></i>';
+                        status.textContent = "Playing Audio...";
+                        
+                        speakText(q.audioText, () => {
+                            status.textContent = "Audio finished. You may answer.";
+                            btnPlay.innerHTML = '<i class="fa-solid fa-check text-white"></i>';
+                        });
+                        
+                        setTimeout(() => document.getElementById('transcript-fallback').classList.remove('hidden'), 1500);
+                    };
+                }
+            }
+            else if (q.type === 'build_sentence') {
+                if (previousAnswer && previousAnswer.bank && previousAnswer.constructed) {
+                    sentenceBank = previousAnswer.bank;
+                    sentenceConstructed = previousAnswer.constructed;
+                }
+                renderSentenceUI();
+            }
+            else if (q.type === 'email' || q.type === 'essay') {
+                const textarea = document.getElementById('writing-area');
+                const wc = document.getElementById('word-count');
+                if (previousAnswer) {
+                    textarea.value = previousAnswer;
+                    wc.textContent = previousAnswer.trim().split(/\s+/).filter(w => w.length > 0).length;
+                }
+                textarea.addEventListener('input', () => {
+                    const text = textarea.value.trim();
+                    wc.textContent = text === '' ? 0 : text.split(/\s+/).length;
+                });
+            }
+            else if (q.type === 'listen_repeat' || q.type === 'interview') {
+                const btnPlay = document.getElementById('btn-play-prompt');
+                const recUI = document.getElementById('recording-ui');
+                const recDone = document.getElementById('recording-done');
+                const recProgress = document.getElementById('rec-progress');
+                const recStatus = document.getElementById('rec-status');
+                
+                if(previousAnswer === "recorded") {
+                    btnPlay.classList.add('hidden');
+                    recDone.classList.remove('hidden');
+                    recDone.classList.add('flex');
+                } else {
+                    btnPlay.onclick = () => {
+                        btnPlay.disabled = true;
+                        btnPlay.classList.replace('bg-blue-600', 'bg-gray-500');
+                        btnPlay.innerHTML = '<i class="fa-solid fa-volume-high mr-3 animate-pulse"></i> Playing...';
+                        
+                        speakText(q.audioText, () => {
+                            btnPlay.classList.add('hidden');
+                            document.getElementById('transcript-fallback').classList.remove('hidden');
+                            recUI.classList.remove('hidden');
+                            recUI.classList.add('flex');
+                            
+                            let recTime = q.type === 'listen_repeat' ? 8000 : 45000; 
+                            const match = q.instruction.match(/\((\d+)s\)/);
+                            if(match) recTime = parseInt(match[1]) * 1000;
+
+                            let elapsed = 0;
+                            const updateInterval = 50;
+                            
+                            const recInterval = setInterval(() => {
+                                elapsed += updateInterval;
+                                const percent = (elapsed / recTime) * 100;
+                                recProgress.style.width = `${percent}%`;
+                                
+                                const secLeft = Math.ceil((recTime - elapsed)/1000);
+                                recStatus.textContent = `REC: ${secLeft}s`;
+
+                                if (elapsed >= recTime) {
+                                    clearInterval(recInterval);
+                                    recUI.classList.add('hidden');
+                                    recUI.classList.remove('flex');
+                                    recDone.classList.remove('hidden');
+                                    recDone.classList.add('flex');
+                                    userAnswers[answerKey] = "recorded";
+                                }
+                            }, updateInterval);
+                        });
+                    };
+                }
+            }
+        }
+
+        function renderSentenceUI() {
+            const bankArea = document.getElementById('bank-area');
+            const consArea = document.getElementById('constructed-area');
+            const placeholder = document.getElementById('construct-placeholder');
+            
+            if(!bankArea || !consArea) return;
+
+            Array.from(bankArea.children).forEach(c => c.remove());
+            Array.from(consArea.children).forEach(c => { if(c.id !== 'construct-placeholder') c.remove() });
+
+            if (sentenceConstructed.length > 0 && placeholder) {
+                placeholder.classList.add('hidden');
+            } else if (placeholder) {
+                placeholder.classList.remove('hidden');
+            }
+
+            sentenceBank.forEach((word, index) => {
+                const el = document.createElement('div');
+                el.className = 'word-chip shadow-sm';
+                el.textContent = word;
+                el.onclick = () => {
+                    sentenceConstructed.push(word);
+                    sentenceBank.splice(index, 1);
+                    renderSentenceUI();
+                };
+                bankArea.appendChild(el);
+            });
+
+            sentenceConstructed.forEach((word, index) => {
+                const el = document.createElement('div');
+                el.className = 'word-chip selected shadow-md';
+                el.innerHTML = `${word} <i class="fa-solid fa-xmark ml-3 text-sm opacity-80"></i>`;
+                el.onclick = () => {
+                    sentenceBank.push(word);
+                    sentenceConstructed.splice(index, 1);
+                    renderSentenceUI();
+                };
+                consArea.appendChild(el);
+            });
+        }
+
+        function saveCurrentAnswer() {
+            if (currentQuestionIndex < 0) return;
+            const section = currentTest.sections[currentSectionIndex];
+            const q = section.questions[currentQuestionIndex];
+            const answerKey = `${currentTest.id}_${currentSectionIndex}_${currentQuestionIndex}`;
+
+            if (q.type === 'complete_words') {
+                const inputs = document.querySelectorAll('.ctw-input');
+                let ans = [];
+                inputs.forEach(i => ans.push(i.value.toLowerCase()));
+                userAnswers[answerKey] = ans;
+            } 
+            else if (q.type === 'mcq' || q.type === 'mcq_audio') {
+                const selected = document.querySelector('input[name="mcq_answer"]:checked');
+                if (selected) userAnswers[answerKey] = parseInt(selected.value);
+            }
+            else if (q.type === 'build_sentence') {
+                userAnswers[answerKey] = { bank: [...sentenceBank], constructed: [...sentenceConstructed] };
+            }
+            else if (q.type === 'email' || q.type === 'essay') {
+                const textarea = document.getElementById('writing-area');
+                if(textarea) userAnswers[answerKey] = textarea.value;
+            }
+        }
+
+        function moveToNextSection() {
+            stopAudio();
+            currentSectionIndex++;
+            loadSection(currentSectionIndex);
+        }
+
+        function finishTest() {
+            clearInterval(timerInterval);
+            headerStatus.classList.add('hidden');
+            testNav.classList.add('hidden');
+            
+            let html = `
+                <div class="max-w-5xl mx-auto mt-6 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-fade-in-up">
+                    <div class="bg-gray-900 p-12 text-white text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-blue-600 opacity-20" style="background-image: radial-gradient(circle at center, #3b82f6 0%, transparent 70%);"></div>
+                        <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-green-500 text-white mb-6 text-5xl shadow-xl border-4 border-gray-800 relative z-10">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <h2 class="text-5xl font-black mb-4 relative z-10 tracking-tight">Test Completed</h2>
+                        <p class="text-gray-300 text-xl relative z-10 font-medium tracking-wide">Review your answers and the official explanations below.</p>
+                    </div>
+                    <div class="p-8 md:p-12 space-y-12 bg-gray-50">
+            `;
+
+            currentTest.sections.forEach((section, sIdx) => {
+                html += `
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
+                        <h3 class="text-2xl font-black text-gray-900 mb-6 pb-4 border-b-2 border-gray-100 flex items-center">
+                            <span class="bg-blue-600 text-white rounded-lg px-4 py-1.5 text-sm mr-4 uppercase tracking-widest font-bold shadow-sm">Section ${sIdx + 1}</span>
+                            ${section.title}
+                        </h3>
+                        <div class="space-y-8">
+                `;
+
+                section.questions.forEach((q, qIdx) => {
+                    const ansKey = `${currentTest.id}_${sIdx}_${qIdx}`;
+                    const uAns = userAnswers[ansKey];
+                    
+                    let displayUserAns = "No answer provided";
+                    let statusColor = "text-red-600";
+                    let statusIcon = "fa-xmark";
+                    let badge = `<span class="bg-red-100 text-red-800 text-xs font-black px-3 py-1 rounded uppercase tracking-wider">Incorrect</span>`;
+
+                    if (q.type === 'complete_words') {
+                        if (uAns && Array.isArray(uAns)) {
+                            let correct = 0;
+                            uAns.forEach((l, i) => { if(l === q.answerKeys[i]) correct++; });
+                            displayUserAns = uAns.join(' ').toUpperCase();
+                            if(correct === q.answerKeys.length) { 
+                                statusColor = "text-green-600"; statusIcon = "fa-check"; badge = `<span class="bg-green-100 text-green-800 text-xs font-black px-3 py-1 rounded uppercase tracking-wider">Correct</span>`;
+                            } else if(correct > 0) { 
+                                statusColor = "text-amber-600"; statusIcon = "fa-triangle-exclamation"; badge = `<span class="bg-amber-100 text-amber-800 text-xs font-black px-3 py-1 rounded uppercase tracking-wider">Partial</span>`;
+                                displayUserAns += ` (${correct}/${q.answerKeys.length})`;
+                            }
+                        }
+                    } 
+                    else if (q.type === 'mcq' || q.type === 'mcq_audio') {
+                        if (uAns !== undefined) {
+                            displayUserAns = q.options[uAns];
+                            if(uAns === q.correctOption) { 
+                                statusColor = "text-green-600"; statusIcon = "fa-check"; badge = `<span class="bg-green-100 text-green-800 text-xs font-black px-3 py-1 rounded uppercase tracking-wider">Correct</span>`;
+                            }
+                        }
+                    }
+                    else if (q.type === 'build_sentence') {
+                        if (uAns && uAns.constructed) {
+                            displayUserAns = uAns.constructed.join(' ');
+                            if(uAns.constructed.join(' ') === q.correctOrder.join(' ')) { 
+                                statusColor = "text-green-600"; statusIcon = "fa-check"; badge = `<span class="bg-green-100 text-green-800 text-xs font-black px-3 py-1 rounded uppercase tracking-wider">Correct</span>`;
+                            }
+                        }
+                    }
+                    else if (q.type === 'email' || q.type === 'essay') {
+                        statusColor = "text-blue-600"; statusIcon = "fa-pen-to-square";
+                        badge = `<span class="bg-blue-100 text-blue-800 text-xs font-black px-3 py-1 rounded uppercase tracking-wider">Self-Assess</span>`;
+                        displayUserAns = uAns ? `<div class="mt-3 p-5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 whitespace-pre-wrap font-serif text-lg leading-relaxed">${uAns}</div>` : "No essay written.";
+                    }
+                    else if (q.type === 'listen_repeat' || q.type === 'interview') {
+                        statusColor = "text-purple-600"; statusIcon = "fa-microphone";
+                        badge = `<span class="bg-purple-100 text-purple-800 text-xs font-black px-3 py-1 rounded uppercase tracking-wider">Self-Assess</span>`;
+                        displayUserAns = uAns === "recorded" ? "Audio recorded (Simulated)" : "Not recorded.";
+                    }
+
+                    html += `
+                        <div class="border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+                            <div class="flex justify-between items-center p-5 bg-gray-50 border-b border-gray-200">
+                                <div class="flex items-center gap-4">
+                                    <span class="w-8 h-8 rounded-full bg-white text-gray-800 flex items-center justify-center font-black text-sm border border-gray-300 shadow-sm">${qIdx + 1}</span>
+                                    <span class="font-bold text-gray-800">${q.taskType}</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    ${badge}
+                                    <span class="${statusColor} text-xl"><i class="fa-solid ${statusIcon}"></i></span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-6">
+                                <div class="mb-6">
+                                    <div class="text-xs text-gray-400 uppercase font-black tracking-widest mb-2">Your Answer</div>
+                                    <div class="text-gray-900 font-semibold text-lg">${displayUserAns}</div>
+                                </div>
+                                
+                                <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl">
+                                    <div class="text-xs text-blue-800 uppercase font-black tracking-widest mb-2 flex items-center"><i class="fa-solid fa-book-open-reader mr-2"></i>Official Explanation / Model</div>
+                                    <p class="text-gray-700 leading-relaxed text-base">${q.explanation}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            });
+
+            html += `
+                        <div class="text-center pt-6">
+                            <button onclick="initApp()" class="px-12 py-4 bg-gray-900 text-white rounded-full font-black hover:bg-black shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all text-xl flex items-center justify-center mx-auto tracking-wide">
+                                <i class="fa-solid fa-house mr-3"></i> Return to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            mainContent.innerHTML = html;
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
