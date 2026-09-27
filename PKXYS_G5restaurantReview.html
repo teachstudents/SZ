@@ -107,9 +107,51 @@
             color: #000 !important;
             box-shadow: 0 0 0 2px #fef08a; /* Expand highlight slightly without layout shift */
         }
+
+        /* Animated Emoji Border */
+        @keyframes marquee-x {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-x-reverse {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
+        }
+        @keyframes marquee-y {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+        @keyframes marquee-y-reverse {
+            0% { transform: translateY(-50%); }
+            100% { transform: translateY(0); }
+        }
+        .animate-marquee-x { animation: marquee-x 60s linear infinite; }
+        .animate-marquee-x-reverse { animation: marquee-x-reverse 60s linear infinite; }
+        .animate-marquee-y { animation: marquee-y 60s linear infinite; }
+        .animate-marquee-y-reverse { animation: marquee-y-reverse 60s linear infinite; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-gray-800 text-lg">
+
+    <!-- Emoji Border Overlay -->
+    <div class="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
+        <!-- Top -->
+        <div class="absolute top-0 left-0 h-6 w-[200%] flex items-center text-xl animate-marquee-x whitespace-nowrap opacity-60">
+            🍔🍕🍟🌭🍿🧂🥓🥚🍳🧇🥞🧈🍞🥐🥨🥯🥪🌮🌯🍣🍱🍜🍲🥗🍤🍔🍕🍟🌭🍿🧂🥓🥚🍳🧇🥞🧈🍞🥐🥨🥯🥪🌮🌯🍣🍱🍜🍲🥗🍤
+        </div>
+        <!-- Bottom -->
+        <div class="absolute bottom-0 left-0 h-6 w-[200%] flex items-center text-xl animate-marquee-x-reverse whitespace-nowrap opacity-60">
+            🍔🍕🍟🌭🍿🧂🥓🥚🍳🧇🥞🧈🍞🥐🥨🥯🥪🌮🌯🍣🍱🍜🍲🥗🍤🍔🍕🍟🌭🍿🧂🥓🥚🍳🧇🥞🧈🍞🥐🥨🥯🥪🌮🌯🍣🍱🍜🍲🥗🍤
+        </div>
+        <!-- Left -->
+        <div class="absolute top-0 left-0 w-6 h-[200%] flex flex-col text-xl animate-marquee-y opacity-60" style="writing-mode: vertical-rl;">
+             🍔🍕🍟🌭🍿🧂🥓🥚🍳🧇🥞🧈🍞🥐🥨🥯🥪🌮🌯🍣🍱🍜🍲🥗🍤🍔🍕🍟🌭🍿🧂🥓🥚🍳🧇🥞🧈🍞🥐🥨🥯🥪🌮🌯🍣🍱🍜🍲🥗🍤
+        </div>
+        <!-- Right -->
+        <div class="absolute top-0 right-0 w-6 h-[200%] flex flex-col text-xl animate-marquee-y-reverse opacity-60" style="writing-mode: vertical-rl;">
+             🍔🍕🍟🌭🍿🧂🥓🥚🍳🧇🥞🧈🍞🥐🥨🥯🥪🌮🌯🍣🍱🍜🍲🥗🍤🍔🍕🍟🌭🍿🧂🥓🥚🍳🧇🥞🧈🍞🥐🥨🥯🥪🌮🌯🍣🍱🍜🍲🥗🍤
+        </div>
+    </div>
 
     <aside class="w-64 bg-white shadow-2xl flex flex-col z-[60] h-full flex-shrink-0 transition-transform duration-300 absolute -translate-x-full" id="sidebar">
         <div class="p-6 flex items-center justify-between border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition" onclick="document.getElementById('sidebar').classList.add('-translate-x-full');">
@@ -158,22 +200,18 @@
 
         <!-- Scrollable Main Content -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8 relative bg-gray-50 scroll-smooth" id="main-content">
-            <div class="max-w-4xl mx-auto pb-20">
+            <div class="w-full px-2 sm:px-6 pb-20">
 
                 <div id="page-1" class="page-content active">
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                        <div class="bg-indigo-600 text-white p-6 flex justify-between items-center">
-                            <div>
-                                <span class="text-indigo-200 text-sm font-semibold uppercase tracking-wider">Part I: Let's read</span>
-                                <h2 class="text-2xl font-bold mt-1">Model Text: Restaurant Review</h2>
-                            </div>
-                            <button onclick="speakTextWithHighlight('model-text-content')" class="bg-white/20 hover:bg-white/30 text-white rounded-full px-5 py-3 transition flex items-center gap-3 backdrop-blur-sm shadow-sm" title="Read Aloud with Highlighting">
-                                <i class="fas fa-volume-up text-xl"></i> <span class="text-lg font-bold">Listen</span>
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 relative mt-6">
+                        <div class="absolute top-4 right-4 z-10">
+                            <button onclick="speakTextWithHighlight('model-text-content')" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-full w-12 h-12 transition flex items-center justify-center shadow-sm" title="Read Aloud">
+                                <i class="fas fa-volume-up text-2xl"></i>
                             </button>
                         </div>
                         
                         <div class="p-8 prose prose-indigo max-w-none text-gray-700 text-xl leading-loose indent-p" id="model-text-content">
-                            <h3 class="text-3xl font-bold text-gray-900 mb-2">Vega, Shenzhen</h3>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-2 mt-4">Vega, Shenzhen</h3>
                             <div class="flex items-center gap-2 mb-6 text-base text-gray-500">
                                 <span>Reviewed yesterday</span>
                                 <span class="text-yellow-400 text-lg">★★★☆☆</span>
@@ -248,85 +286,118 @@
                 </div>
 
                 <div id="page-3" class="page-content">
-                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8">
-                        <div class="bg-amber-500 text-white p-4 rounded-t-xl -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6">
-                            <span class="text-amber-100 text-sm font-semibold uppercase tracking-wider">Part II: Preparation</span>
-                            <h2 class="text-2xl font-bold mt-1">Planning & Brainstorming</h2>
-                        </div>
-                        
-                        <p class="text-gray-600 mb-6">Write a review for a restaurant you have recently dined in. Fill in the basic information below.</p>
+                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 mt-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-2">
+                                <p class="text-gray-600 mb-6 text-xl">Write a review for a restaurant you have recently dined in. Fill in the basic information below.</p>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant's Name</label>
-                                <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border" placeholder="e.g., Pizza Express">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                                <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border" placeholder="e.g., Sea World">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Food Type</label>
-                                <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border" placeholder="e.g., Italian">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Company (Who with?)</label>
-                                <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border" placeholder="e.g., My family">
-                            </div>
-                        </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Restaurant's Name</label>
+                                        <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border text-lg" placeholder="e.g., Pizza Express">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                        <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border text-lg" placeholder="e.g., Sea World">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Food Type</label>
+                                        <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border text-lg" placeholder="e.g., Italian">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Company (Who with?)</label>
+                                        <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2 border text-lg" placeholder="e.g., My family">
+                                    </div>
+                                </div>
 
-                        <div class="bg-indigo-50 p-6 rounded-lg mb-8 border border-indigo-100">
-                            <label class="block text-sm font-bold text-indigo-900 mb-3">Overall Rating</label>
-                            <div class="flex gap-2 text-3xl text-gray-300 cursor-pointer" id="star-rating">
-                                <i class="fas fa-star hover:text-yellow-400 transition" data-rating="1"></i>
-                                <i class="fas fa-star hover:text-yellow-400 transition" data-rating="2"></i>
-                                <i class="fas fa-star hover:text-yellow-400 transition" data-rating="3"></i>
-                                <i class="fas fa-star hover:text-yellow-400 transition" data-rating="4"></i>
-                                <i class="fas fa-star hover:text-yellow-400 transition" data-rating="5"></i>
-                            </div>
-                            <p class="text-sm text-indigo-600 mt-2" id="rating-text">Select stars to rate</p>
-                        </div>
+                                <div class="bg-indigo-50 p-6 rounded-lg mb-8 border border-indigo-100">
+                                    <label class="block text-sm font-bold text-indigo-900 mb-3">Overall Rating</label>
+                                    <div class="flex gap-2 text-3xl text-gray-300 cursor-pointer" id="star-rating">
+                                        <i class="fas fa-star hover:text-yellow-400 transition" data-rating="1"></i>
+                                        <i class="fas fa-star hover:text-yellow-400 transition" data-rating="2"></i>
+                                        <i class="fas fa-star hover:text-yellow-400 transition" data-rating="3"></i>
+                                        <i class="fas fa-star hover:text-yellow-400 transition" data-rating="4"></i>
+                                        <i class="fas fa-star hover:text-yellow-400 transition" data-rating="5"></i>
+                                    </div>
+                                    <p class="text-sm text-indigo-600 mt-2" id="rating-text">Select stars to rate</p>
+                                </div>
 
-                        <div class="mb-6">
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Catchy Title</label>
-                            <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-3 border text-lg font-medium text-center" placeholder="A Slice of Heaven in Sea World!">
+                                <div class="mb-6">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Catchy Title</label>
+                                    <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-3 border text-lg font-medium text-center" placeholder="A Slice of Heaven in Sea World!">
+                                </div>
+                            </div>
+                            
+                            <!-- Margin Examples -->
+                            <div class="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-r-xl shadow-inner h-fit">
+                                <h4 class="font-bold text-amber-800 text-xl mb-4"><i class="fas fa-lightbulb text-amber-500 mr-2"></i>Examples</h4>
+                                <div class="space-y-4 text-amber-900 text-lg">
+                                    <div><strong class="block text-sm text-amber-700">Restaurant's Name</strong> Pizza Express</div>
+                                    <div><strong class="block text-sm text-amber-700">Location</strong> Sea World, Nanshan</div>
+                                    <div><strong class="block text-sm text-amber-700">Food Type</strong> Italian (Pizza and Pasta)</div>
+                                    <div><strong class="block text-sm text-amber-700">Company</strong> My family and best friend</div>
+                                    <div class="pt-2 border-t border-amber-200"><strong class="block text-sm text-amber-700">Catchy Title Ideas</strong> 
+                                        <ul class="list-disc pl-5 mt-1 text-base italic">
+                                            <li>The Best Crust in Town!</li>
+                                            <li>A Terrible Dim Sum Disaster</li>
+                                            <li>A Weekend Feast</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div id="page-4" class="page-content">
-                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8">
-                         <h2 class="text-2xl font-bold text-gray-800 mb-6">Section-by-Section Outlining</h2>
+                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 mt-6">
                          
-                         <div class="space-y-6">
-                             <div class="bg-purple-50 p-5 rounded-lg border border-purple-100">
-                                 <h4 class="font-bold text-purple-800 mb-2"><i class="fas fa-utensils mr-2"></i>Describe the dish you have eaten:</h4>
-                                 <p class="text-sm text-purple-600 mb-3">Name, appearance, flavors, textures, smell... What do you think of its price?</p>
-                                 <textarea rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 p-3 border"></textarea>
+                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                             <div class="lg:col-span-2 space-y-6">
+                                 <div class="bg-purple-50 p-5 rounded-lg border border-purple-100">
+                                     <h4 class="font-bold text-purple-800 mb-2 text-xl"><i class="fas fa-utensils mr-2"></i>Describe the dish you have eaten:</h4>
+                                     <p class="text-base text-purple-600 mb-3">Name, appearance, flavors, textures, smell... What do you think of its price?</p>
+                                     <textarea rows="4" class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 p-3 border text-lg"></textarea>
+                                 </div>
+
+                                 <div class="bg-blue-50 p-5 rounded-lg border border-blue-100">
+                                    <h4 class="font-bold text-blue-800 mb-2 text-xl"><i class="fas fa-couch mr-2"></i>Describe decoration and service:</h4>
+                                    <p class="text-base text-blue-600 mb-3">Theme, lighting, music... Are waiters nice or impatient? Any stories?</p>
+                                    <textarea rows="4" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border text-lg"></textarea>
+                                </div>
+
+                                <div class="bg-green-50 p-5 rounded-lg border border-green-100">
+                                    <h4 class="font-bold text-green-800 mb-2 text-xl"><i class="fas fa-comment-dots mr-2"></i>Conclusion:</h4>
+                                    <p class="text-base text-green-600 mb-3">Give overall opinions: like it or not? Would you recommend?</p>
+                                    <textarea rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-3 border text-lg"></textarea>
+                                </div>
                              </div>
 
-                             <div class="bg-blue-50 p-5 rounded-lg border border-blue-100">
-                                <h4 class="font-bold text-blue-800 mb-2"><i class="fas fa-couch mr-2"></i>Describe decoration and service:</h4>
-                                <p class="text-sm text-blue-600 mb-3">Theme, lighting, music... Are waiters nice or impatient? Any stories?</p>
-                                <textarea rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border"></textarea>
-                            </div>
-
-                            <div class="bg-green-50 p-5 rounded-lg border border-green-100">
-                                <h4 class="font-bold text-green-800 mb-2"><i class="fas fa-comment-dots mr-2"></i>Conclusion:</h4>
-                                <p class="text-sm text-green-600 mb-3">Give overall opinions: like it or not? Would you recommend?</p>
-                                <textarea rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-3 border"></textarea>
-                            </div>
+                             <!-- Margin Examples -->
+                             <div class="bg-gray-50 border-l-4 border-gray-400 p-6 rounded-r-xl shadow-inner h-fit space-y-6">
+                                <h4 class="font-bold text-gray-800 text-2xl mb-2"><i class="fas fa-book-open text-gray-500 mr-2"></i>Hints & Examples</h4>
+                                
+                                <div class="bg-white p-4 rounded border border-purple-200 shadow-sm">
+                                    <strong class="text-purple-700 text-sm block mb-1 uppercase tracking-wider">Dish Detail Example</strong>
+                                    <p class="text-gray-700 italic">"The Margherita pizza was baked perfectly. It had a crispy crust, stringy cheese, and smelled amazing. For 65 RMB, it was a bargain!"</p>
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded border border-blue-200 shadow-sm">
+                                    <strong class="text-blue-700 text-sm block mb-1 uppercase tracking-wider">Atmosphere & Service Example</strong>
+                                    <p class="text-gray-700 italic">"The room had soft jazz music and bright windows. The waiter was very patient and refilled our water quickly."</p>
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded border border-green-200 shadow-sm">
+                                    <strong class="text-green-700 text-sm block mb-1 uppercase tracking-wider">Conclusion Example</strong>
+                                    <p class="text-gray-700 italic">"Overall, I loved the food but the restaurant was too loud. I highly recommend it for families."</p>
+                                </div>
+                             </div>
                          </div>
                     </div>
                 </div>
 
                 <div id="page-5" class="page-content">
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                        <div class="bg-teal-600 text-white p-6">
-                            <h2 class="text-2xl font-bold">Language Workshop: Vocabulary Bank</h2>
-                            <p class="text-teal-100 mt-2">Tap any word to hear it pronounced.</p>
-                        </div>
-                        
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden mt-6">
                         <div class="p-6 sm:p-8 space-y-8">
                             <!-- Category 1 -->
                             <div>
@@ -487,44 +558,78 @@
                 </div>
 
                 <div id="page-9" class="page-content">
-                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 border-t-4 border-orange-500">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Workshop: Contrast Linkers</h2>
-                        <p class="text-gray-600 mb-6">A fair review shares both highlights and disappointments. Use linkers like <strong class="text-orange-600">However, Although, Even though</strong> to join ideas.</p>
+                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 border-t-4 border-orange-500 mt-6">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Workshop: Contrast Linkers</h2>
+                        <p class="text-gray-600 mb-6 text-xl">A fair review shares both highlights and disappointments. Use linkers to join ideas. <br><i class="fas fa-hand-pointer text-orange-500 mr-1 mt-2"></i> <strong>Tap & Place:</strong> Tap a linker below, then tap an empty box in the sentences to complete them.</p>
 
-                        <div class="space-y-8">
-                            <!-- Exercise 1 -->
-                            <div>
-                                <h4 class="font-bold text-gray-800 mb-2">1. Join these ideas using <span class="text-orange-600">Although</span>:</h4>
-                                <div class="p-4 bg-orange-50 rounded-lg border border-orange-200 text-gray-700 mb-3 text-sm">
-                                    <strong>Idea A:</strong> The Tom Yum soup was authentic and spicy.<br>
-                                    <strong>Idea B:</strong> The dining room was cramped and noisy.
-                                </div>
-                                <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 p-3 border font-medium text-gray-800" placeholder="Although...">
+                        <!-- Linker Word Bank -->
+                        <div class="flex flex-wrap gap-3 mb-8 p-5 bg-gray-100 rounded-xl min-h-[4rem] border border-gray-200" id="linker-bank">
+                            <div class="word-bank-item bg-white border-2 border-orange-300 rounded-lg px-4 py-2 shadow-sm font-bold text-lg text-orange-700">Although</div>
+                            <div class="word-bank-item bg-white border-2 border-orange-300 rounded-lg px-4 py-2 shadow-sm font-bold text-lg text-orange-700">Even though</div>
+                            <div class="word-bank-item bg-white border-2 border-blue-300 rounded-lg px-4 py-2 shadow-sm font-bold text-lg text-blue-700">However,</div>
+                            <div class="word-bank-item bg-white border-2 border-blue-300 rounded-lg px-4 py-2 shadow-sm font-bold text-lg text-blue-700">On the other hand,</div>
+                        </div>
+
+                        <div class="space-y-6 text-xl text-gray-800 leading-loose">
+                            <div class="p-5 bg-orange-50 rounded-xl border border-orange-200 shadow-sm flex items-start gap-4">
+                                <span class="font-bold text-orange-400 mt-1">1.</span>
+                                <div><span class="drop-zone rounded-lg min-w-[10rem] h-10 border-orange-400 bg-white inline-block align-middle mb-1" data-type="word"></span> the Tom Yum soup was authentic and spicy, the dining room was cramped and noisy.</div>
                             </div>
-
-                            <!-- Exercise 2 -->
-                            <div>
-                                <h4 class="font-bold text-gray-800 mb-2">2. Join these ideas using <span class="text-orange-600">However</span>:</h4>
-                                <div class="p-4 bg-orange-50 rounded-lg border border-orange-200 text-gray-700 mb-3 text-sm">
-                                    <strong>Idea A:</strong> The waiter greeted us with a cheerful smile.<br>
-                                    <strong>Idea B:</strong> Our side dish of fries arrived cold and greasy.
-                                </div>
-                                <input type="text" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 p-3 border font-medium text-gray-800" placeholder="The waiter greeted us with a cheerful smile. However,...">
+                            <div class="p-5 bg-blue-50 rounded-xl border border-blue-200 shadow-sm flex items-start gap-4">
+                                <span class="font-bold text-blue-400 mt-1">2.</span>
+                                <div>The waiter greeted us with a cheerful smile. <span class="drop-zone rounded-lg min-w-[12rem] h-10 border-blue-400 bg-white inline-block align-middle mb-1" data-type="word"></span> our side dish of fries arrived cold and greasy.</div>
+                            </div>
+                            <div class="p-5 bg-orange-50 rounded-xl border border-orange-200 shadow-sm flex items-start gap-4">
+                                <span class="font-bold text-orange-400 mt-1">3.</span>
+                                <div><span class="drop-zone rounded-lg min-w-[10rem] h-10 border-orange-400 bg-white inline-block align-middle mb-1" data-type="word"></span> the pizza was slightly burnt on the edges, the cheese was absolutely delicious.</div>
+                            </div>
+                            <div class="p-5 bg-blue-50 rounded-xl border border-blue-200 shadow-sm flex items-start gap-4">
+                                <span class="font-bold text-blue-400 mt-1">4.</span>
+                                <div>The restaurant has a beautiful seaside view. <span class="drop-zone rounded-lg min-w-[12rem] h-10 border-blue-400 bg-white inline-block align-middle mb-1" data-type="word"></span> the menu is very overpriced.</div>
+                            </div>
+                            <div class="p-5 bg-orange-50 rounded-xl border border-orange-200 shadow-sm flex items-start gap-4">
+                                <span class="font-bold text-orange-400 mt-1">5.</span>
+                                <div><span class="drop-zone rounded-lg min-w-[10rem] h-10 border-orange-400 bg-white inline-block align-middle mb-1" data-type="word"></span> we had to wait 30 minutes for a table, the friendly service made up for it.</div>
+                            </div>
+                            <div class="p-5 bg-blue-50 rounded-xl border border-blue-200 shadow-sm flex items-start gap-4">
+                                <span class="font-bold text-blue-400 mt-1">6.</span>
+                                <div>The steaks were cooked to perfection. <span class="drop-zone rounded-lg min-w-[12rem] h-10 border-blue-400 bg-white inline-block align-middle mb-1" data-type="word"></span> the pasta dishes were mushy and tasteless.</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="page-10" class="page-content">
-                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 border-t-4 border-teal-500">
+                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 border-t-4 border-teal-500 mt-6">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">Conclusion & Rating Formula</h2>
                         
-                        <div class="bg-teal-50 border border-teal-200 p-4 rounded-lg mb-8 shadow-sm">
-                            <h4 class="font-bold text-teal-800 mb-2">Opinion Formula:</h4>
-                            <p class="text-lg leading-loose font-medium text-gray-700">
-                                Overall, I <select class="bg-white border rounded px-2 py-1 text-sm font-normal"><option>liked</option><option>did not like</option><option>had mixed feelings about</option></select> the restaurant because <input type="text" class="bg-white border rounded px-2 py-1 w-48 text-sm font-normal" placeholder="[reason]">. 
-                                I <select class="bg-white border rounded px-2 py-1 text-sm font-normal"><option>highly recommend</option><option>would recommend</option><option>do not recommend</option></select> it to <input type="text" class="bg-white border rounded px-2 py-1 w-32 text-sm font-normal" placeholder="[group of people]">. 
-                                I rate it <input type="number" min="1" max="5" class="bg-white border rounded px-2 py-1 w-16 text-sm font-normal text-center" placeholder="#"> out of 5 stars.
+                        <div class="bg-teal-50 border border-teal-200 p-6 rounded-xl mb-8 shadow-sm">
+                            <h4 class="font-bold text-teal-900 mb-4 text-xl">Opinion Formula:</h4>
+                            <p class="text-2xl leading-[3.5rem] font-medium text-gray-700">
+                                Overall, I 
+                                <select class="bg-white border-2 border-teal-300 rounded-lg px-3 py-1 text-xl font-bold text-teal-800 mx-2 focus:ring-2 focus:ring-teal-500">
+                                    <option>liked</option>
+                                    <option>loved</option>
+                                    <option>thoroughly enjoyed</option>
+                                    <option>had mixed feelings about</option>
+                                    <option>was disappointed by</option>
+                                    <option>did not like</option>
+                                    <option>was unimpressed by</option>
+                                </select> 
+                                the restaurant because <input type="text" class="bg-white border-2 border-teal-300 rounded-lg px-3 py-1 w-64 text-xl font-normal mx-2 focus:ring-2 focus:ring-teal-500" placeholder="[reason]">. 
+                                <br>
+                                I 
+                                <select class="bg-white border-2 border-indigo-300 rounded-lg px-3 py-1 text-xl font-bold text-indigo-800 mx-2 focus:ring-2 focus:ring-indigo-500">
+                                    <option>highly recommend</option>
+                                    <option>strongly suggest</option>
+                                    <option>would recommend</option>
+                                    <option>might recommend</option>
+                                    <option>do not recommend</option>
+                                    <option>advise against</option>
+                                </select> 
+                                it to <input type="text" class="bg-white border-2 border-indigo-300 rounded-lg px-3 py-1 w-48 text-xl font-normal mx-2 focus:ring-2 focus:ring-indigo-500" placeholder="[group of people]">. 
+                                <br>
+                                I rate it <input type="number" min="1" max="5" class="bg-white border-2 border-yellow-400 rounded-lg px-3 py-1 w-20 text-xl font-bold text-yellow-600 text-center mx-2 focus:ring-2 focus:ring-yellow-500" placeholder="#"> out of 5 stars.
                             </p>
                         </div>
                     </div>
@@ -547,31 +652,136 @@
                 </div>
 
                 <div id="page-12" class="page-content">
-                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 border-t-4 border-yellow-500">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Student Peer-Check List</h2>
-                        <p class="text-gray-600 mb-6">Swap your draft with a partner. Check off the items they have successfully included.</p>
+                    <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border-t-8 border-yellow-400">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-3xl font-bold text-gray-800"><i class="fas fa-hamburger text-yellow-500 mr-2"></i>Peer-Editing Checklist: The Hamburger Review</h2>
+                        </div>
+                        <p class="text-gray-600 mb-6 text-lg">Let’s help your classmate make their restaurant review deliciously perfect! Use this checklist to see if your partner's writing has all the right ingredients to satisfy a hungry reader. Remember, your feedback is the "secret sauce" that helps them improve!</p>
                         
-                        <div class="space-y-4 text-gray-700">
-                            <label class="flex items-start gap-3 p-3 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer transition">
-                                <input type="checkbox" class="mt-1 w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                                <span>A catchy title that reflects the restaurant being reviewed.</span>
-                            </label>
-                            <label class="flex items-start gap-3 p-3 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer transition">
-                                <input type="checkbox" class="mt-1 w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                                <span>An interesting introduction (name, location, people, food type).</span>
-                            </label>
-                            <label class="flex items-start gap-3 p-3 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer transition">
-                                <input type="checkbox" class="mt-1 w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                                <span>Detailed description of the food (taste, texture, cooking method).</span>
-                            </label>
-                            <label class="flex items-start gap-3 p-3 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer transition">
-                                <input type="checkbox" class="mt-1 w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                                <span>Description of the decoration and service.</span>
-                            </label>
-                            <label class="flex items-start gap-3 p-3 bg-gray-50 rounded hover:bg-gray-100 cursor-pointer transition">
-                                <input type="checkbox" class="mt-1 w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                                <span>Used contrast linkers (However, Although) to balance opinions.</span>
-                            </label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Reviewer’s Name:</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-md p-2" placeholder="Your name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Author’s Name:</label>
+                                <input type="text" class="w-full border border-gray-300 rounded-md p-2" placeholder="Partner's name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Date:</label>
+                                <input type="date" class="w-full border border-gray-300 rounded-md p-2">
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6 text-gray-800 text-lg">
+                            <!-- Section 1: Top Bun -->
+                            <div class="bg-amber-100 p-6 rounded-xl border-2 border-amber-200 shadow-sm">
+                                <h3 class="text-2xl font-bold text-amber-900 mb-3"><i class="fas fa-bread-slice mr-2"></i>1. The Top Bun: A Great Start</h3>
+                                <p class="text-amber-800 mb-4 text-sm font-medium uppercase tracking-wide">Check the box if your partner included this ingredient in their introduction!</p>
+                                <div class="space-y-3">
+                                    <label class="flex items-start gap-3 cursor-pointer hover:bg-amber-200 p-2 rounded transition"><input type="checkbox" class="mt-1.5 w-5 h-5 text-amber-600 rounded"><span>A <strong>Catchy Title</strong> that makes you want to read more.</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer hover:bg-amber-200 p-2 rounded transition"><input type="checkbox" class="mt-1.5 w-5 h-5 text-amber-600 rounded"><span>The <strong>Restaurant Name & Location</strong> (e.g., Vega at Coco Park).</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer hover:bg-amber-200 p-2 rounded transition"><input type="checkbox" class="mt-1.5 w-5 h-5 text-amber-600 rounded"><span><strong>The Company</strong> they went with (e.g., sister, family).</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer hover:bg-amber-200 p-2 rounded transition"><input type="checkbox" class="mt-1.5 w-5 h-5 text-amber-600 rounded"><span>The <strong>Food Type</strong> or cuisine mentioned (e.g., Thai, Italian).</span></label>
+                                </div>
+                            </div>
+
+                            <!-- Section 2: Burger Filling -->
+                            <div class="bg-red-50 p-6 rounded-xl border-2 border-red-200 shadow-sm">
+                                <h3 class="text-2xl font-bold text-red-900 mb-3"><i class="fas fa-bacon mr-2"></i>2. The Burger Filling: The Meat of the Review</h3>
+                                <p class="text-red-800 mb-4 text-sm font-medium uppercase tracking-wide">This is the main part of the review. Look for descriptive details and clear critiques.</p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div class="space-y-3 bg-white p-4 rounded-lg border border-red-100">
+                                        <h4 class="font-bold text-red-700 border-b border-red-100 pb-1">Food & Sides</h4>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-red-50 p-1 rounded"><input type="checkbox" class="mt-1 w-5 h-5 text-red-600 rounded"><span>Main Dish Description (appearance, taste, texture).</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-red-50 p-1 rounded"><input type="checkbox" class="mt-1 w-5 h-5 text-red-600 rounded"><span>Side Dish Critique for specific details (e.g., "burnt").</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-red-50 p-1 rounded"><input type="checkbox" class="mt-1 w-5 h-5 text-red-600 rounded"><span>Mentioned if the food was worth the money.</span></label>
+                                    </div>
+                                    <div class="space-y-3 bg-white p-4 rounded-lg border border-red-100">
+                                        <h4 class="font-bold text-red-700 border-b border-red-100 pb-1">Service & Atmosphere</h4>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-red-50 p-1 rounded"><input type="checkbox" class="mt-1 w-5 h-5 text-red-600 rounded"><span>Rated the Service Quality (kind, rude, impatient).</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-red-50 p-1 rounded"><input type="checkbox" class="mt-1 w-5 h-5 text-red-600 rounded"><span>Description of what the staff said or did.</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-red-50 p-1 rounded"><input type="checkbox" class="mt-1 w-5 h-5 text-red-600 rounded"><span>Waiting Time mentioned.</span></label>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-red-100 p-3 rounded border border-red-300">
+                                    <p class="font-bold text-red-900 text-sm mb-2">Vivid Adjectives Word Bank - Check for these "tasty" words:</p>
+                                    <p class="text-red-800 bg-white px-3 py-2 rounded text-base font-serif italic">crunchy, crispy, juicy, tender, yucky, mouth-watering</p>
+                                </div>
+                            </div>
+
+                            <!-- Section 3: Bottom Bun -->
+                            <div class="bg-orange-100 p-6 rounded-xl border-2 border-orange-200 shadow-sm">
+                                <h3 class="text-2xl font-bold text-orange-900 mb-3"><i class="fas fa-bread-slice mr-2"></i>3. The Bottom Bun: Finishing Strong</h3>
+                                <p class="text-orange-800 mb-4 text-sm font-medium uppercase tracking-wide">Check the boxes to see if the conclusion wraps the review up well.</p>
+                                <div class="space-y-3 mb-4">
+                                    <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-200 p-2 rounded transition"><input type="checkbox" class="mt-1.5 w-5 h-5 text-orange-600 rounded"><span>An <strong>Overall Opinion</strong> (did they like the experience or not?).</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-200 p-2 rounded transition"><input type="checkbox" class="mt-1.5 w-5 h-5 text-orange-600 rounded"><span>The <strong>Recommendation</strong> (who should or shouldn't visit this place?).</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-200 p-2 rounded transition"><input type="checkbox" class="mt-1.5 w-5 h-5 text-orange-600 rounded"><span>The <strong>Star Rating</strong> is included.</span></label>
+                                </div>
+                                <div class="flex items-center gap-4 bg-white p-3 rounded-lg border border-orange-200">
+                                    <span class="font-bold text-orange-800">Draw your star rating here (1-5 stars) if it is missing:</span>
+                                    <div class="flex gap-1 text-2xl text-gray-300 cursor-pointer" id="peer-star-rating">
+                                        <i class="fas fa-star hover:text-yellow-400"></i><i class="fas fa-star hover:text-yellow-400"></i><i class="fas fa-star hover:text-yellow-400"></i><i class="fas fa-star hover:text-yellow-400"></i><i class="fas fa-star hover:text-yellow-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section 4: Secret Sauce -->
+                            <div class="bg-purple-50 p-6 rounded-xl border-2 border-purple-200 shadow-sm">
+                                <h3 class="text-2xl font-bold text-purple-900 mb-3"><i class="fas fa-flask mr-2"></i>4. The "Secret Sauce": Language & Transitions</h3>
+                                <p class="text-purple-800 mb-4 text-sm font-medium uppercase tracking-wide">Circle these transition words in your classmate’s draft, then check them off this list!</p>
+                                
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                                    <label class="flex items-center gap-2 bg-white p-2 rounded border border-purple-100 cursor-pointer hover:bg-purple-100"><input type="checkbox" class="w-5 h-5 text-purple-600 rounded"> <span class="font-bold">But</span></label>
+                                    <label class="flex items-center gap-2 bg-white p-2 rounded border border-purple-100 cursor-pointer hover:bg-purple-100"><input type="checkbox" class="w-5 h-5 text-purple-600 rounded"> <span class="font-bold">However</span></label>
+                                    <label class="flex items-center gap-2 bg-white p-2 rounded border border-purple-100 cursor-pointer hover:bg-purple-100"><input type="checkbox" class="w-5 h-5 text-purple-600 rounded"> <span class="font-bold">Although</span></label>
+                                    <label class="flex items-center gap-2 bg-white p-2 rounded border border-purple-100 cursor-pointer hover:bg-purple-100"><input type="checkbox" class="w-5 h-5 text-purple-600 rounded"> <span class="font-bold">At first</span></label>
+                                    <label class="flex items-center gap-2 bg-purple-100 p-2 rounded border border-purple-200 cursor-pointer hover:bg-purple-200"><input type="checkbox" class="w-5 h-5 text-purple-600 rounded"> <span class="font-bold text-purple-900">Bonus: Therefore</span></label>
+                                    <label class="flex items-center gap-2 bg-purple-100 p-2 rounded border border-purple-200 cursor-pointer hover:bg-purple-200"><input type="checkbox" class="w-5 h-5 text-purple-600 rounded"> <span class="font-bold text-purple-900">Bonus: Another thing</span></label>
+                                </div>
+                                
+                                <label class="flex items-start gap-3 cursor-pointer hover:bg-purple-100 p-2 rounded transition bg-white border border-purple-200"><input type="checkbox" class="mt-1.5 w-5 h-5 text-purple-600 rounded"><span>Check for <strong>1st Person Point of View</strong> (Look for words like "I" or "we").</span></label>
+                            </div>
+
+                            <!-- Section 5: Friendship Plate & Final Polish -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="bg-blue-50 p-6 rounded-xl border-2 border-blue-200 shadow-sm">
+                                    <h3 class="text-2xl font-bold text-blue-900 mb-3"><i class="fas fa-handshake mr-2"></i>5. The Friendship Plate</h3>
+                                    <p class="text-blue-800 mb-4 text-sm font-medium uppercase tracking-wide">Give helpful advice. Always be kind!</p>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <span class="text-sm font-bold text-blue-700">"I really liked the part where you described..."</span>
+                                            <input type="text" class="w-full border-b-2 border-blue-300 bg-transparent focus:outline-none focus:border-blue-600 py-1">
+                                        </div>
+                                        <div>
+                                            <span class="text-sm font-bold text-blue-700">"Your use of the word [vivid word] made me feel..."</span>
+                                            <input type="text" class="w-full border-b-2 border-blue-300 bg-transparent focus:outline-none focus:border-blue-600 py-1">
+                                        </div>
+                                        <div>
+                                            <span class="text-sm font-bold text-blue-700">"Maybe you could add more detail about..."</span>
+                                            <input type="text" class="w-full border-b-2 border-blue-300 bg-transparent focus:outline-none focus:border-blue-600 py-1">
+                                        </div>
+                                        <div>
+                                            <span class="text-sm font-bold text-blue-700">"One thing that would make your review even better is..."</span>
+                                            <input type="text" class="w-full border-b-2 border-blue-300 bg-transparent focus:outline-none focus:border-blue-600 py-1">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-100 p-6 rounded-xl border-2 border-gray-300 shadow-sm">
+                                    <h3 class="text-2xl font-bold text-gray-800 mb-3"><i class="fas fa-check-double mr-2"></i>6. Final Polish</h3>
+                                    <p class="text-gray-600 mb-4 text-sm font-medium uppercase tracking-wide">Quick Fix Technical Check</p>
+                                    <div class="space-y-4">
+                                        <label class="flex items-start gap-3 cursor-pointer bg-white p-3 rounded shadow-sm border border-gray-200 hover:bg-gray-50"><input type="checkbox" class="mt-1 w-5 h-5 text-gray-600 rounded"><span>Spot <strong>capital letters</strong> at the start of every sentence.</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer bg-white p-3 rounded shadow-sm border border-gray-200 hover:bg-gray-50"><input type="checkbox" class="mt-1 w-5 h-5 text-gray-600 rounded"><span>Check the <strong>spelling</strong> of food words and adjectives.</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer bg-white p-3 rounded shadow-sm border border-gray-200 hover:bg-gray-50"><input type="checkbox" class="mt-1 w-5 h-5 text-gray-600 rounded"><span>Count the writing length. Is it about <strong>120-150 words</strong>?</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -616,7 +826,7 @@
                 </div>
 
                 <div id="page-14" class="page-content">
-                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 bg-gradient-to-br from-indigo-900 to-blue-900 text-white">
+                    <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 bg-gradient-to-br from-indigo-900 to-blue-900 text-white mt-6">
                         <h2 class="text-2xl font-bold text-white mb-2"><i class="fas fa-chalkboard-teacher mr-2"></i>Teacher's Guide</h2>
                         <p class="text-blue-200 mb-6 font-medium text-xl">Classroom Implementation Strategy (Pairs, Quads & Homework)</p>
                         
@@ -637,83 +847,239 @@
                     </div>
                 </div>
 
-                <!-- Page 15: AI Model Generator -->
+                <!-- Page 15: Exemplar Models -->
                 <div id="page-15" class="page-content">
                     <div class="bg-white rounded-xl shadow-md p-6 sm:p-8 border-t-4 border-fuchsia-500">
                         <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
                             <div>
-                                <h2 class="text-3xl font-bold text-gray-800"><i class="fas fa-robot text-fuchsia-500 mr-2"></i>AI Lab: Review Generator</h2>
-                                <p class="text-gray-600 mt-2 text-lg">Generate 10 unique, fully graded model restaurant reviews based on the rubric.</p>
+                                <h2 class="text-3xl font-bold text-gray-800"><i class="fas fa-award text-fuchsia-500 mr-2"></i>Exemplar Models</h2>
+                                <p class="text-gray-600 mt-2 text-lg">Excellent examples showing a high-scoring review based on our grading rubric.</p>
                             </div>
-                            <button id="btn-generate-ai" onclick="generateAIModels()" class="bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition flex items-center gap-2 transform hover:scale-105">
-                                <i class="fas fa-magic"></i> Generate 10 Models
-                            </button>
                         </div>
                         
-                        <!-- Loading State -->
-                        <div id="ai-loading" class="hidden py-12 flex flex-col items-center justify-center">
-                            <i class="fas fa-circle-notch fa-spin text-5xl text-fuchsia-500 mb-4"></i>
-                            <p class="text-xl text-gray-600 font-medium">Gemini is writing and grading 10 reviews...</p>
-                        </div>
-
-                        <!-- Results Container -->
-                        <div id="ai-results-container" class="hidden">
-                            <div class="flex items-center justify-between bg-fuchsia-50 p-4 rounded-lg mb-6 border border-fuchsia-100">
-                                <label class="font-bold text-fuchsia-900 text-lg">Select a generated model:</label>
-                                <select id="ai-model-selector" onchange="displaySelectedAIModel()" class="bg-white border-2 border-fuchsia-200 rounded-lg px-4 py-2 text-lg font-medium text-gray-800 shadow-sm focus:outline-none focus:border-fuchsia-500 w-1/2">
-                                    <!-- Options generated by JS -->
-                                </select>
+                        <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 relative mb-8 shadow-sm">
+                            <div class="absolute top-4 right-4 text-2xl text-yellow-400 tracking-widest bg-white px-3 py-1 rounded-full shadow-md border border-gray-100">
+                                ★★★★★
+                            </div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-2">A Taste of Italy at Bella Pizza!</h3>
+                            <div class="flex flex-wrap gap-2 mb-6 text-base font-semibold">
+                                <span class="bg-yellow-200 text-yellow-900 px-2 py-1 rounded">Bella Pizza, Sea World</span>
+                                <span class="bg-red-200 text-red-900 px-2 py-1 rounded">Last Saturday with my family</span>
                             </div>
 
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                                <!-- Model Text Display -->
-                                <div class="lg:col-span-2 bg-gray-50 rounded-xl p-6 border border-gray-200">
-                                    <div class="flex justify-between items-start mb-4 border-b border-gray-200 pb-4">
-                                        <div>
-                                            <h3 id="ai-review-title" class="text-2xl font-bold text-gray-900">Title</h3>
-                                            <p id="ai-review-subtitle" class="text-gray-500 font-medium">Restaurant Name</p>
-                                        </div>
-                                        <div id="ai-review-stars" class="text-2xl text-yellow-400 tracking-widest bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100">
-                                            ★★★★★
-                                        </div>
-                                    </div>
-                                    <p id="ai-review-text" class="text-xl text-gray-700 leading-loose indent-p font-serif bg-white p-6 rounded-lg shadow-inner border border-gray-100"></p>
-                                </div>
+                            <p class="text-xl text-gray-800 leading-loose indent-p font-serif bg-white p-6 rounded-lg shadow-inner border border-gray-100">
+                                Last Saturday, I visited <span class="bg-yellow-200 px-1 rounded">Bella Pizza located in Sea World</span> with <span class="bg-red-200 px-1 rounded">my family</span>. It is a fantastic Italian restaurant.
+                                <br><br>
+                                We ordered the <span class="bg-purple-200 px-1 rounded">Margherita Pizza</span> and <span class="bg-purple-200 px-1 rounded">Spaghetti Bolognese</span>. The pizza was baked to perfection! It had a <span class="bg-green-200 px-1 rounded">crispy</span> crust and <span class="bg-green-200 px-1 rounded">mouth-watering</span> melted cheese. The spaghetti was also <span class="bg-green-200 px-1 rounded">delicious</span>, with a rich and <span class="bg-green-200 px-1 rounded">savory</span> tomato sauce. For $80, the meal was very <span class="bg-green-200 px-1 rounded">reasonable</span> and a great bargain!
+                                <br><br>
+                                The restaurant had a <span class="bg-green-200 px-1 rounded">cheerful</span> atmosphere, with beautiful Italian paintings on the walls and soft music. The staff were very <span class="bg-green-200 px-1 rounded">attentive</span> and brought our food promptly. Although the dining room was a little <span class="bg-[#e8d5c4] px-1 rounded">cramped</span> because it was so popular, we still had a wonderful time.
+                                <br><br>
+                                Overall, I highly recommend this <span class="bg-green-200 px-1 rounded">amazing</span> restaurant to anyone who loves authentic Italian food. I rate it 5 out of 5 stars!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page 16: Canteen Worksheet -->
+                <div id="page-16" class="page-content">
+                    <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border-t-8 border-indigo-600">
+                        <div class="text-center border-b-2 border-indigo-100 pb-6 mb-6">
+                            <h2 class="text-3xl font-black text-indigo-900 uppercase tracking-wide">PKXYS Grade 5 English Unit 1</h2>
+                            <h3 class="text-xl font-bold text-gray-600 mt-2">Student Canteen Review Worksheet</h3>
+                        </div>
+                        
+                        <div class="flex flex-wrap justify-between items-center gap-4 bg-indigo-50 p-4 rounded-lg border border-indigo-200 mb-8 font-bold text-indigo-900">
+                            <div class="flex items-center gap-2">Name: <input type="text" class="border-b-2 border-indigo-300 bg-transparent focus:outline-none focus:border-indigo-600 px-2 w-32"></div>
+                            <div class="flex items-center gap-2">Class: 5_ ( <input type="text" class="border-b-2 border-indigo-300 bg-transparent focus:outline-none focus:border-indigo-600 px-2 w-12 text-center"> )</div>
+                            <div class="flex items-center gap-2">Date: <input type="date" class="border-b-2 border-indigo-300 bg-transparent focus:outline-none focus:border-indigo-600 px-2"></div>
+                            <div class="flex items-center gap-2 text-xl">Score: <input type="number" class="border-2 border-indigo-300 rounded bg-white focus:outline-none focus:border-indigo-600 px-2 w-20 text-center text-red-600 font-black"> /40</div>
+                        </div>
+
+                        <!-- Section 1 -->
+                        <div class="mb-10">
+                            <h4 class="text-xl font-bold text-white bg-indigo-600 p-3 rounded-t-lg">SECTION 1: CURRICULUM VOCABULARY GROUNDING – GLOBAL FLAVOURS</h4>
+                            <div class="bg-white border-2 border-indigo-600 rounded-b-lg p-5">
+                                <p class="text-gray-700 font-medium mb-4">Instructions: Complete the "Nationality" column. Then, choose the correct famous dish from the word bank and select it in the "Famous Dish" column. (2 marks each / 14 marks total)</p>
                                 
-                                <!-- Grading Display -->
-                                <div class="bg-white rounded-xl p-6 border-2 border-fuchsia-200 shadow-sm flex flex-col">
-                                    <h4 class="font-bold text-xl text-gray-800 mb-4 border-b border-gray-100 pb-2">Rubric Score</h4>
-                                    
-                                    <div class="space-y-4 flex-1">
-                                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded">
-                                            <span class="font-semibold text-gray-700">Content (10)</span>
-                                            <span id="ai-score-content" class="text-xl font-bold text-fuchsia-600">0</span>
+                                <div class="bg-gray-100 p-3 rounded text-center font-bold text-indigo-800 mb-4 border border-gray-300 tracking-wider">
+                                    Dish Word Bank: <span class="font-normal text-gray-700">naan bread | sushi | spring rolls | fish & chips | crêpes | lasagne | nachos</span>
+                                </div>
+
+                                <table class="w-full text-left text-lg border-collapse">
+                                    <thead>
+                                        <tr class="bg-indigo-50 border-b-2 border-indigo-200">
+                                            <th class="p-3 text-indigo-900 w-1/3">Country</th>
+                                            <th class="p-3 text-indigo-900 w-1/3">Nationality</th>
+                                            <th class="p-3 text-indigo-900 w-1/3">Famous Dish</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 font-medium">
+                                        <tr>
+                                            <td class="p-3 bg-gray-50">1. Vietnam</td>
+                                            <td class="p-3"><input type="text" class="w-full border-b border-gray-400 focus:outline-none focus:border-indigo-500 py-1" placeholder="Vietnamese"></td>
+                                            <td class="p-3"><select class="w-full border border-gray-300 rounded p-1"><option></option><option>naan bread</option><option>sushi</option><option>spring rolls</option><option>fish & chips</option><option>crêpes</option><option>lasagne</option><option>nachos</option></select></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 bg-gray-50">2. Italy</td>
+                                            <td class="p-3"><input type="text" class="w-full border-b border-gray-400 focus:outline-none focus:border-indigo-500 py-1"></td>
+                                            <td class="p-3"><select class="w-full border border-gray-300 rounded p-1"><option></option><option>naan bread</option><option>sushi</option><option>spring rolls</option><option>fish & chips</option><option>crêpes</option><option>lasagne</option><option>nachos</option></select></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 bg-gray-50">3. Mexico</td>
+                                            <td class="p-3"><input type="text" class="w-full border-b border-gray-400 focus:outline-none focus:border-indigo-500 py-1"></td>
+                                            <td class="p-3"><select class="w-full border border-gray-300 rounded p-1"><option></option><option>naan bread</option><option>sushi</option><option>spring rolls</option><option>fish & chips</option><option>crêpes</option><option>lasagne</option><option>nachos</option></select></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 bg-gray-50">4. Japan</td>
+                                            <td class="p-3"><input type="text" class="w-full border-b border-gray-400 focus:outline-none focus:border-indigo-500 py-1"></td>
+                                            <td class="p-3"><select class="w-full border border-gray-300 rounded p-1"><option></option><option>naan bread</option><option>sushi</option><option>spring rolls</option><option>fish & chips</option><option>crêpes</option><option>lasagne</option><option>nachos</option></select></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 bg-gray-50">5. UK</td>
+                                            <td class="p-3"><input type="text" class="w-full border-b border-gray-400 focus:outline-none focus:border-indigo-500 py-1"></td>
+                                            <td class="p-3"><select class="w-full border border-gray-300 rounded p-1"><option></option><option>naan bread</option><option>sushi</option><option>spring rolls</option><option>fish & chips</option><option>crêpes</option><option>lasagne</option><option>nachos</option></select></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 bg-gray-50">6. India</td>
+                                            <td class="p-3"><input type="text" class="w-full border-b border-gray-400 focus:outline-none focus:border-indigo-500 py-1"></td>
+                                            <td class="p-3"><select class="w-full border border-gray-300 rounded p-1"><option></option><option>naan bread</option><option>sushi</option><option>spring rolls</option><option>fish & chips</option><option>crêpes</option><option>lasagne</option><option>nachos</option></select></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 bg-gray-50">7. France</td>
+                                            <td class="p-3"><input type="text" class="w-full border-b border-gray-400 focus:outline-none focus:border-indigo-500 py-1"></td>
+                                            <td class="p-3"><select class="w-full border border-gray-300 rounded p-1"><option></option><option>naan bread</option><option>sushi</option><option>spring rolls</option><option>fish & chips</option><option>crêpes</option><option>lasagne</option><option>nachos</option></select></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Section 2 -->
+                        <div class="mb-10">
+                            <h4 class="text-xl font-bold text-white bg-green-600 p-3 rounded-t-lg">SECTION 2: GRAMMAR CHECK – PREPARING THE PERFECT RECIPE</h4>
+                            <div class="bg-white border-2 border-green-600 rounded-b-lg p-5">
+                                <p class="text-gray-700 font-medium mb-4">Instructions: Use the words in the word bank to complete the steps for making nachos and lasagne. You may use words more than once. (1 mark each / 5 marks total)</p>
+                                
+                                <div class="flex flex-wrap gap-3 mb-6">
+                                    <span class="bg-green-100 text-green-900 border border-green-300 px-4 py-2 rounded shadow-sm font-bold">need</span>
+                                    <span class="bg-green-100 text-green-900 border border-green-300 px-4 py-2 rounded shadow-sm font-bold">need to</span>
+                                    <span class="bg-green-100 text-green-900 border border-green-300 px-4 py-2 rounded shadow-sm font-bold">enough</span>
+                                    <span class="bg-green-100 text-green-900 border border-green-300 px-4 py-2 rounded shadow-sm font-bold">plenty of</span>
+                                </div>
+
+                                <ol class="list-decimal pl-6 space-y-4 text-xl text-gray-800 leading-loose">
+                                    <li>First, we <select class="border-2 border-gray-300 rounded mx-2 bg-gray-50"><option></option><option>need</option><option>need to</option><option>enough</option><option>plenty of</option></select> chop the onion and green pepper into small pieces.</li>
+                                    <li>We <select class="border-2 border-gray-300 rounded mx-2 bg-gray-50"><option></option><option>need</option><option>need to</option><option>enough</option><option>plenty of</option></select> some spices and tomato pieces to make the salsa sauce.</li>
+                                    <li>While the sauce cooks, grate <select class="border-2 border-gray-300 rounded mx-2 bg-gray-50"><option></option><option>need</option><option>need to</option><option>enough</option><option>plenty of</option></select> cheese into a bowl so the chips are completely covered.</li>
+                                    <li>Check the cupboard to see if we have <select class="border-2 border-gray-300 rounded mx-2 bg-gray-50"><option></option><option>need</option><option>need to</option><option>enough</option><option>plenty of</option></select> tortilla chips for everyone.</li>
+                                    <li>Finally, you <select class="border-2 border-gray-300 rounded mx-2 bg-gray-50"><option></option><option>need</option><option>need to</option><option>enough</option><option>plenty of</option></select> bake the ingredients in the oven for 8 minutes.</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Section 3 -->
+                        <div class="mb-10">
+                            <h4 class="text-xl font-bold text-white bg-red-600 p-3 rounded-t-lg">SECTION 3: THE "SPOT THE ERROR" CHALLENGE</h4>
+                            <div class="bg-white border-2 border-red-600 rounded-b-lg p-5">
+                                <p class="text-gray-700 font-medium mb-4">Instructions: Read the paragraph about the restaurant "Vega" in Shenzhen. There are five grammatical errors. Look at the underlined mistakes and write the correct word in the spaces provided. (1 mark each / 5 marks total)</p>
+                                
+                                <div class="p-6 bg-red-50 rounded-lg border border-red-200 text-xl text-gray-800 leading-loose font-serif italic mb-6">
+                                    The restaurant <span class="underline decoration-red-500 decoration-2 font-bold bg-white px-1">(1) serve</span> amazing Thai food at Coco Park. The Grilled Pork Neck <span class="underline decoration-red-500 decoration-2 font-bold bg-white px-1">(2) taste</span> very crunchy and delicious. <span class="underline decoration-red-500 decoration-2 font-bold bg-white px-1">(3) Because</span> the main dishes are great, the service is below average. It smells mouth-watering in the kitchen, but it <span class="underline decoration-red-500 decoration-2 font-bold bg-white px-1">(4) take</span> 20 minutes just to get a table. The meal costs 60 dollars, <span class="underline decoration-red-500 decoration-2 font-bold bg-white px-1">(5) and</span> the chips are burnt and oily.
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-bold text-lg text-gray-700">
+                                    <div class="flex items-center gap-2">Ex. is <i class="fas fa-arrow-right text-green-500"></i> <span class="text-green-600">(No Error)</span></div>
+                                    <div class="flex items-center gap-2">(1) serve <i class="fas fa-arrow-right text-red-500"></i> <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-32" placeholder="correct word"></div>
+                                    <div class="flex items-center gap-2">(2) taste <i class="fas fa-arrow-right text-red-500"></i> <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-32"></div>
+                                    <div class="flex items-center gap-2">(3) Because <i class="fas fa-arrow-right text-red-500"></i> <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-32"></div>
+                                    <div class="flex items-center gap-2">(4) take <i class="fas fa-arrow-right text-red-500"></i> <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-32"></div>
+                                    <div class="flex items-center gap-2">(5) and <i class="fas fa-arrow-right text-red-500"></i> <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-32"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 4 -->
+                        <div class="mb-10">
+                            <h4 class="text-xl font-bold text-white bg-amber-500 p-3 rounded-t-lg">SECTION 4: THE PKXYS CANTEEN "REVIEW SANDWICH" DRAFTING TEMPLATE</h4>
+                            <div class="bg-amber-50 border-2 border-amber-500 rounded-b-lg p-5">
+                                <p class="text-gray-700 font-medium mb-4">Instructions: Use the "Hamburger Method" to draft a review of a dish from our school canteen. Choose one dish from the Menu Choice Word Bank below. (11 marks total)</p>
+                                
+                                <div class="bg-white p-3 rounded-lg shadow-sm border border-amber-200 mb-6 font-bold text-amber-900 flex flex-wrap gap-4 justify-center">
+                                    <span class="bg-amber-100 px-3 py-1 rounded">Portuguese-Style Braised Chicken</span>
+                                    <span class="bg-amber-100 px-3 py-1 rounded">Black Pepper Pork Chop</span>
+                                    <span class="bg-amber-100 px-3 py-1 rounded">Mung Bean Sweet Soup</span>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <!-- 4.1 Top Bun -->
+                                    <div class="bg-white p-5 rounded-lg border-2 border-amber-200">
+                                        <h5 class="font-bold text-xl text-amber-800 mb-3"><i class="fas fa-bread-slice"></i> 4.1 The Top Bun (Introduction)</h5>
+                                        <p class="text-lg leading-loose text-gray-800">
+                                            Yesterday, I went to the PKXYS canteen with my <input type="text" class="border-b-2 border-amber-300 focus:outline-none focus:border-amber-600 px-2 w-48 bg-amber-50">. 
+                                            I decided to try the <input type="text" class="border-b-2 border-amber-300 focus:outline-none focus:border-amber-600 px-2 w-64 bg-amber-50 font-bold" placeholder="[Menu Item]"> 
+                                            because <input type="text" class="border-b-2 border-amber-300 focus:outline-none focus:border-amber-600 px-2 w-full mt-2 bg-amber-50">.
+                                        </p>
+                                    </div>
+
+                                    <!-- 4.2 Filling -->
+                                    <div class="bg-white p-5 rounded-lg border-2 border-red-200">
+                                        <h5 class="font-bold text-xl text-red-800 mb-3"><i class="fas fa-bacon"></i> 4.2 The Burger Filling (Food, Price & Service)</h5>
+                                        <div class="bg-red-50 p-2 rounded mb-4 text-sm font-medium text-red-900 border border-red-100">
+                                            <strong>Sensory Word Bank:</strong> tasty, mouth-watering, crunchy, spicy, tender, savory, greasy, authentic, reasonable price, a bargain, overpriced, kind staff.
                                         </div>
-                                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded">
-                                            <span class="font-semibold text-gray-700">Language (10)</span>
-                                            <span id="ai-score-language" class="text-xl font-bold text-fuchsia-600">0</span>
-                                        </div>
-                                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded">
-                                            <span class="font-semibold text-gray-700">Organization (5)</span>
-                                            <span id="ai-score-organization" class="text-xl font-bold text-fuchsia-600">0</span>
-                                        </div>
-                                        <div class="flex justify-between items-center bg-gray-50 p-3 rounded">
-                                            <span class="font-semibold text-gray-700">Style & Tone (5)</span>
-                                            <span id="ai-score-style" class="text-xl font-bold text-fuchsia-600">0</span>
-                                        </div>
-                                        <div class="flex justify-between items-center bg-fuchsia-600 p-3 rounded-lg text-white mt-4 shadow-md">
-                                            <span class="font-bold text-lg">Total Score</span>
-                                            <span id="ai-score-total" class="text-2xl font-black">0/30</span>
+                                        
+                                        <div class="space-y-4 text-lg text-gray-800">
+                                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                                <span class="font-bold text-gray-900 block mb-1">Smell & Texture (Level 1)</span>
+                                                The dish smells <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-40 bg-white"> 
+                                                and the texture is <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-40 bg-white">.
+                                            </div>
+                                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                                <span class="font-bold text-gray-900 block mb-1">Taste (Choose Level 1 OR Level 2)</span>
+                                                L1: I think the flavor is <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-32 bg-white"> and <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-32 bg-white">.
+                                                <br>L2: I think the flavor is <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-32 bg-white"> because it is <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-48 bg-white">.
+                                            </div>
+                                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                                <span class="font-bold text-gray-900 block mb-1">Price (Choose Level 1 OR Level 2)</span>
+                                                L1: I spent <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-16 text-center bg-white"> dollars. I think the price is <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-40 bg-white">.
+                                                <br>L2: I think the price is <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-40 bg-white"> compared to other restaurants.
+                                            </div>
+                                            <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                                                <span class="font-bold text-gray-900 block mb-1">Service (Level 1)</span>
+                                                The canteen staff were <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-40 bg-white"> 
+                                                and <input type="text" class="border-b-2 border-red-300 focus:outline-none focus:border-red-600 px-2 w-40 bg-white">.
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                                        <h5 class="font-bold text-yellow-800 text-sm mb-1 uppercase tracking-wider">Teacher's Marking Notes:</h5>
-                                        <p id="ai-score-explanation" class="text-gray-700 text-sm italic"></p>
+                                    <!-- 4.3 Bottom Bun -->
+                                    <div class="bg-white p-5 rounded-lg border-2 border-amber-200">
+                                        <h5 class="font-bold text-xl text-amber-800 mb-3"><i class="fas fa-bread-slice"></i> 4.3 The Bottom Bun (Conclusion & Rating)</h5>
+                                        <p class="text-lg leading-loose text-gray-800">
+                                            Overall, I think this dish is <input type="text" class="border-b-2 border-amber-300 focus:outline-none focus:border-amber-600 px-2 w-64 bg-amber-50">. 
+                                            I give it <input type="number" min="1" max="5" class="border-2 border-amber-300 focus:outline-none focus:border-amber-600 px-2 w-16 text-center rounded bg-white"> out of 5 stars 
+                                            because <input type="text" class="border-b-2 border-amber-300 focus:outline-none focus:border-amber-600 px-2 w-full mt-2 bg-amber-50">.
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Section 5 -->
+                        <div class="mb-4">
+                            <h4 class="text-xl font-bold text-white bg-gray-800 p-3 rounded-t-lg">SECTION 5: WRITING SELF-CHECK LIST</h4>
+                            <div class="bg-gray-100 border-2 border-gray-800 rounded-b-lg p-5">
+                                <p class="text-gray-700 font-medium mb-4">Instructions: Before you finish, check your work against the criteria below. (5 marks total)</p>
+                                <div class="space-y-3 text-lg font-medium text-gray-800">
+                                    <label class="flex items-start gap-3 cursor-pointer bg-white p-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50"><input type="checkbox" class="mt-1 w-5 h-5 text-gray-800 rounded"><span><strong>Content:</strong> Did I include a catchy title and write in the 1st person POV (I/we)?</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer bg-white p-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50"><input type="checkbox" class="mt-1 w-5 h-5 text-gray-800 rounded"><span><strong>Content:</strong> Did I mention the name, appearance, taste, texture, smell, and price of the food?</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer bg-white p-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50"><input type="checkbox" class="mt-1 w-5 h-5 text-gray-800 rounded"><span><strong>Organization:</strong> Does my review have three distinct parts (Top Bun, Filling, Bottom Bun)?</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer bg-white p-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50"><input type="checkbox" class="mt-1 w-5 h-5 text-gray-800 rounded"><span><strong>Language:</strong> Did I use capital letters at the start of every sentence?</span></label>
+                                    <label class="flex items-start gap-3 cursor-pointer bg-white p-2 rounded shadow-sm border border-gray-300 hover:bg-gray-50"><input type="checkbox" class="mt-1 w-5 h-5 text-gray-800 rounded"><span><strong>Language:</strong> Did I use conjunctions (and, but, because, although) to link my ideas?</span></label>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -761,15 +1127,15 @@
     </div>
 
     <script>
-        const totalPages = 15;
+        const totalPages = 16;
         let currentPage = 1;
 
         // Navigation Data
         const pageTitles = [
             "Model Text", "Analysis & Marking", "Planning", "Outlining",
             "Vocabulary Bank", "Food Formula", "Atmosphere Concepts", "Service Formula",
-            "Contrast Linkers", "Conclusion Formula", "Final Draft", "Peer-Check List",
-            "Grading Rubric", "Teacher's Guide", "AI Model Generator"
+            "Contrast Linkers", "Conclusion Formula", "Final Draft", "Peer-Editing Checklist",
+            "Grading Rubric", "Teacher's Guide", "Exemplar Models", "Canteen Worksheet"
         ];
 
         // Init App
@@ -796,9 +1162,8 @@
                 const btn = document.createElement('button');
                 btn.className = `w-full text-left px-4 py-3 rounded-lg mb-1 transition-colors flex items-center gap-3 font-medium text-sm ${i === 1 ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`;
                 
-                // Add icon for AI page
                 let icon = '';
-                if(i === 15) icon = '<i class="fas fa-robot text-fuchsia-500 mr-1"></i>';
+                if(i === 15) icon = '<i class="fas fa-medal text-fuchsia-500 mr-1"></i>';
                 
                 btn.innerHTML = `<span class="w-6 text-center text-xs text-gray-400 font-bold">${i}</span> ${icon}${pageTitles[i-1]}`;
                 btn.id = `nav-btn-${i}`;
@@ -1204,123 +1569,6 @@
             localStorage.setItem('grade5_restaurant_points', JSON.stringify(studentScores));
             renderRoster();
             closeResetModal();
-        }
-
-        // --- AI Model Generator Logic (Gemini API) ---
-        let generatedAIModels = [];
-
-        async function generateAIModels() {
-            const btn = document.getElementById('btn-generate-ai');
-            const loading = document.getElementById('ai-loading');
-            const results = document.getElementById('ai-results-container');
-            
-            btn.disabled = true;
-            btn.classList.add('opacity-50');
-            loading.classList.remove('hidden');
-            results.classList.add('hidden');
-
-            const prompt = `Generate 10 different restaurant reviews suitable for Grade 5 students. 
-            Each review should be exactly 120-150 words. 
-            Provide varying quality (some 5 stars, some 3 stars, some 1 star, some 4 stars).
-            Grade them using a 30-mark rubric: Content(out of 10), Language(out of 10), Organization(out of 5), Style/Tone(out of 5).
-            Ensure the text matches the rubric scores (e.g. a 30/30 should be perfect, a 15/30 should have simple errors or lack detail).`;
-            
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: "ARRAY",
-                        items: {
-                            type: "OBJECT",
-                            properties: {
-                                "restaurantName": { "type": "STRING" },
-                                "title": { "type": "STRING" },
-                                "reviewText": { "type": "STRING" },
-                                "starRating": { "type": "INTEGER" },
-                                "rubricScore": {
-                                    type: "OBJECT",
-                                    properties: {
-                                        "content": { "type": "INTEGER" },
-                                        "language": { "type": "INTEGER" },
-                                        "organization": { "type": "INTEGER" },
-                                        "style": { "type": "INTEGER" },
-                                        "total": { "type": "INTEGER" },
-                                        "explanation": { "type": "STRING" }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-            
-            const apiKey = ""; 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-            
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates.length > 0) {
-                    const jsonString = result.candidates[0].content.parts[0].text;
-                    generatedAIModels = JSON.parse(jsonString);
-                    
-                    // Populate Select Dropdown
-                    const selector = document.getElementById('ai-model-selector');
-                    selector.innerHTML = '';
-                    generatedAIModels.forEach((model, index) => {
-                        const option = document.createElement('option');
-                        option.value = index;
-                        option.text = `Model ${index + 1}: ${model.starRating} Stars (${model.rubricScore.total}/30) - ${model.restaurantName}`;
-                        selector.appendChild(option);
-                    });
-                    
-                    // Display first model
-                    displaySelectedAIModel();
-                    
-                    loading.classList.add('hidden');
-                    results.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error("Error generating models:", error);
-                alert("Failed to generate models. Please try again.");
-                loading.classList.add('hidden');
-            } finally {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50');
-            }
-        }
-
-        function displaySelectedAIModel() {
-            const index = document.getElementById('ai-model-selector').value;
-            const model = generatedAIModels[index];
-            if(!model) return;
-
-            document.getElementById('ai-review-title').innerText = model.title;
-            document.getElementById('ai-review-subtitle').innerText = model.restaurantName;
-            
-            // Format stars
-            let starsStr = '';
-            for(let i=0; i<5; i++) starsStr += (i < model.starRating) ? '★' : '☆';
-            document.getElementById('ai-review-stars').innerText = starsStr;
-            
-            // Format Text with indentation (paragraphs split by newlines if any)
-            const textHTML = model.reviewText.split('\n').filter(p => p.trim() !== '').map(p => `<p>${p}</p>`).join('');
-            document.getElementById('ai-review-text').innerHTML = textHTML;
-            
-            // Format Rubric
-            document.getElementById('ai-score-content').innerText = model.rubricScore.content;
-            document.getElementById('ai-score-language').innerText = model.rubricScore.language;
-            document.getElementById('ai-score-organization').innerText = model.rubricScore.organization;
-            document.getElementById('ai-score-style').innerText = model.rubricScore.style;
-            document.getElementById('ai-score-total').innerText = `${model.rubricScore.total}/30`;
-            document.getElementById('ai-score-explanation').innerText = model.rubricScore.explanation;
         }
 
     </script>
