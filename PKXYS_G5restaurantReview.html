@@ -1083,6 +1083,84 @@
                     </div>
                 </div>
 
+                <!-- Page 17: Peer Interview -->
+                <div id="page-17" class="page-content">
+                    <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 border-t-8 border-cyan-500">
+                        <div class="flex items-center gap-4 border-b-2 border-cyan-100 pb-6 mb-6">
+                            <div class="bg-cyan-100 p-4 rounded-full text-cyan-600 text-3xl">
+                                <i class="fas fa-microphone-alt"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-3xl font-black text-cyan-900 uppercase tracking-wide">The Food Critic Interview</h2>
+                                <p class="text-xl font-medium text-gray-600 mt-1">Roleplay Activity: Interview your partner about their restaurant experience to help them practice speaking their ideas before writing.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mb-8 text-lg text-yellow-900 shadow-sm flex items-center gap-3">
+                            <i class="fas fa-lightbulb text-2xl text-yellow-500"></i>
+                            <p><strong>Instructions:</strong> One student is the <em>Reporter</em>, the other is the <em>Food Critic</em>. The reporter asks the questions. Tap any question to hear Andrew pronounce it! Check the boxes as you ask them.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Left Column: Settings & Food -->
+                            <div class="space-y-8">
+                                <div class="bg-white border-2 border-cyan-200 rounded-xl overflow-hidden shadow-sm">
+                                    <h3 class="bg-cyan-100 text-cyan-900 font-bold p-3 text-xl flex items-center gap-2"><i class="fas fa-map-marker-alt"></i> Setting the Scene</h3>
+                                    <div class="p-4 space-y-3 text-lg font-medium text-gray-700">
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-cyan-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-cyan-600 rounded"> <span class="group-hover:text-cyan-700 transition" onclick="speakText(this.innerText)">1. What is the name of the restaurant you visited?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-cyan-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-cyan-600 rounded"> <span class="group-hover:text-cyan-700 transition" onclick="speakText(this.innerText)">2. Where exactly is this restaurant located?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-cyan-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-cyan-600 rounded"> <span class="group-hover:text-cyan-700 transition" onclick="speakText(this.innerText)">3. When did you go there to eat?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-cyan-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-cyan-600 rounded"> <span class="group-hover:text-cyan-700 transition" onclick="speakText(this.innerText)">4. Who did you invite to go with you?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-cyan-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-cyan-600 rounded"> <span class="group-hover:text-cyan-700 transition" onclick="speakText(this.innerText)">5. What kind of food do they serve there?</span></label>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white border-2 border-orange-200 rounded-xl overflow-hidden shadow-sm">
+                                    <h3 class="bg-orange-100 text-orange-900 font-bold p-3 text-xl flex items-center gap-2"><i class="fas fa-utensils"></i> The Main Course</h3>
+                                    <div class="p-4 space-y-3 text-lg font-medium text-gray-700">
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-orange-600 rounded"> <span class="group-hover:text-orange-700 transition" onclick="speakText(this.innerText)">6. What was the main dish you ordered?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-orange-600 rounded"> <span class="group-hover:text-orange-700 transition" onclick="speakText(this.innerText)">7. What did the food look like when it arrived?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-orange-600 rounded"> <span class="group-hover:text-orange-700 transition" onclick="speakText(this.innerText)">8. Did the dish have a strong smell? How did it smell?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-orange-600 rounded"> <span class="group-hover:text-orange-700 transition" onclick="speakText(this.innerText)">9. Can you describe the texture? Was it crunchy, tender, or soft?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-orange-600 rounded"> <span class="group-hover:text-orange-700 transition" onclick="speakText(this.innerText)">10. How did the food taste? Was it spicy, savory, or sour?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-orange-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-orange-600 rounded"> <span class="group-hover:text-orange-700 transition" onclick="speakText(this.innerText)">11. Did you order any side dishes? Did you like them?</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Vibe & Verdict -->
+                            <div class="space-y-8">
+                                <div class="bg-white border-2 border-purple-200 rounded-xl overflow-hidden shadow-sm">
+                                    <h3 class="bg-purple-100 text-purple-900 font-bold p-3 text-xl flex items-center gap-2"><i class="fas fa-couch"></i> Vibe Check (Service & Cost)</h3>
+                                    <div class="p-4 space-y-3 text-lg font-medium text-gray-700">
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-purple-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-purple-600 rounded"> <span class="group-hover:text-purple-700 transition" onclick="speakText(this.innerText)">12. How much did the meal cost in total?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-purple-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-purple-600 rounded"> <span class="group-hover:text-purple-700 transition" onclick="speakText(this.innerText)">13. Do you think the price was a good bargain or too expensive?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-purple-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-purple-600 rounded"> <span class="group-hover:text-purple-700 transition" onclick="speakText(this.innerText)">14. What did the inside of the restaurant look like?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-purple-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-purple-600 rounded"> <span class="group-hover:text-purple-700 transition" onclick="speakText(this.innerText)">15. Was the atmosphere relaxed, noisy, or cheerful?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-purple-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-purple-600 rounded"> <span class="group-hover:text-purple-700 transition" onclick="speakText(this.innerText)">16. Did you have to wait a long time for a table?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-purple-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-purple-600 rounded"> <span class="group-hover:text-purple-700 transition" onclick="speakText(this.innerText)">17. Were the waiters kind and helpful, or rude and impatient?</span></label>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white border-2 border-pink-200 rounded-xl overflow-hidden shadow-sm">
+                                    <h3 class="bg-pink-100 text-pink-900 font-bold p-3 text-xl flex items-center gap-2"><i class="fas fa-star"></i> The Final Verdict</h3>
+                                    <div class="p-4 space-y-3 text-lg font-medium text-gray-700">
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-pink-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-pink-600 rounded"> <span class="group-hover:text-pink-700 transition" onclick="speakText(this.innerText)">18. What was your favorite part of the whole experience?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-pink-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-pink-600 rounded"> <span class="group-hover:text-pink-700 transition" onclick="speakText(this.innerText)">19. Out of 5 stars, what rating would you give this restaurant?</span></label>
+                                        <label class="flex items-start gap-3 cursor-pointer hover:bg-pink-50 p-2 rounded transition group"><input type="checkbox" class="mt-1.5 w-6 h-6 text-pink-600 rounded"> <span class="group-hover:text-pink-700 transition" onclick="speakText(this.innerText)">20. Would you recommend this place to your friends or family? Why?</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reporter Notes Area -->
+                        <div class="mt-8 bg-gray-50 p-6 rounded-xl border border-gray-300 shadow-inner">
+                            <h4 class="text-xl font-bold text-gray-800 mb-3"><i class="fas fa-edit text-gray-500"></i> Reporter's Notes</h4>
+                            <textarea rows="4" class="w-full bg-white border border-gray-300 rounded-lg p-4 text-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 placeholder-gray-400" placeholder="Jot down the most interesting things the food critic says here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
         
@@ -1127,7 +1205,7 @@
     </div>
 
     <script>
-        const totalPages = 16;
+        const totalPages = 17;
         let currentPage = 1;
 
         // Navigation Data
@@ -1135,7 +1213,8 @@
             "Model Text", "Analysis & Marking", "Planning", "Outlining",
             "Vocabulary Bank", "Food Formula", "Atmosphere Concepts", "Service Formula",
             "Contrast Linkers", "Conclusion Formula", "Final Draft", "Peer-Editing Checklist",
-            "Grading Rubric", "Teacher's Guide", "Exemplar Models", "Canteen Worksheet"
+            "Grading Rubric", "Teacher's Guide", "Exemplar Models", "Canteen Worksheet",
+            "Peer Interview"
         ];
 
         // Init App
