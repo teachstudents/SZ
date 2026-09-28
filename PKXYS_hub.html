@@ -21,6 +21,9 @@
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .font-inter { font-family: 'Inter', sans-serif; }
 
+        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #main-content { transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
         @keyframes pulse-ring {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
@@ -44,12 +47,11 @@
         .timetable-cell {
             border: 1px solid #f1f5f9;
             padding: 2px !important;
-            white-space: nowrap !important;
         }
         .timetable-cell div {
             padding: 4px !important;
-            font-size: 15px !important; 
-            line-height: 1.3 !important;
+            font-size: 13px !important; /* Increased from 12px */
+            line-height: 1.2 !important;
         }
 
         .fun-bg {
@@ -82,7 +84,7 @@
         .menu-button:active { transform: translateY(3px); box-shadow: 0 0px 0 #3c1f70, 0 2px 5px rgba(0,0,0,0.3); }
 
         .student-list-item {
-            background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px;
+            background: rgba(255,255,255,0.1); padding: 8px; border-radius: 8px;
             text-align: center; word-break: keep-all; white-space: nowrap; transition: all 0.2s ease;
         }
         .student-list-item.highlight { background: linear-gradient(45deg, #feca57, #ff9f43); transform: scale(1.1); box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: bold; color: black; z-index: 10; position: relative;}
@@ -96,15 +98,8 @@
         @keyframes fireworkExplode { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(25); opacity: 0; } }
         .confetti { position: absolute; width: 10px; height: 10px; pointer-events: none; font-size: 24px; }
         @keyframes confettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-        
-        @keyframes pointFloat {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -150px) scale(2); }
-        }
-        .point-anim {
-            position: fixed; font-size: 3rem; font-weight: 900; color: #fbbf24; text-shadow: 0 4px 10px rgba(0,0,0,0.3); pointer-events: none; z-index: 10000; animation: pointFloat 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-        }
 
+        /* Restored Fishing Game Animations */
         @keyframes waterShimmer { 0%, 100% { transform: translateX(-100%); } 50% { transform: translateX(100%); } }
         @keyframes waveMotion { 0% { transform: translateX(0); } 100% { transform: translateX(-20px); } }
         @keyframes rodCast { 0%, 100% { transform: rotate(45deg); } 50% { transform: rotate(60deg); } }
@@ -125,6 +120,38 @@
         .locked-in { animation: flashWhite 0.5s ease-out; background-color: rgba(34, 197, 94, 0.2); border-color: #22c55e; box-shadow: 0 0 15px rgba(34, 197, 94, 0.4); }
         @keyframes flashWhite { 0% { background-color: #ffffff; color: #000; } 100% { background-color: rgba(34, 197, 94, 0.2); color: #fff; } }
 
+        @keyframes pointFloat {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -150px) scale(2); }
+        }
+        .point-anim {
+            position: fixed;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fbbf24;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            pointer-events: none;
+            z-index: 10000;
+            animation: pointFloat 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+        }
+
+        /* Quiet Timer Additions */
+        @keyframes urgentFlash {
+            0%, 100% { opacity: 1; color: #ef4444; text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); transform: scale(1.05); }
+            50% { opacity: 0.5; color: #f87171; text-shadow: 0 0 5px rgba(248, 113, 113, 0.4); transform: scale(1); }
+        }
+        .text-flash-urgent {
+            animation: urgentFlash 1s ease-in-out infinite;
+        }
+        #behavior-panel {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+
+        /* Reading Timer Background */
         .reading-bg { background: linear-gradient(135deg, #0f172a, #1e1b4b, #0f172a); }
         .alarm-flash { animation: screenFlash 0.2s infinite; }
         @keyframes screenFlash {
@@ -135,9 +162,64 @@
         }
         .huge-clock { font-size: clamp(8rem, 25vw, 15rem); line-height: 1; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+        /* Interactive Picker Styles */
+        .picker-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 100;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .back-button {
+            z-index: 1001;
+        }
+        
+        .picker-body {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .student-list-container {
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-width: 90%;
+            width: 800px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .student-list-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 0.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        @keyframes r-containerGlow { 0%, 100% { border-color: rgba(255,255,255,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 30px rgba(255,255,255,0.1); } 50% { border-color: rgba(255,255,255,0.6); box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 50px rgba(255,255,255,0.3); } }
+        @keyframes r-shuffle { 0% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.05); } 100% { transform: translateY(0) scale(1); } }
+        @keyframes r-gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes r-winnerPulse { 0%, 100% { transform: scale(1.1); box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 50px rgba(255,255,255,0.5); } 50% { transform: scale(1.2); box-shadow: 0 15px 40px rgba(0,0,0,0.4), 0 0 80px rgba(255,255,255,0.8); } }
+        @keyframes r-buttonColorShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes r-timerUrgent { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
     </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex flex-col relative">
@@ -147,39 +229,40 @@
             <div id="timer-progress-bar"></div>
         </div>
         
-        <div class="flex items-center gap-3 w-auto md:w-1/3">
-            <button id="menu-toggle" class="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg transition-colors focus:outline-none border border-indigo-200 shadow-sm active:scale-95">
+        <div class="flex items-center gap-3 w-auto md:w-[45%]">
+            <button id="menu-toggle" class="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg transition-colors focus:outline-none border border-indigo-200 shadow-sm active:scale-95 z-50">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
-                <span class="font-bold text-sm">Menu</span>
+                <span class="font-bold text-sm hidden sm:inline">Menu</span>
             </button>
-            <div class="hidden lg:block">
-                <p id="header-date" class="text-xs font-semibold text-slate-500 truncate"></p>
-            </div>
             
-            <div class="hidden md:flex items-center gap-1 bg-indigo-50 border border-indigo-200 rounded-lg p-0.5 shadow-sm z-10 ml-2">
+            <div class="hidden lg:flex items-center gap-2 ml-2 bg-slate-100/50 px-2 py-1 rounded-lg border border-slate-200/50">
+                <span id="header-date" class="text-sm font-semibold text-slate-600 truncate"></span>
+                <div class="w-px h-4 bg-slate-300 mx-1"></div>
+                <span id="header-time" class="text-sm font-bold text-slate-700"></span>
+                <span id="header-ampm" class="text-[10px] font-bold text-slate-500"></span>
+            </div>
+
+            <div class="hidden md:flex items-center gap-1 bg-indigo-50 border border-indigo-200 rounded-lg p-0.5 shadow-sm z-10 ml-2 shrink-0">
                 <button onclick="setGlobalTimer(5)" class="px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-200 rounded transition-colors active:scale-95 whitespace-nowrap">⏱️ 5m</button>
                 <button onclick="setGlobalTimer(10)" class="px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-200 rounded transition-colors active:scale-95 whitespace-nowrap">⏱️ 10m</button>
                 <div class="w-px h-5 bg-indigo-300 mx-0.5"></div>
-                <button id="timer-btn" onclick="toggleTimer()" class="flex items-center gap-1 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded transition-all active:scale-95 group relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                <button id="timer-btn" onclick="toggleTimer()" class="flex items-center gap-1 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded transition-all active:scale-95 group relative w-[65px] justify-center">
                     <span id="timer-display" class="font-display font-bold text-sm tracking-wide">40:00</span>
                 </button>
             </div>
         </div>
 
-        <div class="w-1/3 flex justify-center flex-col items-center">
+        <div class="w-[20%] flex justify-center flex-col items-center">
             <h2 id="header-class-name" class="text-[13px] sm:text-[15px] md:text-[18px] font-display font-bold text-indigo-800 tracking-wide drop-shadow-sm text-center px-2 truncate leading-none">
                 PKXYS Dashboard
             </h2>
             <span id="header-room-name" class="text-[10px] font-bold text-slate-400 uppercase hidden"></span>
         </div>
 
-        <div class="flex flex-row items-center justify-end gap-2 sm:gap-3 w-auto md:w-1/3">
-            <div class="group relative hidden lg:block">
+        <div class="flex flex-row items-center justify-end gap-2 sm:gap-3 w-auto md:w-[35%]">
+            <div class="group relative hidden lg:block z-50">
                 <button class="p-1.5 rounded-md bg-purple-50 text-purple-600 hover:bg-purple-100 border border-purple-200 transition-colors font-bold flex items-center justify-center gap-1 shadow-sm">
                     🎵 <span class="text-xs">SFX</span>
                 </button>
@@ -207,22 +290,37 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-1 bg-slate-100/50 p-1 rounded-lg border border-slate-200/50">
-                <button onclick="awardPoint(event)" title="Award Points" class="p-1.5 rounded-md hover:bg-yellow-100 text-yellow-500 transition-colors active:scale-95 font-bold flex items-center justify-center gap-1 bg-white border border-yellow-200 shadow-sm">
-                    ⭐ <span class="text-[10px] text-slate-600 hidden xl:inline">Point</span>
+            <div class="hidden md:flex items-center gap-1 bg-slate-100/50 p-1 rounded-lg border border-slate-200/50 shrink-0">
+                <button onclick="awardPoint(event)" title="Award Points" class="p-1 rounded-md hover:bg-yellow-100 text-yellow-500 transition-colors active:scale-95 font-bold flex items-center justify-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                 </button>
                 <div class="w-px h-4 bg-slate-300 mx-1"></div>
-                <button onclick="playSFX('loudbell')" title="Attention Bell" class="p-1.5 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-600 border border-amber-200 transition-colors active:scale-95 font-bold text-sm shadow-sm">
+                <!-- Attention Grabbers -->
+                <button onclick="playSFX('loudbell')" title="Attention Bell" class="p-1 rounded-md hover:bg-amber-100 text-amber-600 transition-colors active:scale-95 font-bold text-xs">
                     🛎️
                 </button>
-                <button onclick="playSFX('loudbuzz')" title="Loud Buzzer" class="p-1.5 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors active:scale-95 font-bold text-sm shadow-sm">
+                <button onclick="playSFX('loudbuzz')" title="Loud Buzzer" class="p-1 rounded-md hover:bg-rose-100 text-rose-600 transition-colors active:scale-95 font-bold text-xs">
                     🚨
+                </button>
+                <div class="w-px h-4 bg-slate-300 mx-1"></div>
+                <!-- Standard Game Sounds -->
+                <button onclick="playSFX('ding')" title="Correct Answer" class="p-1 rounded-md hover:bg-emerald-100 text-emerald-600 transition-colors active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                </button>
+                <button onclick="playSFX('buzz')" title="Incorrect Answer" class="p-1 rounded-md hover:bg-rose-100 text-rose-600 transition-colors active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <button onclick="playSFX('chime')" title="Attention" class="p-1 rounded-md hover:bg-blue-100 text-blue-600 transition-colors active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                </button>
+                <button onclick="playSFX('tada')" title="Success" class="p-1 rounded-md hover:bg-amber-100 text-amber-600 transition-colors active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
                 </button>
             </div>
         </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden relative w-full h-full">
+    <div class="flex flex-1 overflow-hidden relative">
         <aside id="sidebar" class="absolute inset-y-0 left-0 w-64 bg-white border-r border-slate-200 shadow-[20px_0_30px_rgba(0,0,0,0.1)] z-50 overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-in-out">
             <div class="p-4 flex flex-col h-full">
                 <div class="flex justify-between items-center mb-6">
@@ -253,11 +351,14 @@
 
                 <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tools</p>
                 <div class="space-y-1 mb-6">
+                    <button onclick="switchView('quiet-timer')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-50 hover:text-red-700 text-slate-600 transition-colors border border-transparent hover:border-red-100 flex items-center gap-2">
+                        <span>🤫</span> Quiet Timer & Behavior
+                    </button>
                     <button onclick="switchView('reading-timer')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-teal-50 hover:text-teal-700 text-slate-600 transition-colors border border-transparent hover:border-teal-100 flex items-center gap-2">
-                        <span>⏱️</span> Silent Reading Timer
+                        <span>📖</span> Silent Reading Session
                     </button>
                     <button onclick="switchView('class-roles')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 transition-colors border border-transparent hover:border-indigo-100 flex items-center gap-2">
-                        <span>📋</span> 6H2 Class Roles
+                        <span>📋</span> 6H2 一人一職
                     </button>
                     <button onclick="switchView('awards'); renderAwards('6h2');" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-amber-50 hover:text-amber-700 text-slate-600 transition-colors border border-transparent hover:border-amber-100 flex items-center gap-2">
                         <span>🏆</span> Student Awards
@@ -272,10 +373,12 @@
             </div>
         </aside>
 
-        <main id="main-content" class="flex-1 w-full h-full overflow-y-auto bg-slate-50 relative z-0">
+        <!-- CONTENT AREA -->
+        <main id="main-content" class="flex-1 overflow-y-auto bg-slate-50 w-full ml-0">
             
-            <!-- VIEW: DASHBOARD (TIMETABLE) -->
+            <!-- VIEW: DASHBOARD -->
             <div id="view-dashboard" class="p-2 md:p-4 max-w-7xl mx-auto space-y-4">
+                
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="bg-slate-800 px-4 py-2 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                         <h2 class="text-white font-display text-lg font-bold flex items-center gap-2">
@@ -290,15 +393,15 @@
                     </div>
                     
                     <div class="p-0 overflow-x-auto">
-                        <table class="w-full text-sm text-left border-collapse min-w-[850px]">
+                        <table class="w-full text-sm text-left border-collapse min-w-[700px]">
                             <thead>
                                 <tr class="bg-slate-50 text-slate-500 uppercase tracking-wider text-xs border-b border-slate-200">
                                     <th class="px-2 py-1 text-center font-bold w-auto whitespace-nowrap border-r border-slate-200">Period</th>
-                                    <th class="px-2 py-1 font-bold w-1/5 text-center whitespace-nowrap">Monday <span id="th-monday" class="text-[11px] text-slate-400 font-normal ml-1"></span></th>
-                                    <th class="px-2 py-1 font-bold w-1/5 text-center whitespace-nowrap">Tuesday <span id="th-tuesday" class="text-[11px] text-slate-400 font-normal ml-1"></span></th>
-                                    <th class="px-2 py-1 font-bold w-1/5 text-center whitespace-nowrap">Wednesday <span id="th-wednesday" class="text-[11px] text-slate-400 font-normal ml-1"></span></th>
-                                    <th class="px-2 py-1 font-bold w-1/5 text-center whitespace-nowrap">Thursday <span id="th-thursday" class="text-[11px] text-slate-400 font-normal ml-1"></span></th>
-                                    <th class="px-2 py-1 font-bold w-1/5 text-center whitespace-nowrap">Friday <span id="th-friday" class="text-[11px] text-slate-400 font-normal ml-1"></span></th>
+                                    <th class="px-2 py-1 font-bold w-1/5 text-center">Monday<br><span id="th-monday" class="text-[11px] text-slate-400 font-normal"></span></th>
+                                    <th class="px-2 py-1 font-bold w-1/5 text-center">Tuesday<br><span id="th-tuesday" class="text-[11px] text-slate-400 font-normal"></span></th>
+                                    <th class="px-2 py-1 font-bold w-1/5 text-center">Wednesday<br><span id="th-wednesday" class="text-[11px] text-slate-400 font-normal"></span></th>
+                                    <th class="px-2 py-1 font-bold w-1/5 text-center">Thursday<br><span id="th-thursday" class="text-[11px] text-slate-400 font-normal"></span></th>
+                                    <th class="px-2 py-1 font-bold w-1/5 text-center">Friday<br><span id="th-friday" class="text-[11px] text-slate-400 font-normal"></span></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 bg-white">
@@ -306,28 +409,28 @@
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">MR 08:00-08:30</td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-amber-50 border border-amber-200 text-amber-800 p-1 rounded text-center whitespace-nowrap">6H2 MR <span class="font-normal text-amber-600">RM 202</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-amber-50 border border-amber-200 text-amber-800 p-1 rounded text-center whitespace-nowrap">6H2 MR <span class="font-normal text-amber-600">RM 202</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-amber-50 border border-amber-200 text-amber-800 p-1 rounded text-center whitespace-nowrap">6H2 MR <span class="font-normal text-amber-600">RM 202</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-amber-50 border border-amber-200 text-amber-800 p-1 rounded text-center whitespace-nowrap">6H2 MR <span class="font-normal text-amber-600">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-amber-50 border border-amber-200 text-amber-800 p-1 rounded text-center">6H2 MR<br><span class="font-normal text-amber-600">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-amber-50 border border-amber-200 text-amber-800 p-1 rounded text-center">6H2 MR<br><span class="font-normal text-amber-600">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-amber-50 border border-amber-200 text-amber-800 p-1 rounded text-center">6H2 MR<br><span class="font-normal text-amber-600">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-amber-50 border border-amber-200 text-amber-800 p-1 rounded text-center">6H2 MR<br><span class="font-normal text-amber-600">RM 202</span></div></td>
                                 </tr>
                                 <!-- Row 1 -->
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">P1 08:30-09:10</td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">RM 202</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center whitespace-nowrap">5M2 ENG <span class="text-emerald-500 font-normal">RM 105</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center whitespace-nowrap">5M2 ENG <span class="text-emerald-500 font-normal">RM 105</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">RM 202</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center">5M2 ENG<br><span class="text-emerald-500 font-normal">RM 105</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center">5M2 ENG<br><span class="text-emerald-500 font-normal">RM 105</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">RM 202</span></div></td>
                                 </tr>
                                 <!-- Row 2 -->
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">P2 09:10-09:50</td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">RM 202</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center whitespace-nowrap">5M2 ENG <span class="text-emerald-500 font-normal">RM 105</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center whitespace-nowrap">5M2 ENG <span class="text-emerald-500 font-normal">RM 105</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center">5M2 ENG<br><span class="text-emerald-500 font-normal">RM 105</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center">5M2 ENG<br><span class="text-emerald-500 font-normal">RM 105</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">RM 202</span></div></td>
                                 </tr>
                                 <!-- Break -->
                                 <tr>
@@ -338,53 +441,36 @@
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">P3 10:05-10:45</td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">RM 202</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center whitespace-nowrap">5M2 ENG <span class="text-emerald-500 font-normal">RM 105</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center">5M2 ENG<br><span class="text-emerald-500 font-normal">RM 105</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                 </tr>
                                 <!-- Row 4 -->
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">P4 10:45-11:30</td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">Lib 6F-B</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">Lib 6F-B</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center whitespace-nowrap">5M2 ENG <span class="text-emerald-500 font-normal">Lib 6F-B</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center">5M2 ENG<br><span class="text-emerald-500 font-normal">Lib 6F-B</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                 </tr>
-                                <!-- Lunch 1 -->
+                                <!-- Lunch -->
                                 <tr>
-                                    <td class="px-1 py-0.5 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-200/60 text-[10px] whitespace-nowrap">11:30-12:05</td>
-                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest">Lunch</td>
-                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest">Lunch</td>
-                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest">Lunch</td>
-                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest">Lunch</td>
-                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest">Lunch</td>
-                                </tr>
-                                <!-- Lunch 2 / Duties -->
-                                <tr>
-                                    <td class="px-1 py-0.5 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-200/60 text-[10px] whitespace-nowrap">12:05-12:35</td>
-                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest">Lunch</td>
-                                    <td class="px-1 py-0.5 timetable-cell"><div class="bg-blue-100 border border-blue-300 text-blue-800 p-1 rounded text-center text-[11px] font-bold whitespace-nowrap">2F Blue Duty</div></td>
-                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest">Lunch</td>
-                                    <td class="px-1 py-0.5 timetable-cell"><div class="bg-yellow-100 border border-yellow-300 text-yellow-800 p-1 rounded text-center text-[11px] font-bold whitespace-nowrap">2F Yellow Duty</div></td>
-                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest">Lunch</td>
+                                    <td class="px-1 py-0.5 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-200/60 text-[10px] whitespace-nowrap">11:30-12:35</td>
+                                    <td class="px-1 py-0.5 timetable-cell bg-slate-200/60 text-center text-[11px] text-slate-500 font-bold uppercase tracking-widest" colspan="5">Lunch Break</td>
                                 </tr>
                                 <!-- Row 5 -->
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">P5 12:35-13:15</td>
-                                    <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-purple-100 border border-purple-300 text-purple-800 p-1 rounded text-center text-[11px] font-bold whitespace-nowrap">G5 CLP <span class="font-normal text-[10px]">Rm 207</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
+                                    <td class="px-1 py-1 timetable-cell bg-slate-50/30" colspan="5"></td>
                                 </tr>
                                 <!-- Row 6 -->
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">P6 13:15-13:55</td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center whitespace-nowrap">5M2 ENG <span class="text-emerald-500 font-normal">RM 105</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center">5M2 ENG<br><span class="text-emerald-500 font-normal">RM 105</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">RM 202</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                 </tr>
@@ -392,7 +478,7 @@
                                 <tr>
                                     <td class="px-1 py-0.5 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-100/80 text-[10px] whitespace-nowrap">13:55-14:10</td>
                                     <td class="px-1 py-0.5 timetable-cell bg-slate-100/80 text-center text-[11px] text-slate-400 font-bold uppercase tracking-widest">Break</td>
-                                    <td class="px-1 py-0.5 timetable-cell"><div class="bg-blue-100 border border-blue-300 text-blue-800 p-1 rounded text-center text-[11px] font-bold whitespace-nowrap">1F Blue Duty <span class="font-normal text-[10px]">(to 14:15)</span></div></td>
+                                    <td class="px-1 py-0.5 timetable-cell"><div class="bg-blue-100 border border-blue-300 text-blue-800 p-1 rounded text-center text-[10px] font-bold">1F Blue Duty<br><span class="font-normal text-[9px]">(to 14:15)</span></div></td>
                                     <td class="px-1 py-0.5 timetable-cell bg-slate-100/80 text-center text-[11px] text-slate-400 font-bold uppercase tracking-widest">Break</td>
                                     <td class="px-1 py-0.5 timetable-cell bg-slate-100/80 text-center text-[11px] text-slate-400 font-bold uppercase tracking-widest">Break</td>
                                     <td class="px-1 py-0.5 timetable-cell bg-slate-100/80 text-center text-[11px] text-slate-400 font-bold uppercase tracking-widest">Break</td>
@@ -400,17 +486,17 @@
                                 <!-- Row 7 -->
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">P7 14:10-14:50</td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center whitespace-nowrap">5M2 ENG <span class="text-emerald-500 font-normal">RM 105</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center">5M2 ENG<br><span class="text-emerald-500 font-normal">RM 105</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center whitespace-nowrap">6H2 ENG <span class="text-blue-500 font-normal">RM 202</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-blue-50 border border-blue-200 text-blue-800 p-1 rounded text-center">6H2 ENG<br><span class="text-blue-500 font-normal">RM 202</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                 </tr>
                                 <!-- Row 8 -->
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">P8 14:50-15:30</td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-slate-100 border border-slate-300 text-slate-700 p-1 rounded text-center text-[11px] font-bold whitespace-nowrap">Class Teachers <span class="font-normal text-[10px]">Meeting</span></div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-purple-100 border border-purple-300 text-purple-800 p-1 rounded text-center text-[11px] font-bold whitespace-nowrap">G6 CLP <span class="font-normal text-[10px]">2T03</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-slate-100 border border-slate-300 text-slate-700 p-1 rounded text-center text-[11px] font-bold">Class Teachers<br><span class="font-normal text-[10px]">Meeting</span></div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-purple-100 border border-purple-300 text-purple-800 p-1 rounded text-center text-[11px] font-bold">G6 CLP<br><span class="font-normal text-[10px]">2T03</span></div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
@@ -429,9 +515,9 @@
                                 <tr>
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">16:30</td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-rose-50 border border-rose-200 text-rose-800 p-1 rounded text-center whitespace-nowrap">Dismissal</div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-rose-50 border border-rose-200 text-rose-800 p-1 rounded text-center whitespace-nowrap">Dismissal</div></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-rose-50 border border-rose-200 text-rose-800 p-1 rounded text-center whitespace-nowrap">Dismissal</div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-rose-50 border border-rose-200 text-rose-800 p-1 rounded text-center">Dismissal</div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-rose-50 border border-rose-200 text-rose-800 p-1 rounded text-center">Dismissal</div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-rose-50 border border-rose-200 text-rose-800 p-1 rounded text-center">Dismissal</div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                 </tr>
                                 <!-- Evening Duty -->
@@ -439,7 +525,7 @@
                                     <td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-100 text-[11px] whitespace-nowrap">19:00-20:30</td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
-                                    <td class="px-1 py-1 timetable-cell"><div class="bg-indigo-100 border border-indigo-300 text-indigo-900 p-1 rounded text-center font-bold text-[11px] whitespace-nowrap">9M4 Night Duty</div></td>
+                                    <td class="px-1 py-1 timetable-cell"><div class="bg-indigo-100 border border-indigo-300 text-indigo-900 p-1 rounded text-center font-bold text-[11px]">9M4 Night Duty</div></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                     <td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>
                                 </tr>
@@ -454,19 +540,93 @@
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Aug 24-28</span><span class="text-slate-600">Year-Start Assessment</span></div>
+                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Aug 24-28</span><span class="text-slate-600">Year-Start Assessment (G11&12)</span></div>
                             <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Sep 1</span><span class="text-slate-600">Start of School Year</span></div>
-                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Sep 25-26</span><span class="text-slate-600">Mid-Autumn Holiday</span></div>
+                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Sep 25-26</span><span class="text-slate-600">Mid-Autumn Festival Holiday</span></div>
                             <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Oct 1-2</span><span class="text-slate-600">National Day Holiday</span></div>
                             <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Oct 26-30</span><span class="text-slate-600 font-semibold text-amber-600">First Term Break</span></div>
-                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Nov 20</span><span class="text-slate-600">Staff Dev Day</span></div>
-                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Dec 3-4</span><span class="text-slate-600">Sports Days</span></div>
+                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Nov 20</span><span class="text-slate-600">Staff Dev Day (Student Holiday)</span></div>
+                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Dec 3-4</span><span class="text-slate-600">Sports Days (Sec & Pri)</span></div>
                             <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Dec 25-31</span><span class="text-slate-600 font-semibold text-amber-600">Second Term Break</span></div>
-                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Jan 5-12</span><span class="text-slate-600">First Term Final Exams</span></div>
-                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Feb 1-12</span><span class="text-slate-600 font-semibold text-amber-600">Chinese New Year</span></div>
+                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Jan 5-12</span><span class="text-slate-600">First Term Final Exams (G1-11)</span></div>
+                            <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Feb 1-12</span><span class="text-slate-600 font-semibold text-amber-600">Chinese New Year Holiday</span></div>
                             <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Feb 15</span><span class="text-slate-600 text-emerald-600 font-bold">Start of Second Term</span></div>
                             <div class="flex gap-3"><span class="font-bold text-slate-700 w-16">Mar 29-2</span><span class="text-slate-600 font-semibold text-amber-600">Third Term Break</span></div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: QUIET TIMER & BEHAVIOR -->
+            <div id="view-quiet-timer" class="hidden flex h-full bg-slate-900 relative overflow-hidden">
+                <!-- Center Area: Timer -->
+                <div class="flex-1 flex flex-col items-center justify-center p-8 relative">
+                    <button onclick="switchView('dashboard')" class="absolute top-6 left-6 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors z-10 shadow-lg text-sm">
+                        &larr; Back to Dashboard
+                    </button>
+                    
+                    <button onclick="toggleBehaviorPanel()" class="absolute top-6 right-6 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-colors z-10 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        Behavior Panel
+                    </button>
+                    
+                    <div class="text-center w-full max-w-4xl flex flex-col items-center">
+                        <h2 id="quiet-flashing-text" class="text-4xl md:text-6xl font-black text-rose-500 mb-8 uppercase tracking-widest text-shadow-lg opacity-80 transition-all">
+                            Get Ready For Class<br>& Be Silent
+                        </h2>
+
+                        <div class="flex items-center gap-4 mb-12 bg-slate-800/80 p-4 rounded-2xl backdrop-blur border border-slate-700 shadow-2xl">
+                            <select id="quiet-time-select" class="bg-slate-900 text-white text-xl font-bold rounded-lg px-4 py-3 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                                <option value="10">10 Seconds</option>
+                                <option value="30">30 Seconds</option>
+                                <option value="60" selected>1 Minute</option>
+                                <option value="120">2 Minutes</option>
+                                <option value="300">5 Minutes</option>
+                            </select>
+                            
+                            <button onclick="startQuietTimer()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl px-8 py-3 rounded-lg transition-colors shadow-lg active:scale-95">
+                                Start Silence
+                            </button>
+                            <button onclick="stopQuietTimer()" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xl px-8 py-3 rounded-lg transition-colors shadow-lg active:scale-95">
+                                Stop
+                            </button>
+                        </div>
+
+                        <div class="relative w-full flex flex-col items-center">
+                            <div id="quiet-timer-display" class="font-mono text-[12rem] md:text-[16rem] font-black text-white leading-none drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] tabular-nums">
+                                60
+                            </div>
+                            <div class="w-full max-w-3xl h-6 bg-slate-800 rounded-full mt-8 overflow-hidden shadow-inner border border-slate-700">
+                                <div id="quiet-timer-bar" class="h-full bg-blue-500 transition-all duration-1000 ease-linear w-full shadow-[0_0_15px_#3b82f6]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Panel: Behavior Tracking -->
+                <div id="behavior-panel" class="absolute right-0 top-0 bottom-0 w-[22rem] bg-slate-50 border-l border-slate-300 shadow-[0_0_40px_rgba(0,0,0,0.5)] transform translate-x-full z-40 flex flex-col">
+                    <div class="bg-indigo-900 text-white p-3 flex justify-between items-center shrink-0 shadow-md">
+                        <div>
+                            <h2 class="font-bold text-base leading-tight">Behavior Tracking</h2>
+                            <p class="text-[9px] text-indigo-300 uppercase tracking-widest">Talking without permission</p>
+                        </div>
+                        <button onclick="toggleBehaviorPanel()" class="text-indigo-300 hover:text-white transition-colors bg-indigo-800 p-1 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-2 bg-indigo-50 border-b border-indigo-100 flex gap-2 shrink-0">
+                        <button onclick="exportBehaviorCSV()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded shadow-sm text-[11px] transition-colors flex items-center justify-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                            Export to CSV
+                        </button>
+                        <button onclick="resetBehaviorScores()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-1.5 px-2 rounded shadow-sm text-[11px] transition-colors" title="Reset all to 0">
+                            Reset
+                        </button>
+                    </div>
+
+                    <div id="behavior-list" class="flex-1 overflow-y-auto p-1.5 space-y-1 custom-scrollbar bg-slate-100">
+                        <!-- Student behavior rows injected here via JS -->
                     </div>
                 </div>
             </div>
@@ -679,17 +839,18 @@
                             <button id="award-tab-5m2" onclick="renderAwards('5m2')" class="px-6 py-1.5 rounded font-bold transition-colors text-slate-500 hover:bg-slate-100">5M2</button>
                         </div>
                     </div>
-                    <div id="awards-grid" class="flex-1 grid grid-cols-6 gap-2 content-start pr-2 pb-8 w-full mx-auto">
+                    <!-- Exactly 6 columns, minimized height -->
+                    <div id="awards-grid" class="flex-1 grid grid-cols-6 gap-2 content-start overflow-y-auto custom-scrollbar pr-2 pb-12">
                         <!-- Cards injected here -->
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW: GROUP ORGANIZER -->
+            <!-- VIEW: CLASS / GROUP ORGANIZER -->
             <div id="view-class" class="hidden flex flex-col h-full bg-slate-50">
                 <div class="p-4 md:p-6 flex-1 flex flex-col max-w-7xl mx-auto w-full">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-slate-200 pb-4">
-                        <div class="flex flex-col gap-2 w-full md:w-auto">
+                        <div class="flex flex-col gap-2">
                             <h2 class="text-2xl font-display font-bold text-indigo-900 drop-shadow-sm">Group Organizer</h2>
                             <div id="group-timer-bar-container" class="hidden flex items-center gap-3">
                                 <span id="group-timer-text" class="font-mono font-bold text-sm text-slate-700 w-8">60s</span>
@@ -698,30 +859,27 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-wrap gap-2 bg-white p-2 rounded-xl shadow-sm border border-slate-200 items-center justify-center">
-                            <button onclick="startGroupTimer(1)" class="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-sm font-bold rounded-lg border border-cyan-200 transition-all shadow-sm active:scale-95">⏳ 1m</button>
-                            <button onclick="setGlobalTimer(5)" class="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-sm font-bold rounded-lg border border-cyan-200 transition-all shadow-sm active:scale-95">⏳ 5m</button>
-                            <button onclick="setGlobalTimer(10)" class="px-3 py-1.5 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-sm font-bold rounded-lg border border-cyan-200 transition-all shadow-sm active:scale-95">⏳ 10m</button>
-                            <div class="w-px h-6 bg-slate-200 mx-0.5"></div>
+                        <div class="flex flex-wrap gap-2 bg-white p-2 rounded-xl shadow-sm border border-slate-200 items-center">
+                            <button onclick="startGroupTimer()" class="px-3 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-sm font-bold rounded-lg border border-cyan-200 transition-all shadow-sm active:scale-95 flex items-center gap-1">
+                                ⏳ 1 Min
+                            </button>
+                            <div class="w-px h-6 bg-slate-200 mx-1"></div>
                             <button onclick="shuffleStudents(2)" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-bold rounded-lg border border-indigo-200 transition-all shadow-sm active:scale-95">Pairs</button>
                             <button onclick="shuffleStudents(3)" class="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-bold rounded-lg border border-emerald-200 transition-all shadow-sm active:scale-95">Trios</button>
                             <button onclick="shuffleStudents(4)" class="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-bold rounded-lg border border-amber-200 transition-all shadow-sm active:scale-95">Quads</button>
                             <button onclick="shuffleStudents(5)" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-sm font-bold rounded-lg border border-rose-200 transition-all shadow-sm active:scale-95">Fives</button>
-                            <button onclick="shuffleStudents(6)" class="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-bold rounded-lg border border-purple-200 transition-all shadow-sm active:scale-95">Sixes</button>
                         </div>
                     </div>
-                    <div id="shuffler-display" class="flex-1 grid gap-4 content-start pb-12 w-full">
+
+                    <div id="shuffler-display" class="flex-1 grid gap-3 content-start pb-12 w-full">
                         <!-- Cards injected here -->
                     </div>
                 </div>
             </div>
 
-            <!-- VIEW: INTERACTIVE PICKERS MENU -->
-            <div id="view-fun-pickers" class="hidden absolute inset-0 overflow-y-auto fun-bg z-40">
+            <!-- VIEW: FUN PICKERS -->
+            <div id="view-fun-pickers" class="hidden absolute inset-0 overflow-y-auto fun-bg z-20">
                 <div id="main-menu" class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
-                    <div class="absolute top-4 left-4">
-                        <button onclick="switchView('dashboard')" class="bg-white/20 hover:bg-white/40 border border-white/30 text-white font-bold py-2 px-4 rounded-xl transition duration-300 shadow-sm text-sm flex items-center gap-2">&larr; Dashboard</button>
-                    </div>
                     <div class="text-center w-full max-w-4xl mx-auto">
                         <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-10 text-shadow-lg drop-shadow-xl text-white">Interactive Pickers</h1>
 
@@ -736,7 +894,7 @@
                                 </div>
                             </div>
                             <div class="grade-card rounded-3xl p-8 shadow-2xl" style="animation-delay: 0.5s;">
-                                <h2 class="text-4xl font-black mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-300 to-purple-300">Grade 6 (6H2)</h2>
+                                <h2 class="text-4xl font-black mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-300 to-purple-300">Grade 6</h2>
                                 <div class="flex flex-col space-y-4">
                                     <button onclick="showFunPicker('random', '6h2')" class="menu-button text-xl">🎲 Random Picker</button>
                                     <button onclick="showFunPicker('fishing', '6h2')" class="menu-button text-xl">🎣 Fishing Game</button>
@@ -749,19 +907,16 @@
                 </div>
 
                 <!-- Containers for Picker Templates -->
-                <div id="fun-random-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-50"></div>
-                <div id="fun-fishing-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-50"></div>
-                <div id="fun-timer-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-50"></div>
-                <div id="fun-teams-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-50"></div>
+                <div id="fun-random-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-30"></div>
+                <div id="fun-fishing-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-30"></div>
+                <div id="fun-timer-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-30"></div>
+                <div id="fun-teams-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-30"></div>
                 <div id="celebration-container"></div>
             </div>
 
             <!-- VIEW: TECH SHUFFLER -->
-            <div id="view-tech-shuffler" class="hidden absolute inset-0 z-40 tech-bg overflow-hidden">
+            <div id="view-tech-shuffler" class="hidden absolute inset-0 z-20 tech-bg overflow-hidden">
                 <div class="scanlines"></div>
-                <div class="absolute top-4 left-4 z-50">
-                    <button onclick="switchView('dashboard')" class="bg-black/50 hover:bg-white/20 border border-slate-600 text-white font-bold py-2 px-4 rounded transition duration-300 shadow-sm text-xs font-mono">&larr; DASHBOARD</button>
-                </div>
                 
                 <!-- Tech Menu -->
                 <div id="techMenuView" class="absolute inset-0 flex flex-col items-center justify-center bg-[#050505] z-40 transition-opacity duration-500">
@@ -788,7 +943,7 @@
                 </div>
 
                 <!-- Tech Shuffle Interface -->
-                <div id="techShuffleView" class="flex h-full w-full hidden opacity-0 transition-opacity duration-1000 pt-14">
+                <div id="techShuffleView" class="flex h-full w-full hidden opacity-0 transition-opacity duration-1000">
                     <main class="w-3/4 h-full p-4 flex flex-col border-r border-slate-800 bg-slate-900/30 relative">
                         <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 50% 50%, #1e293b 1px, transparent 1px); background-size: 30px 30px;"></div>
 
@@ -854,59 +1009,111 @@
     </div>
 
     <script>
+        // --- DATA: ACTUAL SCHEDULE & CLASSES ---
         const females6h2 = ['Elsa', 'Lily', 'Florence', 'Yao', 'Miya', 'Nadiia', 'Amara', 'Hitomi', 'Alice', 'Karina', 'Winnie', 'Bella', 'Sonia', 'Albee', 'Abby'];
         const males6h2 = ['Martin', 'Noah', 'Eric', 'Eden', 'Dominic', 'Austin', 'Charles', 'Hoho', 'Anders', 'Jimmy', 'Ming', 'Jason', 'Brendan', 'Charlie', 'Sky', 'Ryan', 'Ian', 'Biscuit'];
-        const females5m2 = ["Julia", "Freya", "Anna", "Grace", "Avery", "Yihan", "Emma", "Abigail", "Susie", "Nina"];
-        const males5m2 = ["Bobby", "Kenneth", "Dafa", "Jim", "Leo", "Charles", "Henry", "Patrick", "Ryan", "David", "Justin", "Richard", "Jason Ma", "Edwin", "Circle", "Jason Shen", "Terrance", "Derek"];
+
+        const females5m2 = ["杜明阳 Dù Míngyáng", "方莉莹 Fāng Lìyíng", "贺麒晓 Hè Qíxiǎo", "李依慈 Lǐ Yīcí", "黎云葙 Lí Yúnxiāng", "路毅涵 Lù Yìhán", "叶书凝 Yè Shūníng", "王楚浵 Wáng Chǔtóng", "张舒珊 Zhāng Shūshān", "赵伽溪 Zhào Jiāxī"];
+        const males5m2 = ["曹宇哲 Cáo Yǔzhé", "陈子逍 Chén Zǐxiāo", "陈奕孝 Chén Yìxiào", "庄子翔 Zhuāng Zǐxiáng", "高英诚 Gāo Yīngchéng", "廖梓皓 Liào Zǐhào", "廖俊豪 Liào Jùnháo", "林柏佑 Lín Bǎiyòu", "林保宇 Lín Bǎoyǔ", "李润林 Lǐ Rùnlín", "李允正 Lǐ Yǔnzhèng", "李彦廷 Lǐ Yàntíng", "马翊皓 Mǎ Yìhào", "麦恩玮 Mài Ēnwěi", "马尚 Mǎ Shàng", "沈宇皓 Shěn Yǔhào", "谢浩谦 Xiè Hàoqiān", "张浩然 Zhāng Hàorán D"];
+
+        const behaviorRoster = [
+            { id: 1, cn: '陳一泓', en: 'Elsa', pts: 0 }, { id: 2, cn: '何嘉奕', en: 'Lily', pts: 0 }, { id: 3, cn: '李懿飛', en: 'Florence', pts: 0 },
+            { id: 4, cn: '羅瑤', en: 'Yao', pts: 0 }, { id: 5, cn: '宁天媛', en: 'Miya', pts: 0 }, { id: 6, cn: '秦藝宸', en: 'Nadiia', pts: 0 },
+            { id: 7, cn: '汪泊妍', en: 'Amara', pts: 0 }, { id: 8, cn: '王樂瞳', en: 'Hitomi', pts: 0 }, { id: 9, cn: '王藝錫', en: 'Alice', pts: 0 },
+            { id: 10, cn: '邱凱琳', en: 'Karina', pts: 0 }, { id: 11, cn: '楊宛宜', en: 'Winnie', pts: 0 }, { id: 12, cn: '張華純', en: 'Bella', pts: 0 },
+            { id: 13, cn: '張緒揚', en: 'Sonia', pts: 0 }, { id: 14, cn: '章芷鈞', en: 'Albee', pts: 0 }, { id: 15, cn: '鄭鈺冰', en: 'Abby', pts: 0 },
+            { id: 16, cn: '白艾辰', en: 'Martin', pts: 0 }, { id: 17, cn: '白尔诺', en: 'Noah', pts: 0 }, { id: 18, cn: '蔡昀融', en: 'Eric', pts: 0 },
+            { id: 19, cn: '陳茗渲', en: 'Eden', pts: 0 }, { id: 20, cn: '陳瀝楷', en: 'Dominic', pts: 0 }, { id: 21, cn: '江昕祐', en: 'Austin', pts: 0 },
+            { id: 22, cn: '龔朝毓', en: 'Charles', pts: 0 }, { id: 23, cn: '何皓泓', en: 'Hoho', pts: 0 }, { id: 24, cn: '林駿豪', en: 'Anders', pts: 0 },
+            { id: 25, cn: '林俊奕', en: 'Jimmy', pts: 0 }, { id: 26, cn: '羅昊明', en: 'Ming', pts: 0 }, { id: 27, cn: '文俊誠', en: 'Jason', pts: 0 },
+            { id: 28, cn: '顏林', en: 'Brendan', pts: 0 }, { id: 29, cn: '孫浩宸', en: 'Charlie', pts: 0 }, { id: 30, cn: '王涵竣', en: 'Sky', pts: 0 },
+            { id: 31, cn: '王蒴鑫', en: 'Ryan', pts: 0 }, { id: 32, cn: '楊知易', en: 'Ian', pts: 0 }, { id: 33, cn: '張宸嘉', en: 'Biscuit', pts: 0 }
+        ];
 
         const classes = [
-            { id: '6h2', name: '6H2 English', room: 'Room 202', students: [...females6h2, ...males6h2] },
-            { id: '5m2', name: '5M2 English', room: 'Room 105', students: [...females5m2, ...males5m2] }
+            {
+                id: '6h2',
+                name: '6H2 English',
+                room: 'Room 202',
+                students: [...females6h2, ...males6h2]
+            },
+            {
+                id: '5m2',
+                name: '5M2 English',
+                room: 'Room 105',
+                students: [...females5m2, ...males5m2]
+            }
         ];
 
         const studentGenders = {};
-        females6h2.forEach(n => studentGenders[n] = 'F'); males6h2.forEach(n => studentGenders[n] = 'M');
-        females5m2.forEach(n => studentGenders[n] = 'F'); males5m2.forEach(n => studentGenders[n] = 'M');
+        females6h2.forEach(n => studentGenders[n] = 'F');
+        males6h2.forEach(n => studentGenders[n] = 'M');
+        females5m2.forEach(n => studentGenders[n] = 'F');
+        males5m2.forEach(n => studentGenders[n] = 'M');
 
+        // Reusable Crypto-Secure Shuffle function
         function secureShuffle(array) {
             const shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
-                const buf = new Uint32Array(1); window.crypto.getRandomValues(buf);
+                const buf = new Uint32Array(1);
+                window.crypto.getRandomValues(buf);
                 const j = buf[0] % (i + 1);
                 [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
             return shuffled;
         }
 
-        classes.forEach(c => { c.students = secureShuffle(c.students); });
+        // Make sure classes are initially shuffled securely
+        classes.forEach(c => {
+            c.students = secureShuffle(c.students);
+        });
 
-        let currentClassId = null; let isSidebarOpen = false;
-        const sidebar = document.getElementById('sidebar'); const menuToggle = document.getElementById('menu-toggle');
+        // --- STATE ---
+        let currentClassId = null;
+        let isSidebarOpen = false;
+
+        // --- UI INITIALIZATION ---
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const menuToggle = document.getElementById('menu-toggle');
 
         menuToggle.addEventListener('click', () => {
             isSidebarOpen = !isSidebarOpen;
-            if (isSidebarOpen) sidebar.classList.remove('-translate-x-full');
-            else sidebar.classList.add('-translate-x-full');
+            if (isSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                mainContent.classList.add('md:ml-64');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                mainContent.classList.remove('md:ml-64');
+            }
         });
 
         const classListContainer = document.getElementById('class-list-container');
         classes.forEach(c => {
             const btn = document.createElement('button');
             btn.className = 'w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 transition-colors border border-transparent hover:border-indigo-100 flex items-center justify-between group';
-            btn.innerHTML = `${c.name} <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>`;
+            btn.innerHTML = `
+                ${c.name}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+            `;
             btn.onclick = () => { playSFX('click'); loadClass(c.id); };
             classListContainer.appendChild(btn);
         });
 
+        // --- Setting up Clock & Date Logic ---
         function updateTimetableDates() {
-            const now = new Date(); const dayOfWeek = now.getDay(); 
+            const now = new Date();
+            const dayOfWeek = now.getDay(); 
             const distanceToMonday = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
             const monday = new Date(now.setDate(distanceToMonday));
+            
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
             days.forEach((day, index) => {
-                const date = new Date(monday); date.setDate(monday.getDate() + index);
+                const date = new Date(monday);
+                date.setDate(monday.getDate() + index);
                 const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                const el = document.getElementById(`th-${day}`); if (el) el.innerText = dateStr;
+                const el = document.getElementById(`th-${day}`);
+                if (el) el.innerText = dateStr;
             });
         }
 
@@ -914,9 +1121,19 @@
             const now = new Date();
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('header-date').innerText = now.toLocaleDateString('en-US', dateOptions);
+            
+            let hours = now.getHours(); let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12; hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('header-time').innerText = `${hours}:${minutes}`;
+            document.getElementById('header-ampm').innerText = ampm;
         }
-        setInterval(updateDateTime, 1000); updateDateTime(); updateTimetableDates();
+        setInterval(updateDateTime, 1000); 
+        updateDateTime();
+        updateTimetableDates();
 
+        // --- STUDENT AWARDS ---
         let studentRewardsData = { '6h2': {}, '5m2': {} };
 
         const praisePhrases = [
@@ -958,7 +1175,9 @@
             document.getElementById('award-tab-6h2').className = classId === '6h2' ? "px-6 py-1.5 rounded font-bold transition-colors bg-indigo-100 text-indigo-700" : "px-6 py-1.5 rounded font-bold transition-colors text-slate-500 hover:bg-slate-100";
             document.getElementById('award-tab-5m2').className = classId === '5m2' ? "px-6 py-1.5 rounded font-bold transition-colors bg-indigo-100 text-indigo-700" : "px-6 py-1.5 rounded font-bold transition-colors text-slate-500 hover:bg-slate-100";
             
-            const grid = document.getElementById('awards-grid'); grid.innerHTML = '';
+            const grid = document.getElementById('awards-grid');
+            grid.innerHTML = '';
+            
             const classData = classes.find(c => c.id === classId);
             const sortedStudents = [...classData.students].sort((a,b) => a.localeCompare(b));
             
@@ -966,15 +1185,16 @@
                 if(studentRewardsData[classId][student] === undefined) studentRewardsData[classId][student] = 0;
                 
                 const card = document.createElement('button');
-                card.className = 'bg-white rounded-lg shadow-sm border border-slate-200 p-1 hover:shadow-md transition-all flex flex-col items-center justify-center gap-0 active:scale-95 h-10 md:h-12 w-full';
+                // Minimized height with h-14, tight padding
+                card.className = 'bg-white rounded-lg shadow-sm border border-slate-200 p-1 hover:shadow-md transition-all flex flex-col items-center justify-center gap-0.5 active:scale-95 h-14';
                 card.onclick = (e) => giveReward(classId, student, e);
                 
                 const isFemale = studentGenders[student] === 'F';
                 const nameColor = isFemale ? 'text-fuchsia-600' : 'text-blue-600';
                 
                 card.innerHTML = `
-                    <div class="font-bold text-[22px] md:text-[26px] ${nameColor} text-center leading-none truncate w-full px-1">${student}</div>
-                    <div class="flex flex-wrap justify-center gap-0.5 h-3 text-[10px] mt-0.5" id="badges-${classId}-${student.replace(/\s+/g,'')}">
+                    <div class="font-bold text-[18px] md:text-[22px] ${nameColor} text-center leading-tight truncate w-full px-1">${student}</div>
+                    <div class="flex flex-wrap justify-center gap-0.5 h-4 text-[10px] md:text-xs" id="badges-${classId}-${student.replace(/\s+/g,'')}">
                         ${'⭐'.repeat(studentRewardsData[classId][student])}
                     </div>
                 `;
@@ -983,25 +1203,37 @@
         }
 
         function giveReward(classId, student, event) {
-            studentRewardsData[classId][student]++; playSFX('ding');
+            studentRewardsData[classId][student]++;
+            playSFX('ding');
             speakPraise();
+            
             const rect = event.currentTarget.getBoundingClientRect();
-            const burstX = rect.left + rect.width / 2; const burstY = rect.top + rect.height / 2;
+            const burstX = rect.left + rect.width / 2;
+            const burstY = rect.top + rect.height / 2;
+
             for(let i=0; i<8; i++) {
-                const c = document.createElement('div'); c.className = 'confetti absolute pointer-events-none text-sm';
-                c.style.left = burstX + (Math.random()*40-20) + 'px'; c.style.top = burstY + (Math.random()*40-20) + 'px';
-                c.innerHTML = '⭐'; c.style.animation = 'fireworkExplode 0.8s ease-out forwards';
-                const angle = (Math.random() * 360) * Math.PI / 180; const distance = 20 + Math.random() * 30;
+                const c = document.createElement('div');
+                c.className = 'confetti absolute pointer-events-none text-sm';
+                c.style.left = burstX + (Math.random()*40-20) + 'px';
+                c.style.top = burstY + (Math.random()*40-20) + 'px';
+                c.innerHTML = '⭐';
+                c.style.animation = 'fireworkExplode 0.8s ease-out forwards';
+                const angle = (Math.random() * 360) * Math.PI / 180; 
+                const distance = 20 + Math.random() * 30;
                 c.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
-                document.body.appendChild(c); setTimeout(() => c.remove(), 800);
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 800);
             }
+            
             const badgeContainer = document.getElementById(`badges-${classId}-${student.replace(/\s+/g,'')}`);
             if(badgeContainer) {
                 badgeContainer.innerHTML = '⭐'.repeat(studentRewardsData[classId][student]);
-                badgeContainer.classList.add('scale-110'); setTimeout(() => badgeContainer.classList.remove('scale-110'), 200);
+                badgeContainer.classList.add('scale-110');
+                setTimeout(() => badgeContainer.classList.remove('scale-110'), 200);
             }
         }
 
+        // --- TIMER LOGIC ---
         let timerInterval; let timeLeft = 40 * 60; let isTimerRunning = false; let initialTime = 40 * 60;
 
         function updateTimerDisplay() {
@@ -1053,161 +1285,138 @@
 
         function awardPoint(event) {
             playSFX('ding');
-            const pt = document.createElement('div'); pt.className = 'point-anim'; pt.innerText = '+1';
-            if (event && event.clientX) { pt.style.left = event.clientX + 'px'; pt.style.top = event.clientY + 'px'; } 
-            else { pt.style.left = '50%'; pt.style.top = '20%'; }
-            document.body.appendChild(pt); setTimeout(() => pt.remove(), 1000);
+            const pt = document.createElement('div');
+            pt.className = 'point-anim';
+            pt.innerText = '+1';
+            if (event && event.clientX) {
+                pt.style.left = event.clientX + 'px';
+                pt.style.top = event.clientY + 'px';
+            } else {
+                pt.style.left = '50%';
+                pt.style.top = '20%';
+            }
+            document.body.appendChild(pt);
+            setTimeout(() => pt.remove(), 1000);
+            
             for(let i=0; i<8; i++) {
-                 const c = document.createElement('div'); c.className = 'confetti';
+                 const c = document.createElement('div');
+                 c.className = 'confetti';
                  c.style.left = ((event && event.clientX) || window.innerWidth/2) + (Math.random()*100 - 50) + 'px';
                  c.style.top = ((event && event.clientY) || window.innerHeight/2) + 'px';
-                 c.innerHTML = '✨'; c.style.animation = `confettiFall 1s linear forwards`;
-                 document.body.appendChild(c); setTimeout(()=>c.remove(), 1000);
+                 c.innerHTML = '✨';
+                 c.style.animation = `confettiFall 1s linear forwards`;
+                 document.body.appendChild(c);
+                 setTimeout(()=>c.remove(), 1000);
             }
         }
 
-        let readingInterval = null;
-        const READING_INITIAL_TIME = 600; 
-        let readingTimeLeft = READING_INITIAL_TIME;
-        let isReadingTimerRunning = false;
+        let quietTimerInterval = null;
+        let quietTimeLeft = 0;
+        let quietTimeTotal = 0;
 
-        function updateReadingDisplay() {
-            const m = Math.floor(readingTimeLeft / 60); 
-            const s = readingTimeLeft % 60;
-            document.getElementById('big-reading-clock').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-            const percentage = (readingTimeLeft / READING_INITIAL_TIME) * 100;
-            document.getElementById('reading-progress').style.width = `${percentage}%`;
-            
-            if (readingTimeLeft <= 60 && readingTimeLeft > 0) {
-                document.getElementById('reading-progress').classList.remove('bg-indigo-500');
-                document.getElementById('reading-progress').classList.add('bg-rose-500');
-            } else {
-                document.getElementById('reading-progress').classList.remove('bg-rose-500');
-                document.getElementById('reading-progress').classList.add('bg-indigo-500');
-            }
+        function toggleBehaviorPanel() {
+            playSFX('sweep');
+            const panel = document.getElementById('behavior-panel');
+            panel.classList.toggle('translate-x-full');
         }
 
-        function startReadingTimer() {
-            initAudio(); 
-            if (readingTimeLeft <= 0) resetReadingTimer(false);
-            if (isReadingTimerRunning) return;
+        function speakAndrew(text) {
+            if(!('speechSynthesis' in window)) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = window.speechSynthesis.getVoices();
+            let selectedVoice = voices.find(v => v.name.includes("Andrew")) ||
+                                voices.find(v => v.name.toLowerCase().includes("male") && v.lang.includes("en")) ||
+                                voices.find(v => v.lang.includes("en"));
             
-            isReadingTimerRunning = true;
-            document.getElementById('btn-reading-start').classList.add('hidden');
-            document.getElementById('btn-reading-pause').classList.remove('hidden');
-            document.getElementById('reading-status-text').innerText = "Reading in Progress...";
-            playSFX('click');
+            if (selectedVoice) utterance.voice = selectedVoice;
+            utterance.rate = 1.1; utterance.pitch = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function startQuietTimer() {
+            if (quietTimerInterval) clearInterval(quietTimerInterval);
+            playSFX('chime');
+            const selectEl = document.getElementById('quiet-time-select');
+            quietTimeTotal = parseInt(selectEl.value, 10);
+            quietTimeLeft = quietTimeTotal;
+            const display = document.getElementById('quiet-timer-display');
+            const bar = document.getElementById('quiet-timer-bar');
+            const flashText = document.getElementById('quiet-flashing-text');
             
-            readingInterval = setInterval(() => {
-                if (readingTimeLeft > 0) {
-                    readingTimeLeft--;
-                    updateReadingDisplay();
+            display.innerText = quietTimeLeft;
+            bar.style.width = "100%"; bar.style.backgroundColor = "#3b82f6";
+            flashText.classList.add('text-flash-urgent');
 
-                    if (readingTimeLeft === 300) speakText("Five minutes remaining.", true);
-                    if (readingTimeLeft === 60) speakText("One minute left. Wrap up your reading.", true);
-                    if (readingTimeLeft === 10) speakText("Ten seconds.", true);
-                    if (readingTimeLeft <= 5 && readingTimeLeft > 0) playSFX('click');
+            quietTimerInterval = setInterval(() => {
+                quietTimeLeft--;
+                display.innerText = quietTimeLeft;
+                bar.style.width = `${(quietTimeLeft / quietTimeTotal) * 100}%`;
 
-                } else {
-                    clearInterval(readingInterval);
-                    isReadingTimerRunning = false;
-                    document.getElementById('btn-reading-start').classList.remove('hidden');
-                    document.getElementById('btn-reading-pause').classList.add('hidden');
-                    document.getElementById('reading-status-text').innerText = "TIME IS UP";
-                    document.getElementById('big-reading-clock').innerText = "0:00";
-                    document.getElementById('reading-progress').style.width = "0%";
-                    
-                    triggerReadingAlarm();
+                if (quietTimeLeft <= 10) bar.style.backgroundColor = "#ef4444";
+                else if (quietTimeLeft <= quietTimeTotal / 2) bar.style.backgroundColor = "#f59e0b";
+
+                if (quietTimeLeft <= 10 && quietTimeLeft > 0) { speakAndrew(quietTimeLeft.toString()); }
+
+                if (quietTimeLeft <= 0) {
+                    clearInterval(quietTimerInterval); quietTimerInterval = null;
+                    display.innerText = "0"; flashText.classList.remove('text-flash-urgent');
+                    playSFX('loudbuzz');
                 }
             }, 1000);
         }
 
-        function pauseReadingTimer() {
-            if (!isReadingTimerRunning) return;
-            clearInterval(readingInterval);
-            isReadingTimerRunning = false;
-            document.getElementById('btn-reading-start').classList.remove('hidden');
-            document.getElementById('btn-reading-pause').classList.add('hidden');
-            document.getElementById('reading-status-text').innerText = "Paused";
-            playSFX('click');
-        }
-
-        function resetReadingTimer(playClick = true) {
-            if (playClick) playSFX('sweep');
-            clearInterval(readingInterval);
-            isReadingTimerRunning = false;
-            readingTimeLeft = READING_INITIAL_TIME;
-            document.getElementById('btn-reading-start').classList.remove('hidden');
-            document.getElementById('btn-reading-pause').classList.add('hidden');
-            document.getElementById('reading-status-text').innerText = "Ready to Focus";
-            document.getElementById('reading-alarm-overlay').classList.remove('alarm-flash');
-            updateReadingDisplay();
-        }
-
-        function triggerReadingAlarm() {
-            const overlay = document.getElementById('reading-alarm-overlay');
-            overlay.classList.add('alarm-flash');
-            
-            let count = 0;
-            const noiseInterval = setInterval(() => {
-                if (count % 2 === 0) playSFX('loudbuzz');
-                else playSFX('loudbell');
-                playSFX('chime');
-                count++;
-                if (count >= 10) clearInterval(noiseInterval); 
-            }, 500);
-
-            setTimeout(() => {
-                speakText("Time is up! Please sit down and read silently.", true);
-            }, 1500);
-
-            setTimeout(() => {
-                overlay.classList.remove('alarm-flash');
-            }, 5000);
-        }
-
-        const views = ['view-dashboard', 'view-class', 'view-fun-pickers', 'view-tech-shuffler', 'view-awards', 'view-reading-timer', 'view-class-roles'];
-        
-        function switchView(target) {
-            playSFX('sweep');
-            views.forEach(v => { const el = document.getElementById(v); if(el) el.classList.add('hidden'); });
-            document.getElementById(`view-${target}`).classList.remove('hidden');
-            
-            const mainHeader = document.getElementById('main-header');
-            if (target === 'fun-pickers' || target === 'tech-shuffler' || target === 'reading-timer') { 
-                mainHeader.classList.add('hidden'); 
-            } else { 
-                mainHeader.classList.remove('hidden'); 
+        function stopQuietTimer() {
+            if (quietTimerInterval) {
+                clearInterval(quietTimerInterval); quietTimerInterval = null;
+                playSFX('click'); document.getElementById('quiet-flashing-text').classList.remove('text-flash-urgent');
             }
-
-            if (target === 'dashboard') {
-                document.getElementById('header-class-name').innerText = "PKXYS Dashboard";
-                document.getElementById('header-room-name').classList.add('hidden');
-                currentClassId = null;
-            } else if (target === 'fun-pickers') { 
-                showFunMenu(); 
-            } else if (target === 'tech-shuffler') { 
-                returnToTechMenu(); 
-            } else if (target === 'awards') {
-                document.getElementById('header-class-name').innerText = "Student Awards";
-                document.getElementById('header-room-name').classList.add('hidden');
-            } else if (target === 'class-roles') {
-                document.getElementById('header-class-name').innerText = "6H2 Class Roles";
-                document.getElementById('header-room-name').classList.add('hidden');
-            } else if (target === 'reading-timer') {
-                updateReadingDisplay(); 
-            }
-
-            if (isSidebarOpen) menuToggle.click();
         }
 
-        function loadClass(classId) {
-            const classData = classes.find(c => c.id === classId); if (!classData) return;
-            currentClassId = classId;
-            document.getElementById('header-class-name').innerText = classData.name;
-            const roomHeader = document.getElementById('header-room-name');
-            roomHeader.innerText = classData.room; roomHeader.classList.remove('hidden');
-            switchView('class'); shuffleStudents(4);
+        function renderBehaviorRoster() {
+            const list = document.getElementById('behavior-list');
+            list.innerHTML = behaviorRoster.map((student, index) => `
+                <div class="flex items-center justify-between bg-white px-1.5 py-0.5 rounded border border-slate-200 shadow-sm transition-colors hover:border-indigo-300 min-h-[22px]">
+                    <div class="flex items-center gap-1 overflow-hidden">
+                        <span class="text-[8px] font-bold text-slate-400 bg-slate-100 px-1 py-0.5 rounded text-center shrink-0 w-4">${student.id}</span>
+                        <div class="font-bold text-slate-800 text-[10px] truncate w-14">${student.cn}</div>
+                        <div class="text-[9px] text-slate-500 truncate w-14">${student.en}</div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0 bg-slate-50 px-1 py-0.5 rounded border border-slate-100">
+                        <button onclick="changeBehaviorScore(${index}, -1)" class="w-4 h-4 bg-white border border-rose-200 text-rose-600 rounded flex items-center justify-center font-bold text-[10px] hover:bg-rose-50 hover:border-rose-300 active:scale-95 shadow-sm leading-none">
+                            -
+                        </button>
+                        <span class="w-4 text-center font-mono font-bold text-[10px] ${student.pts !== 0 ? (student.pts > 0 ? 'text-rose-600' : 'text-emerald-600') : 'text-slate-600'} leading-none">
+                            ${student.pts > 0 ? '+' : ''}${student.pts}
+                        </span>
+                        <button onclick="changeBehaviorScore(${index}, 1)" class="w-4 h-4 bg-white border border-rose-200 text-rose-600 rounded flex items-center justify-center font-bold text-[10px] hover:bg-rose-50 hover:border-rose-300 active:scale-95 shadow-sm leading-none">
+                            +
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeBehaviorScore(index, delta) {
+            behaviorRoster[index].pts += delta;
+            if (delta > 0) playSFX('buzz'); else playSFX('ding');
+            renderBehaviorRoster();
+        }
+
+        function resetBehaviorScores() {
+            if(confirm("Reset all behavior tracking points to 0?")) {
+                behaviorRoster.forEach(s => s.pts = 0); playSFX('sweep'); renderBehaviorRoster();
+            }
+        }
+
+        function exportBehaviorCSV() {
+            playSFX('tada');
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Chinese Name,English Name,Talking Points (Violations)\n";
+            behaviorRoster.forEach(s => { csvContent += `${s.id},${s.cn},${s.en},${s.pts}\n`; });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a"); const dateStr = new Date().toISOString().split('T')[0];
+            link.setAttribute("href", encodedUri); link.setAttribute("download", `6H2_Talking_Behavior_${dateStr}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
         let groupTimerInterval;
@@ -1238,548 +1447,9 @@
             }, 1000);
         }
 
-        function shuffleStudents(groupSize) {
-            if (!currentClassId) return;
-            playSFX('shuffle'); 
-            
-            for (let i = 0; i < 15; i++) {
-                setTimeout(() => {
-                    const c = document.createElement('div'); c.className = 'confetti';
-                    c.style.left = Math.random() * window.innerWidth + 'px';
-                    c.innerHTML = ['✨', '💫', '🌟', '🎉'][Math.floor(Math.random() * 4)];
-                    c.style.animation = `confettiFall ${2 + Math.random() * 2}s linear forwards`;
-                    document.body.appendChild(c); setTimeout(() => c.remove(), 4000);
-                }, i * 30);
-            }
-
-            const classData = classes.find(c => c.id === currentClassId);
-            const display = document.getElementById('shuffler-display');
-            display.innerHTML = ''; 
-            
-            let students = [...classData.students];
-            let males = secureShuffle(students.filter(s => studentGenders[s] === 'M'));
-            let females = secureShuffle(students.filter(s => studentGenders[s] === 'F'));
-            
-            let allShuffled = [];
-            while(males.length || females.length) {
-                if(females.length) allShuffled.push(females.pop());
-                if(males.length) allShuffled.push(males.pop());
-            }
-
-            let groups = [];
-            for (let i = 0; i < allShuffled.length; i += groupSize) {
-                groups.push(allShuffled.slice(i, i + groupSize));
-            }
-
-            display.className = "flex-1 grid gap-4 content-start pb-12 w-full ";
-            const numGroups = groups.length;
-            if (numGroups <= 6) { display.className += "grid-cols-2 md:grid-cols-3"; } 
-            else if (numGroups <= 8) { display.className += "grid-cols-2 md:grid-cols-4"; } 
-            else if (numGroups <= 12) { display.className += "grid-cols-3 md:grid-cols-4 lg:grid-cols-6"; } 
-            else { display.className += "grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8"; }
-
-            groups.forEach((group, index) => {
-                const card = document.createElement('div');
-                card.className = `student-card border rounded-2xl p-1 shadow-sm flex flex-col justify-start bg-white border-slate-200`;
-                
-                const groupTitle = document.createElement('div');
-                groupTitle.className = 'text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-1 border-b-2 border-indigo-50 pb-0.5 text-center shrink-0';
-                groupTitle.innerText = `Team ${index + 1}`;
-                card.appendChild(groupTitle);
-
-                const namesContainer = document.createElement('div');
-                if (group.length >= 5) { namesContainer.className = "grid grid-cols-2 gap-1 w-full"; } 
-                else { namesContainer.className = "flex flex-col gap-1 w-full"; }
-
-                group.forEach(student => {
-                    const nameSpan = document.createElement('div');
-                    let nameColor = studentGenders[student] === 'F' ? 'text-fuchsia-600 bg-fuchsia-50' : 'text-blue-600 bg-blue-50';
-                    nameSpan.className = `font-bold text-xl md:text-2xl leading-none py-1.5 px-1 rounded-lg text-center ${nameColor} flex items-center justify-center truncate w-full`;
-                    nameSpan.innerText = student;
-                    namesContainer.appendChild(nameSpan);
-                });
-                
-                card.appendChild(namesContainer);
-                display.appendChild(card);
-            });
-        }
-
-        let activeTechClass = null; let currentTechNames = []; let isTechAnimating = false;
-        const glitchChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@&%$£€¥";
-
-        function techLog(msg) {
-            const logBox = document.getElementById('techLog'); const el = document.createElement('div');
-            el.textContent = `> ${msg}`; logBox.appendChild(el); logBox.scrollTop = logBox.scrollHeight;
-        }
-
-        function selectTechGrade(gradeId) {
-            playSFX('click'); playSFX('sweep');
-            activeTechClass = gradeId; currentTechNames = [...classes.find(c=>c.id===gradeId).students];
-            document.getElementById('techGradeTitle').textContent = `DB_${gradeId.toUpperCase()}`;
-            document.getElementById('techSystemStatus').textContent = "ENCRYPTED";
-            document.getElementById('techSystemStatus').className = "text-slate-400 animate-pulse font-bold";
-
-            const menu = document.getElementById('techMenuView'); const shuffle = document.getElementById('techShuffleView');
-            menu.style.opacity = '0';
-            setTimeout(() => {
-                menu.classList.add('hidden'); shuffle.classList.remove('hidden');
-                void shuffle.offsetWidth; shuffle.style.opacity = '1';
-                renderTechList(currentTechNames, true);
-                techLog(`Loaded DB_${gradeId}. ${currentTechNames.length} Nodes. [ENCRYPTED]`);
-            }, 500);
-        }
-
-        function returnToTechMenu() {
-            if(isTechAnimating) return; playSFX('click');
-            const menu = document.getElementById('techMenuView'); const shuffle = document.getElementById('techShuffleView');
-            shuffle.style.opacity = '0';
-            setTimeout(() => {
-                shuffle.classList.add('hidden'); menu.classList.remove('hidden');
-                void menu.offsetWidth; menu.style.opacity = '1';
-                techLog("Returned to Main Menu.");
-            }, 500);
-        }
-
-        function renderTechList(names, obfuscate = false) {
-            const container = document.getElementById('techGridContainer'); container.innerHTML = '';
-            document.getElementById('techNodeCount').textContent = names.length;
-            const rowCount = Math.ceil(names.length / 3);
-            container.style.gridTemplateRows = `repeat(${rowCount}, minmax(0, 1fr))`;
-            
-            names.forEach((name, index) => {
-                const el = document.createElement('div');
-                let genderColor = studentGenders[name] === 'F' ? 'border-pink-500' : 'border-blue-500';
-                el.className = `relative flex items-center bg-slate-800/80 rounded-r-lg border-l-4 ${genderColor} overflow-hidden group backdrop-blur-md h-10 transition-all shadow-lg border-t border-r border-b border-white/5 min-w-[200px] max-w-[250px]`;
-                const techID = Math.floor(Math.random()*9000) + 1000;
-                let displayContent = name; let textClass = `name-text text-sm font-bold text-white tracking-wide uppercase truncate drop-shadow-md`;
-                
-                if (obfuscate) {
-                   let s = ""; for(let k=0; k<8; k++) s+= glitchChars[Math.floor(Math.random()*glitchChars.length)];
-                   displayContent = s; textClass = "name-text text-sm font-bold text-emerald-400 tracking-widest uppercase truncate font-mono shadow-[0_0_10px_rgba(52,211,153,0.5)]";
-                }
-
-                el.innerHTML = `
-                  <div class="w-8 h-full bg-slate-900/90 flex items-center justify-center border-r border-white/20">
-                    <span class="text-xs font-bold text-slate-400 font-mono">${index + 1}</span>
-                  </div>
-                  <div class="flex-1 px-2 flex items-center justify-between overflow-hidden">
-                    <span class="${textClass}">${displayContent}</span>
-                    <div class="flex flex-col items-end shrink-0 ml-2">
-                       <span class="text-[8px] font-mono text-slate-400">ID-${techID}</span>
-                       <div class="h-0.5 w-4 bg-slate-700 rounded-full mt-1 overflow-hidden">
-                         <div class="h-full bg-cyan-500/50 w-[${Math.random()*100}%]"></div>
-                       </div>
-                    </div>
-                  </div>
-                `;
-                container.appendChild(el);
-            });
-        }
-
-        async function runTechShuffle() {
-            if (isTechAnimating) return; isTechAnimating = true;
-            const statusEl = document.getElementById('techSystemStatus');
-            statusEl.textContent = "DECRYPTING..."; statusEl.className = "text-yellow-400 animate-pulse font-bold drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]";
-            try { playSFX('shuffle'); } catch(e) {}
-            techLog("Initializing CSPRNG Secure Shuffle Algorithm...");
-            
-            let target = [...currentTechNames];
-            try { target = secureShuffle(target); } 
-            catch (e) {
-                 for (let i = target.length - 1; i > 0; i--) {
-                     const j = Math.floor(Math.random() * (i + 1));
-                     [target[i], target[j]] = [target[j], target[i]];
-                 }
-            }
-
-            const DURATION = 4000; const startTime = Date.now();
-            const nameEls = Array.from(document.querySelectorAll('.name-text'));
-            const progressBar = document.getElementById('techProgressBar');
-            const timerText = document.getElementById('techTimerText');
-            const glitchClasses = ['glitch-cyan', 'glitch-magenta', 'glitch-lime', 'glitch-yellow'];
-
-            return new Promise(resolve => {
-                const interval = setInterval(() => {
-                    const elapsed = Date.now() - startTime; const progress = Math.min(elapsed / DURATION, 1);
-                    progressBar.style.width = `${progress * 100}%`; timerText.textContent = `${(elapsed/1000).toFixed(2)}s`;
-
-                    if (elapsed < DURATION) {
-                        nameEls.forEach(el => {
-                            if (Math.random() > 0.7) {
-                               el.className = `name-text text-sm font-bold tracking-wide uppercase truncate ${glitchClasses[Math.floor(Math.random()*4)]}`;
-                               let s = ""; for(let k=0; k<6; k++) s+= glitchChars[Math.floor(Math.random()*glitchChars.length)];
-                               el.textContent = s;
-                            } else { el.className = "name-text text-sm font-bold text-slate-200 tracking-wide uppercase truncate font-mono"; }
-                        });
-                    } else {
-                        clearInterval(interval); currentTechNames = target;
-                        nameEls.forEach((el, index) => {
-                            el.textContent = currentTechNames[index];
-                            el.className = "name-text text-sm font-bold text-white tracking-wide uppercase truncate drop-shadow-md";
-                            const parent = el.closest('div').parentElement; parent.classList.add('locked-in');
-                            setTimeout(() => parent.classList.remove('locked-in'), 800);
-                        });
-                        try { playSFX('tada'); } catch(e){}
-                        statusEl.textContent = "ONLINE"; statusEl.className = "text-green-400 font-bold drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]";
-                        techLog("Sequence Complete."); isTechAnimating = false; resolve();
-                    }
-                }, 50);
-            });
-        }
-
-        function resetTechSystem() {
-            if(isTechAnimating) return; playSFX('click');
-            currentTechNames = [...classes.find(c=>c.id===activeTechClass).students];
-            renderTechList(currentTechNames, true); 
-            document.getElementById('techProgressBar').style.width = '0%';
-            document.getElementById('techTimerText').textContent = '0.00s';
-            document.getElementById('techSystemStatus').textContent = "ENCRYPTED";
-            document.getElementById('techSystemStatus').className = "text-slate-400 animate-pulse font-bold";
-            techLog("System Reset. Database Encrypted.");
-        }
-
-        const funMenu = document.getElementById('main-menu');
-        const funPickerContainers = document.querySelectorAll('.picker-container');
-        let currentFunActivity = { type: null, grade: null, cleanup: null };
-        let pickedStudentsHistory = {};
-
-        function showFunMenu() {
-            playSFX('click');
-            if (currentFunActivity.cleanup) currentFunActivity.cleanup();
-            funMenu.classList.remove('hidden');
-            funPickerContainers.forEach(c => c.classList.add('hidden'));
-            currentFunActivity = { type: null, grade: null, cleanup: null };
-        }
-
-        function showFunPicker(type, grade) {
-            playSFX('click'); funMenu.classList.add('hidden');
-            const containerId = `fun-${type}-picker`; const container = document.getElementById(containerId);
-            funPickerContainers.forEach(c => c.classList.add('hidden')); container.classList.remove('hidden');
-            pickedStudentsHistory[grade] = [];
-            const students = classes.find(c=>c.id===grade).students;
-            currentFunActivity.type = type; currentFunActivity.grade = grade;
-
-            if (type === 'random') { container.innerHTML = getFunRandomPickerTemplate(grade); currentFunActivity.cleanup = initFunRandomPicker(container, students, grade); }
-            else if (type === 'fishing') { container.innerHTML = getFunFishingTemplate(grade); currentFunActivity.cleanup = initFunFishingGame(container, students, grade); }
-            else if (type === 'timer') { container.innerHTML = getFunTimerTemplate(grade); currentFunActivity.cleanup = initFunSpeakingTimer(container, students, grade); }
-            else if (type === 'teams') { container.innerHTML = getFunTeamsTemplate(grade); currentFunActivity.cleanup = initFunTeamPicker(container, students, grade); }
-        }
-
-        function getFunBackButton() { return `<button onclick="showFunMenu()" class="bg-white/20 hover:bg-white/40 border border-white/30 text-white font-bold py-2 px-4 rounded-xl transition duration-300 shadow-sm text-sm flex items-center gap-2 shrink-0">&larr; Games Menu</button>`; }
-
-        function getFunStudentListHTML(students, idPrefix) {
-            const displayStudents = [...students].sort((a,b) => a.localeCompare(b));
-            const listItems = displayStudents.map((name, index) => {
-                let color = studentGenders[name] === 'F' ? 'text-fuchsia-300' : 'text-blue-300';
-                return `<div class="student-list-item ${color} text-lg md:text-xl font-bold py-3" id="${idPrefix}-${index}">${name}</div>`;
-            }).join('');
-            return `<div class="w-full flex-1 flex flex-col bg-black/20 rounded-2xl p-4 overflow-hidden mt-4"><div class="flex-1 overflow-y-auto grid grid-cols-5 gap-3 md:gap-4 content-start">${listItems}</div></div>`;
-        }
-
-        function getFunRandomPickerTemplate(grade) {
-            return `
-                <div class="h-screen w-full flex flex-col p-4 bg-gray-900">
-                    <div class="flex items-center justify-between gap-4 bg-white/10 p-3 rounded-2xl backdrop-blur z-50 shrink-0">
-                        ${getFunBackButton()}
-                        <div id="random-name-display" class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white text-2xl md:text-3xl font-bold py-2 px-6 rounded-xl shadow-inner transition-all duration-300 min-w-[200px] text-center flex-1 mx-4">Click Start</div>
-                        <div class="flex gap-2 items-center shrink-0">
-                            <button id="random-start-button" class="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg hover:scale-105 transition-transform text-sm uppercase tracking-wider whitespace-nowrap">🚀 Start Picking</button>
-                            <button id="random-reset-button" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-xl shadow-lg hover:bg-gray-500 text-sm uppercase tracking-wider whitespace-nowrap">🔄 Reset</button>
-                            <div id="random-timer" class="text-xl font-bold text-white px-4 py-1 bg-black/30 rounded-xl min-w-[100px] text-center whitespace-nowrap">Ready!</div>
-                        </div>
-                    </div>
-                    ${getFunStudentListHTML(classes.find(c=>c.id===grade).students, 'random')}
-                </div>
-            `;
-        }
-
-        function initFunRandomPicker(container, students, grade) {
-            const nameDisplay = container.querySelector("#random-name-display"); const startButton = container.querySelector("#random-start-button");
-            const resetButton = container.querySelector("#random-reset-button"); const timerDisplay = container.querySelector("#random-timer");
-            let isPicking = false, pickingInterval, timerInterval; const studentElements = container.querySelectorAll('.student-list-item');
-
-            function updateStudentListView() {
-                studentElements.forEach(el => {
-                    if (pickedStudentsHistory[grade].includes(el.textContent)) el.classList.add('picked');
-                    else el.classList.remove('picked');
-                });
-            }
-
-            function startPicking() {
-                if (isPicking) return;
-                const availableStudents = students.filter(s => !pickedStudentsHistory[grade].includes(s));
-                if (availableStudents.length === 0) { nameDisplay.textContent = "All Done!"; nameDisplay.style.color = 'white'; return; }
-                isPicking = true; startButton.disabled = true; resetButton.disabled = true; startButton.textContent = 'Picking...'; nameDisplay.style.color = 'white';
-                let timeLeft = 6; timerDisplay.textContent = `⏱️ ${timeLeft}s`;
-                timerInterval = setInterval(() => { timeLeft--; timerDisplay.textContent = `⏱️ ${timeLeft}s`; }, 1000);
-                const shuffledAvailable = secureShuffle([...availableStudents]); let highlightIndex = 0;
-                pickingInterval = setInterval(() => {
-                    const currentName = shuffledAvailable[highlightIndex % shuffledAvailable.length]; nameDisplay.textContent = currentName;
-                    studentElements.forEach(el => el.classList.remove('highlight'));
-                    const studentToHighlight = Array.from(studentElements).find(el => el.textContent === currentName);
-                    if(studentToHighlight) studentToHighlight.classList.add('highlight');
-                    playSFX('click'); highlightIndex++;
-                }, 150);
-
-                setTimeout(() => {
-                    clearInterval(pickingInterval); clearInterval(timerInterval);
-                    isPicking = false; startButton.disabled = false; resetButton.disabled = false; startButton.textContent = '🚀 Start Again';
-                    const winner = shuffledAvailable[Math.floor(Math.random() * shuffledAvailable.length)];
-                    nameDisplay.textContent = winner; nameDisplay.style.color = studentGenders[winner] === 'F' ? '#e879f9' : '#60a5fa';
-                    pickedStudentsHistory[grade].push(winner); updateStudentListView();
-                    studentElements.forEach(el => el.classList.remove('highlight'));
-                    const winnerElement = Array.from(studentElements).find(el => el.textContent === winner);
-                    if(winnerElement) winnerElement.classList.add('highlight');
-                    playSFX('tada'); triggerHugeCelebration(winner); timerDisplay.textContent = 'Winner!';
-                    setTimeout(() => { nameDisplay.style.color = 'white'; timerDisplay.textContent = 'Ready!'; if(winnerElement) winnerElement.classList.remove('highlight'); }, 5000);
-                }, 6000);
-            }
-            startButton.onclick = startPicking; resetButton.onclick = () => { pickedStudentsHistory[grade] = []; updateStudentListView(); nameDisplay.textContent = 'Ready to Pick!'; nameDisplay.style.color = 'white'; };
-            updateStudentListView(); return () => { clearInterval(pickingInterval); clearInterval(timerInterval); };
-        }
-
-        function getFunFishingTemplate(grade) {
-             return `
-                <div class="h-screen w-full flex flex-col p-4 bg-gradient-to-b from-blue-300 to-blue-800 relative">
-                    <div class="flex items-center justify-between gap-4 mb-4 bg-white/20 p-3 rounded-2xl backdrop-blur z-50 shrink-0">
-                        ${getFunBackButton()}
-                        <div class="flex gap-2 items-center flex-1 justify-end">
-                            <button id="fishing-start-button" class="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg hover:scale-105 text-sm uppercase tracking-wider whitespace-nowrap">🎣 Start Fishing</button>
-                            <button id="fishing-reset-button" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg hover:bg-gray-600 text-sm uppercase tracking-wider whitespace-nowrap">🔄 Reset</button>
-                            <div id="fishing-timer" class="text-lg font-bold text-slate-800 bg-white/90 rounded-xl px-4 py-1.5 shadow-sm min-w-[150px] text-center whitespace-nowrap">Ready to fish!</div>
-                        </div>
-                    </div>
-                    <div id="lake" class="relative flex-1 w-full bg-gradient-to-b from-blue-400 to-blue-900 rounded-[30px] overflow-hidden shadow-2xl border-8 border-yellow-700">
-                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[waterShimmer_3s_ease-in-out_infinite] pointer-events-none"></div>
-                        <div class="absolute top-0 left-0 w-full h-[30px] bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.1)_0px,rgba(255,255,255,0.2)_10px,rgba(255,255,255,0.1)_20px)] animate-[waveMotion_2s_linear_infinite] pointer-events-none"></div>
-                        <div id="boat" class="absolute top-[20px] left-[10%] w-[120px] h-[80px] animate-[boatFloat_4s_ease-in-out_infinite] z-20 pointer-events-none">
-                            <div class="absolute bottom-0 left-[10px] w-[100px] h-[25px] bg-yellow-800 rounded-b-full shadow-lg"></div>
-                            <div class="absolute bottom-[25px] left-[55px] w-[4px] h-[40px] bg-yellow-800 rounded-sm"></div>
-                            <div class="absolute bottom-[35px] left-[25px] w-[35px] h-[25px] bg-gray-100 rounded-l-md shadow-md animate-[sailFlutter_3s_ease-in-out_infinite]"></div>
-                        </div>
-                        <div id="fisherman" class="absolute top-[10px] right-[15%] w-[100px] h-[120px] z-20 pointer-events-none">
-                            <div class="absolute bottom-[85px] left-[32px] w-[35px] h-[15px] bg-red-500 rounded-full"></div>
-                            <div class="absolute bottom-[75px] left-[35px] w-[30px] h-[30px] bg-yellow-200 rounded-full"></div>
-                            <div class="absolute bottom-[20px] left-[30px] w-[40px] h-[60px] bg-yellow-800 rounded-2xl"></div>
-                            <div class="absolute bottom-[40px] left-[60px] w-[4px] h-[80px] bg-gradient-to-t from-yellow-900 to-yellow-700 rounded-sm shadow-md origin-bottom animate-[rodCast_4s_ease-in-out_infinite]"></div>
-                        </div>
-                        <div id="fishing-line" class="absolute w-[2px] h-[300px] bg-white/60 top-[50px] right-[calc(15%+45px)] origin-top animate-[lineSwing_4s_ease-in-out_infinite] z-10 pointer-events-none">
-                           <div class="absolute bottom-[-10px] left-[-3px] w-[8px] h-[12px] bg-gray-400 rounded-b-full border border-gray-500"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function initFunFishingGame(container, students, grade) {
-            const lake = container.querySelector("#lake"); const startButton = container.querySelector("#fishing-start-button");
-            const resetButton = container.querySelector("#fishing-reset-button"); const timerDisplay = container.querySelector("#fishing-timer");
-            let fishElements = [], animationFrameId, timerInterval, isFishing = false;
-
-            function updateFishView() {
-                fishElements.forEach(fish => {
-                    const fishName = fish.element.querySelector('.f-name').textContent;
-                    if (pickedStudentsHistory[grade].includes(fishName)) { fish.element.style.opacity = '0.2'; fish.element.style.pointerEvents = 'none'; } 
-                    else { fish.element.style.opacity = '1'; fish.element.style.pointerEvents = 'auto'; }
-                });
-            }
-
-            function createFish() {
-                lake.querySelectorAll('.fish').forEach(f => f.remove()); fishElements = [];
-                students.forEach(student => {
-                    const fish = document.createElement('div'); fish.className = 'fish';
-                    fish.style.cssText = `position: absolute; display: flex; align-items: center; font-size: 2.5rem; transition: all 0.3s ease; left: ${Math.random() * (lake.offsetWidth - 150)}px; top: ${150 + Math.random() * (lake.offsetHeight - 250)}px; animation: fish-bob ${2 + Math.random() * 2}s ease-in-out infinite; z-index: 15;`;
-                    let nameColor = studentGenders[student] === 'F' ? 'color: #f472b6;' : 'color: #38bdf8;';
-                    fish.innerHTML = `<span>🐟</span><span class="f-name" style="font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.7); padding: 3px 8px; border-radius: 6px; margin-left: 2px; ${nameColor}">${student}</span>`;
-                    lake.appendChild(fish);
-                    fishElements.push({ element: fish, x: parseFloat(fish.style.left), y: parseFloat(fish.style.top), speedX: (Math.random() - 0.5) * 2, speedY: (Math.random() - 0.5) });
-                });
-                updateFishView();
-            }
-
-            function animateFish() {
-                fishElements.forEach(f => {
-                    f.x += f.speedX; f.y += f.speedY;
-                    if (f.x <= 0 || f.x >= lake.offsetWidth - 100) f.speedX *= -1;
-                    if (f.y <= 60 || f.y >= lake.offsetHeight - 50) f.speedY *= -1;
-                    f.element.style.left = `${f.x}px`; f.element.style.top = `${f.y}px`;
-                    f.element.firstElementChild.style.transform = f.speedX < 0 ? 'scaleX(-1)' : 'scaleX(1)';
-                });
-                animationFrameId = requestAnimationFrame(animateFish);
-            }
-            
-            function startFishing() {
-                if (isFishing) return;
-                const availableStudents = students.filter(s => !pickedStudentsHistory[grade].includes(s));
-                if (availableStudents.length === 0) { timerDisplay.textContent = "All fish caught!"; return; }
-                isFishing = true; startButton.disabled = true; resetButton.disabled = true; startButton.textContent = 'Fishing...';
-                let timeLeft = 12;
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    if (timeLeft > 8) timerDisplay.textContent = `Casting... ${timeLeft}s`;
-                    else if (timeLeft > 4) { timerDisplay.textContent = `Biting... ${timeLeft}s`; playSFX('click'); }
-                    else if (timeLeft > 0) timerDisplay.textContent = `Reeling! ${timeLeft}s`;
-                    if (timeLeft <= 0) catchFish(availableStudents);
-                }, 1000);
-            }
-
-            function catchFish(availableStudents) {
-                clearInterval(timerInterval);
-                const winner = availableStudents[Math.floor(Math.random() * availableStudents.length)];
-                const caughtFish = fishElements.find(f => f.element.querySelector('.f-name').textContent === winner);
-                if(caughtFish) caughtFish.element.style.animation = 'fishCaught 2s ease-out forwards';
-                playSFX('tada'); pickedStudentsHistory[grade].push(winner); updateFishView(); triggerHugeCelebration(winner);
-                setTimeout(() => { isFishing = false; startButton.disabled = false; resetButton.disabled = false; startButton.textContent = '🎣 Start Fishing'; timerDisplay.textContent = 'Ready to fish!'; }, 5000);
-            }
-
-            startButton.onclick = startFishing; resetButton.onclick = () => { pickedStudentsHistory[grade] = []; updateFishView(); timerDisplay.textContent = "Pool restocked!"; };
-            setTimeout(() => { createFish(); animateFish(); }, 100);
-            return () => { cancelAnimationFrame(animationFrameId); clearInterval(timerInterval); };
-        }
-
-        function getFunTimerTemplate(grade) {
-            return `
-                <div class="h-screen w-full flex flex-col p-4 bg-gradient-to-br from-indigo-900 to-purple-900">
-                    <div class="flex items-center justify-between gap-4 bg-white/10 p-3 rounded-2xl backdrop-blur z-50 shrink-0">
-                        ${getFunBackButton()}
-                        <div class="flex items-center gap-4 bg-black/20 p-2 rounded-xl flex-1 justify-center mx-4">
-                            <div class="text-xs text-purple-200 font-bold uppercase tracking-widest hidden md:block">Now Speaking</div>
-                            <div id="timer-speaker-name" class="text-2xl md:text-4xl font-bold text-white min-w-[200px] text-center drop-shadow-lg">Ready...</div>
-                            <div id="timer-display-speaker" class="text-3xl md:text-5xl font-black text-cyan-400 w-20 text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">0</div>
-                        </div>
-                        <div class="flex gap-2 shrink-0">
-                            <button class="duration-btn bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-lg hover:scale-105 transition-all whitespace-nowrap">30s Auto</button>
-                            <button class="duration-btn bg-gradient-to-r from-blue-400 to-indigo-500 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-lg hover:scale-105 transition-all whitespace-nowrap">40s Auto</button>
-                            <button class="duration-btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-lg hover:scale-105 transition-all whitespace-nowrap">50s Auto</button>
-                            <button id="timer-stop-btn" class="hidden bg-red-600 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-lg hover:bg-red-500 transition-all whitespace-nowrap">⏹️ Stop</button>
-                        </div>
-                    </div>
-                    ${getFunStudentListHTML(classes.find(c=>c.id===grade).students, 'timer')}
-                </div>
-            `;
-        }
-
-        function initFunSpeakingTimer(container, students, grade) {
-            let timeLeft = 0; let timerInterval = null; let currentSpeaker = null; let autoPilotQueue = []; let autoPilotMode = false;
-            const speakerName = container.querySelector("#timer-speaker-name"); const timerDisplay = container.querySelector("#timer-display-speaker");
-            const studentElements = container.querySelectorAll('.student-list-item'); const durationBtns = container.querySelectorAll('.duration-btn'); const stopBtn = container.querySelector('#timer-stop-btn');
-
-            function updateView() {
-                studentElements.forEach(el => {
-                    el.classList.remove('highlight');
-                    if (pickedStudentsHistory[grade] && pickedStudentsHistory[grade].includes(el.textContent)) el.classList.add('picked');
-                    else el.classList.remove('picked');
-                });
-                if (currentSpeaker) {
-                    speakerName.textContent = currentSpeaker; speakerName.style.color = studentGenders[currentSpeaker] === 'F' ? '#e879f9' : '#60a5fa';
-                    const speakerElement = Array.from(studentElements).find(el => el.textContent === currentSpeaker);
-                    if (speakerElement) speakerElement.classList.add('highlight');
-                } else { speakerName.style.color = 'white'; speakerName.textContent = "Ready..."; }
-                timerDisplay.textContent = timeLeft;
-            }
-
-            function nextAutoPilot(seconds) {
-                if (autoPilotQueue.length === 0) { speakerName.textContent = "All Done!"; autoPilotMode = false; stopBtn.classList.add('hidden'); durationBtns.forEach(btn => btn.classList.remove('hidden')); return; }
-                currentSpeaker = autoPilotQueue.shift(); pickedStudentsHistory[grade].push(currentSpeaker); timeLeft = seconds; updateView(); playSFX('click');
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval); timerInterval = null; playSFX('loudbuzz'); triggerHugeCelebration(currentSpeaker, true); currentSpeaker = null; timeLeft = 0; updateView();
-                        setTimeout(() => { if (autoPilotMode) nextAutoPilot(seconds); }, 5000);
-                    } else { timerDisplay.textContent = timeLeft; }
-                }, 1000);
-            }
-
-            function startAutoPilot(seconds) {
-                if (timerInterval) clearInterval(timerInterval); autoPilotMode = true;
-                const availableStudents = students.filter(s => !pickedStudentsHistory[grade] || !pickedStudentsHistory[grade].includes(s));
-                if (availableStudents.length === 0) pickedStudentsHistory[grade] = []; 
-                const currentAvailable = students.filter(s => !pickedStudentsHistory[grade].includes(s));
-                autoPilotQueue = secureShuffle([...currentAvailable]); durationBtns.forEach(btn => btn.classList.add('hidden')); stopBtn.classList.remove('hidden'); nextAutoPilot(seconds);
-            }
-
-            durationBtns[0].onclick = () => startAutoPilot(30); durationBtns[1].onclick = () => startAutoPilot(40); durationBtns[2].onclick = () => startAutoPilot(50);
-            stopBtn.onclick = () => { autoPilotMode = false; if (timerInterval) clearInterval(timerInterval); timerInterval = null; timeLeft = 0; currentSpeaker = null; updateView(); stopBtn.classList.add('hidden'); durationBtns.forEach(btn => btn.classList.remove('hidden')); }
-            updateView(); return () => { clearInterval(timerInterval); autoPilotMode = false; };
-        }
-
-        function getFunTeamsTemplate(grade) {
-            return `
-                <div class="h-screen w-full flex flex-col p-4 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
-                    <div class="flex items-center justify-between gap-4 mb-4 bg-white/10 p-3 rounded-2xl backdrop-blur z-50 shrink-0">
-                        <div class="flex items-center gap-4 shrink-0">
-                            ${getFunBackButton()}
-                            <h1 class="text-xl font-black text-white drop-shadow-md m-0 uppercase tracking-widest hidden lg:block">Team Generator</h1>
-                        </div>
-                        <div class="flex gap-2 flex-wrap justify-end flex-1">
-                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="2">Pairs</button>
-                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="3">Trios</button>
-                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="4">Quads</button>
-                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="5">Groups of 5</button>
-                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="6">Groups of 6</button>
-                        </div>
-                    </div>
-                    <div id="fun-teams-display" class="w-full flex-1 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 overflow-y-auto content-start p-2"></div>
-                </div>
-            `;
-        }
-
-        function initFunTeamPicker(container, students, grade) {
-            const teamsDisplay = container.querySelector('#fun-teams-display'); const buttons = container.querySelectorAll('.menu-button');
-            function generateTeams(sizeStr) {
-                playSFX('shuffle'); const groupSize = parseInt(sizeStr);
-                let males = secureShuffle(students.filter(s => studentGenders[s] === 'M')); let females = secureShuffle(students.filter(s => studentGenders[s] === 'F')); teamsDisplay.innerHTML = '';
-                let allShuffled = [];
-                while(males.length || females.length) {
-                    if(females.length) allShuffled.push(females.pop());
-                    if(males.length) allShuffled.push(males.pop());
-                }
-                let groups = [];
-                for (let i = 0; i < allShuffled.length; i += groupSize) { groups.push(allShuffled.slice(i, i + groupSize)); }
-                groups.forEach((team, index) => {
-                    const teamCard = document.createElement('div'); teamCard.className = 'bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20 shadow-xl flex flex-col justify-start';
-                    const teamMembers = team.map(name => {
-                        let color = studentGenders[name] === 'F' ? '#f472b6' : '#38bdf8';
-                        return `<div class="bg-black/30 my-1 p-2 rounded text-center text-lg md:text-xl" style="color: ${color}; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">${name}</div>`;
-                    }).join('');
-                    teamCard.innerHTML = `<h3 class="text-xs font-black mb-2 text-center text-white/90 uppercase tracking-widest border-b border-white/20 pb-1">Group ${index + 1}</h3>${teamMembers}`;
-                    teamsDisplay.appendChild(teamCard);
-                });
-            }
-            buttons.forEach(button => button.onclick = () => generateTeams(button.dataset.size)); return () => {};
-        }
-
-        function triggerHugeCelebration(winnerName, isTimer = false) {
-            const celebrationContainer = document.getElementById('celebration-container');
-            const winnerText = isTimer ? `🎉 ${winnerName}'s<br>Time is Up! 🎉` : `🎉 WINNER! 🎉<br>${winnerName}`;
-            celebrationContainer.innerHTML = `<div class="celebration-overlay"></div><div class="winner-display">${winnerText}</div>`;
-            const winnerDisplay = celebrationContainer.querySelector('.winner-display'); winnerDisplay.style.display = 'block';
-            const overlay = celebrationContainer.querySelector('.celebration-overlay');
-            const fireworkColors = ['#ff6b6b', '#4ecdc4', '#feca57', '#ff9ff3', '#54a0ff']; const confettiShapes = ['🎊', '🎉', '⭐', '💫', '✨', '🌟'];
-            for (let i = 0; i < 15; i++) {
-                setTimeout(() => {
-                    const x = Math.random() * window.innerWidth; const y = Math.random() * window.innerHeight * 0.7;
-                    for (let j = 0; j < 15; j++) {
-                        const p = document.createElement('div'); p.className = 'firework'; p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.backgroundColor = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
-                        const angle = (j * 24) * Math.PI / 180; const distance = 120 + Math.random() * 150; p.style.animation = 'fireworkExplode 1.5s ease-out forwards'; p.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
-                        overlay.appendChild(p); setTimeout(() => p.remove(), 1500);
-                    }
-                }, i * 200);
-            }
-            for (let i = 0; i < 100; i++) {
-                setTimeout(() => {
-                    const c = document.createElement('div'); c.className = 'confetti'; c.style.left = Math.random() * window.innerWidth + 'px'; c.innerHTML = confettiShapes[Math.floor(Math.random() * confettiShapes.length)]; c.style.animation = `confettiFall ${3 + Math.random() * 3}s linear forwards`;
-                    overlay.appendChild(c); setTimeout(() => c.remove(), 6000);
-                }, i * 30);
-            }
-            setTimeout(() => { celebrationContainer.innerHTML = ''; }, 5000);
-        }
-
+        // --- AUDIO LOGIC ---
         let sfxCtx = null;
-        function initAudio() {
-            if (!sfxCtx) { sfxCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-            if (sfxCtx.state === 'suspended') sfxCtx.resume();
-        }
+        function initAudio() { if (!sfxCtx) { sfxCtx = new (window.AudioContext || window.webkitAudioContext)(); } if (sfxCtx.state === 'suspended') sfxCtx.resume(); }
 
         function playSFX(type) {
             initAudio(); const t = sfxCtx.currentTime;
@@ -1788,6 +1458,7 @@
                 osc.type = waveType; 
                 osc.frequency.setValueAtTime(freq, startTime);
                 if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, startTime + duration);
+                
                 gain.gain.setValueAtTime(0, startTime);
                 gain.gain.linearRampToValueAtTime(vol, startTime + Math.min(0.02, duration/2));
                 gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
@@ -1827,7 +1498,823 @@
         function playCorrectSound19() { initAudio(); const celebration = [523.25, 659.25, 783.99, 659.25, 783.99, 1046.50]; celebration.forEach((f, i) => { const osc = sfxCtx.createOscillator(); const gn = sfxCtx.createGain(); osc.connect(gn); gn.connect(sfxCtx.destination); osc.frequency.setValueAtTime(f, sfxCtx.currentTime); osc.type = 'triangle'; gn.gain.setValueAtTime(0.15, sfxCtx.currentTime + i * 0.08); gn.gain.exponentialRampToValueAtTime(0.01, sfxCtx.currentTime + 0.12 + i * 0.08); osc.start(sfxCtx.currentTime + i * 0.08); osc.stop(sfxCtx.currentTime + 0.12 + i * 0.08); }); }
         function playCorrectSound20() { initAudio(); const excellence = [880, 1046.50, 1318.51, 1568]; excellence.forEach((f, i) => { const osc = sfxCtx.createOscillator(); const gn = sfxCtx.createGain(); osc.connect(gn); gn.connect(sfxCtx.destination); osc.frequency.setValueAtTime(f, sfxCtx.currentTime); osc.type = 'sine'; gn.gain.setValueAtTime(0.18, sfxCtx.currentTime + i * 0.1); gn.gain.exponentialRampToValueAtTime(0.01, sfxCtx.currentTime + 0.3 + i * 0.1); osc.start(sfxCtx.currentTime + i * 0.1); osc.stop(sfxCtx.currentTime + 0.3 + i * 0.1); }); }
 
-        // Start App on load
+        // --- NAVIGATION ---
+        const views = ['view-dashboard', 'view-class', 'view-fun-pickers', 'view-tech-shuffler', 'view-awards', 'view-quiet-timer', 'view-reading-timer', 'view-class-roles'];
+        function switchView(target) {
+            playSFX('sweep');
+            views.forEach(v => {
+                const el = document.getElementById(v);
+                if(el) el.classList.add('hidden');
+            });
+            document.getElementById(`view-${target}`).classList.remove('hidden');
+            
+            const mainHeader = document.getElementById('main-header');
+            if (target === 'fun-pickers' || target === 'tech-shuffler' || target === 'quiet-timer' || target === 'reading-timer') { 
+                mainHeader.classList.add('hidden'); 
+            } else { 
+                mainHeader.classList.remove('hidden'); 
+            }
+
+            if (target === 'dashboard') {
+                document.getElementById('header-class-name').innerText = "PKXYS Dashboard";
+                document.getElementById('header-room-name').classList.add('hidden');
+                currentClassId = null;
+            } else if (target === 'fun-pickers') {
+                document.getElementById('header-class-name').innerText = "Interactive Pickers";
+                document.getElementById('header-room-name').classList.add('hidden');
+                showFunMenu(); 
+            } else if (target === 'tech-shuffler') {
+                document.getElementById('header-class-name').innerText = "Tech Shuffler";
+                document.getElementById('header-room-name').classList.add('hidden');
+                returnToTechMenu();
+            } else if (target === 'awards') {
+                document.getElementById('header-class-name').innerText = "Student Awards";
+                document.getElementById('header-room-name').classList.add('hidden');
+            } else if (target === 'quiet-timer') {
+                renderBehaviorRoster();
+            } else if (target === 'reading-timer') {
+                updateReadingDisplay();
+            } else if (target === 'class-roles') {
+                document.getElementById('header-class-name').innerText = "6H2 Class Roles";
+                document.getElementById('header-room-name').classList.add('hidden');
+            }
+
+            if (isSidebarOpen) {
+                menuToggle.click();
+            }
+        }
+
+        function loadClass(classId) {
+            const classData = classes.find(c => c.id === classId);
+            if (!classData) return;
+            
+            currentClassId = classId;
+            document.getElementById('header-class-name').innerText = classData.name;
+            const roomHeader = document.getElementById('header-room-name');
+            roomHeader.innerText = classData.room; roomHeader.classList.remove('hidden');
+            
+            switchView('class');
+            
+            shuffleStudents(4);
+        }
+
+        // --- MAIN HUB SHUFFLER LOGIC ---
+        function shuffleStudents(groupSize) {
+            if (!currentClassId) return;
+            
+            playSFX('shuffle'); 
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    c.className = 'confetti';
+                    c.style.left = Math.random() * window.innerWidth + 'px';
+                    c.innerHTML = ['✨', '💫', '🌟', '🎉'][Math.floor(Math.random() * 4)];
+                    c.style.animation = `confettiFall ${2 + Math.random() * 2}s linear forwards`;
+                    document.body.appendChild(c);
+                    setTimeout(() => c.remove(), 4000);
+                }, i * 30);
+            }
+
+            const classData = classes.find(c => c.id === currentClassId);
+            const display = document.getElementById('shuffler-display');
+            display.innerHTML = ''; 
+            
+            let students = [...classData.students];
+            
+            let males = secureShuffle(students.filter(s => studentGenders[s] === 'M'));
+            let females = secureShuffle(students.filter(s => studentGenders[s] === 'F'));
+            
+            let numGroups = Math.floor(students.length / groupSize);
+            if (numGroups === 0) numGroups = 1;
+            
+            let groups = Array.from({length: numGroups}, () => []);
+            
+            let currentIndex = 0;
+            females.forEach(student => {
+                groups[currentIndex % numGroups].push(student);
+                currentIndex++;
+            });
+            males.forEach(student => {
+                groups[currentIndex % numGroups].push(student);
+                currentIndex++;
+            });
+
+            const cardColors = [
+                'bg-slate-50 border-slate-200', 'bg-gray-50 border-gray-200' 
+            ];
+
+            display.className = "flex-1 grid gap-3 content-start pb-12 w-full ";
+            
+            if (numGroups <= 6) {
+                display.className += "grid-cols-3"; 
+            } else if (numGroups <= 8) {
+                display.className += "grid-cols-4"; 
+            } else if (numGroups <= 12) {
+                display.className += "grid-cols-4 md:grid-cols-6"; 
+            } else {
+                display.className += "grid-cols-4 md:grid-cols-6 lg:grid-cols-8"; 
+            }
+
+            groups.forEach((group, index) => {
+                const colorClass = cardColors[index % cardColors.length];
+                const card = document.createElement('div');
+                card.className = `student-card border rounded-xl p-1 md:p-2 shadow-sm flex flex-col justify-start bg-white border-slate-200`;
+                
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-1 border-b border-indigo-50 pb-0.5 text-center';
+                groupTitle.innerText = `Team ${index + 1}`;
+                card.appendChild(groupTitle);
+
+                const namesContainer = document.createElement('div');
+                if (group.length >= 5) {
+                    namesContainer.className = "grid grid-cols-2 gap-1 w-full";
+                } else {
+                    namesContainer.className = "flex flex-col gap-1 w-full";
+                }
+
+                group.forEach(student => {
+                    const nameSpan = document.createElement('div');
+                    let nameColor = studentGenders[student] === 'F' ? 'text-fuchsia-600 bg-fuchsia-50' : 'text-blue-600 bg-blue-50';
+                    nameSpan.className = `font-bold text-xl md:text-2xl leading-none py-1.5 px-1 rounded-lg text-center ${nameColor} flex items-center justify-center truncate w-full`;
+                    nameSpan.innerText = student;
+                    namesContainer.appendChild(nameSpan);
+                });
+                
+                card.appendChild(namesContainer);
+                display.appendChild(card);
+            });
+        }
+
+        // ================= TECH SHUFFLER =================
+        let activeTechClass = null;
+        let currentTechNames = [];
+        let isTechAnimating = false;
+        const glitchChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@&%$£€¥";
+
+        function techLog(msg) {
+            const logBox = document.getElementById('techLog');
+            const el = document.createElement('div');
+            el.textContent = `> ${msg}`;
+            logBox.appendChild(el); logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function selectTechGrade(gradeId) {
+            playSFX('click'); playSFX('sweep');
+            activeTechClass = gradeId;
+            currentTechNames = [...classes.find(c=>c.id===gradeId).students];
+            
+            document.getElementById('techGradeTitle').textContent = `DB_${gradeId.toUpperCase()}`;
+            document.getElementById('techSystemStatus').textContent = "ENCRYPTED";
+            document.getElementById('techSystemStatus').className = "text-slate-400 animate-pulse font-bold";
+
+            const menu = document.getElementById('techMenuView');
+            const shuffle = document.getElementById('techShuffleView');
+            
+            menu.style.opacity = '0';
+            setTimeout(() => {
+                menu.classList.add('hidden'); shuffle.classList.remove('hidden');
+                void shuffle.offsetWidth; shuffle.style.opacity = '1';
+                renderTechList(currentTechNames, true);
+                techLog(`Loaded DB_${gradeId}. ${currentTechNames.length} Nodes. [ENCRYPTED]`);
+            }, 500);
+        }
+
+        function returnToTechMenu() {
+            if(isTechAnimating) return;
+            playSFX('click');
+            const menu = document.getElementById('techMenuView');
+            const shuffle = document.getElementById('techShuffleView');
+            
+            shuffle.style.opacity = '0';
+            setTimeout(() => {
+                shuffle.classList.add('hidden'); menu.classList.remove('hidden');
+                void menu.offsetWidth; menu.style.opacity = '1';
+                techLog("Returned to Main Menu.");
+            }, 500);
+        }
+
+        function renderTechList(names, obfuscate = false) {
+            const container = document.getElementById('techGridContainer');
+            container.innerHTML = '';
+            document.getElementById('techNodeCount').textContent = names.length;
+
+            const rowCount = Math.ceil(names.length / 3);
+            container.style.gridTemplateRows = `repeat(${rowCount}, minmax(0, 1fr))`;
+            
+            names.forEach((name, index) => {
+                const el = document.createElement('div');
+                let genderColor = studentGenders[name] === 'F' ? 'border-pink-500' : 'border-blue-500';
+                
+                el.className = `relative flex items-center bg-slate-800/80 rounded-r-lg border-l-4 ${genderColor} overflow-hidden group backdrop-blur-md h-10 transition-all shadow-lg border-t border-r border-b border-white/5 min-w-[200px] max-w-[250px]`;
+                const techID = Math.floor(Math.random()*9000) + 1000;
+                
+                let displayContent = name;
+                let textClass = `name-text text-sm font-bold text-white tracking-wide uppercase truncate drop-shadow-md`;
+                
+                if (obfuscate) {
+                   let s = ""; for(let k=0; k<8; k++) s+= glitchChars[Math.floor(Math.random()*glitchChars.length)];
+                   displayContent = s; textClass = "name-text text-sm font-bold text-emerald-400 tracking-widest uppercase truncate font-mono shadow-[0_0_10px_rgba(52,211,153,0.5)]";
+                }
+
+                el.innerHTML = `
+                  <div class="w-8 h-full bg-slate-900/90 flex items-center justify-center border-r border-white/20">
+                    <span class="text-xs font-bold text-slate-400 font-mono">${index + 1}</span>
+                  </div>
+                  <div class="flex-1 px-2 flex items-center justify-between overflow-hidden">
+                    <span class="${textClass}">${displayContent}</span>
+                    <div class="flex flex-col items-end shrink-0 ml-2">
+                       <span class="text-[8px] font-mono text-slate-400">ID-${techID}</span>
+                       <div class="h-0.5 w-4 bg-slate-700 rounded-full mt-1 overflow-hidden">
+                         <div class="h-full bg-cyan-500/50 w-[${Math.random()*100}%]"></div>
+                       </div>
+                    </div>
+                  </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        async function runTechShuffle() {
+            if (isTechAnimating) return;
+            isTechAnimating = true;
+            
+            const statusEl = document.getElementById('techSystemStatus');
+            statusEl.textContent = "DECRYPTING...";
+            statusEl.className = "text-yellow-400 animate-pulse font-bold drop-shadow-[0_0_5px_rgba(250,204,21,0.5)]";
+            
+            try { playSFX('shuffle'); } catch(e) { console.log(e); }
+            techLog("Initializing CSPRNG Secure Shuffle Algorithm...");
+            
+            let target = [...currentTechNames];
+            try { target = secureShuffle(target); } 
+            catch (e) {
+                 for (let i = target.length - 1; i > 0; i--) {
+                     const j = Math.floor(Math.random() * (i + 1));
+                     [target[i], target[j]] = [target[j], target[i]];
+                 }
+            }
+
+            const DURATION = 4000;
+            const startTime = Date.now();
+            const nameEls = Array.from(document.querySelectorAll('.name-text'));
+            const progressBar = document.getElementById('techProgressBar');
+            const timerText = document.getElementById('techTimerText');
+            const glitchClasses = ['glitch-cyan', 'glitch-magenta', 'glitch-lime', 'glitch-yellow'];
+
+            return new Promise(resolve => {
+                const interval = setInterval(() => {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / DURATION, 1);
+                    progressBar.style.width = `${progress * 100}%`;
+                    timerText.textContent = `${(elapsed/1000).toFixed(2)}s`;
+
+                    if (elapsed < DURATION) {
+                        nameEls.forEach(el => {
+                            if (Math.random() > 0.7) {
+                               el.className = `name-text text-sm font-bold tracking-wide uppercase truncate ${glitchClasses[Math.floor(Math.random()*4)]}`;
+                               let s = ""; for(let k=0; k<6; k++) s+= glitchChars[Math.floor(Math.random()*glitchChars.length)];
+                               el.textContent = s;
+                            } else {
+                               el.className = "name-text text-sm font-bold text-slate-200 tracking-wide uppercase truncate font-mono";
+                            }
+                        });
+                    } else {
+                        clearInterval(interval);
+                        currentTechNames = target;
+                        nameEls.forEach((el, index) => {
+                            el.textContent = currentTechNames[index];
+                            el.className = "name-text text-sm font-bold text-white tracking-wide uppercase truncate drop-shadow-md";
+                            const parent = el.closest('div').parentElement;
+                            parent.classList.add('locked-in');
+                            setTimeout(() => parent.classList.remove('locked-in'), 800);
+                        });
+                        
+                        try { playSFX('tada'); } catch(e){}
+                        statusEl.textContent = "ONLINE";
+                        statusEl.className = "text-green-400 font-bold drop-shadow-[0_0_8px_rgba(74,222,128,0.5)]";
+                        techLog("Sequence Complete.");
+                        isTechAnimating = false;
+                        resolve();
+                    }
+                }, 50);
+            });
+        }
+
+        function resetTechSystem() {
+            if(isTechAnimating) return;
+            playSFX('click');
+            currentTechNames = [...classes.find(c=>c.id===activeTechClass).students];
+            renderTechList(currentTechNames, true); 
+            document.getElementById('techProgressBar').style.width = '0%';
+            document.getElementById('techTimerText').textContent = '0.00s';
+            document.getElementById('techSystemStatus').textContent = "ENCRYPTED";
+            document.getElementById('techSystemStatus').className = "text-slate-400 animate-pulse font-bold";
+            techLog("System Reset. Database Encrypted.");
+        }
+
+        // ================= FUN PICKERS =================
+        const funMenu = document.getElementById('main-menu');
+        const funPickerContainers = document.querySelectorAll('.picker-container');
+        let currentFunActivity = { type: null, grade: null, cleanup: null };
+        let pickedStudentsHistory = {};
+
+        function showFunMenu() {
+            playSFX('click');
+            if (currentFunActivity.cleanup) currentFunActivity.cleanup();
+            funMenu.classList.remove('hidden');
+            funPickerContainers.forEach(c => c.classList.add('hidden'));
+            currentFunActivity = { type: null, grade: null, cleanup: null };
+        }
+
+        function showFunPicker(type, grade) {
+            playSFX('click');
+            funMenu.classList.add('hidden');
+            const containerId = `fun-${type}-picker`;
+            const container = document.getElementById(containerId);
+            
+            funPickerContainers.forEach(c => c.classList.add('hidden'));
+            container.classList.remove('hidden');
+
+            // Force reset history so names are never scratched off prematurely
+            pickedStudentsHistory[grade] = [];
+
+            const students = classes.find(c=>c.id===grade).students;
+            currentFunActivity.type = type; currentFunActivity.grade = grade;
+
+            if (type === 'random') { container.innerHTML = getFunRandomPickerTemplate(grade); currentFunActivity.cleanup = initFunRandomPicker(container, students, grade); }
+            else if (type === 'fishing') { container.innerHTML = getFunFishingTemplate(grade); currentFunActivity.cleanup = initFunFishingGame(container, students, grade); }
+            else if (type === 'timer') { container.innerHTML = getFunTimerTemplate(grade); currentFunActivity.cleanup = initFunSpeakingTimer(container, students, grade); }
+            else if (type === 'teams') { container.innerHTML = getFunTeamsTemplate(grade); currentFunActivity.cleanup = initFunTeamPicker(container, students, grade); }
+        }
+
+        function getFunBackButton() {
+            return `<button onclick="showFunMenu()" class="bg-white/20 hover:bg-white/40 border border-white/30 text-white font-bold py-2 px-4 rounded-xl transition duration-300 shadow-sm text-sm uppercase tracking-wider flex items-center gap-2 shrink-0">&larr; Games Menu</button>`;
+        }
+
+        function getFunStudentListHTML(students, idPrefix) {
+            // Sort alphabetically to visually mix boys and girls
+            const displayStudents = [...students].sort((a,b) => a.localeCompare(b));
+            const listItems = displayStudents.map((name, index) => {
+                let color = studentGenders[name] === 'F' ? 'text-fuchsia-300' : 'text-blue-300';
+                return `<div class="student-list-item ${color} text-lg md:text-xl font-bold py-3" id="${idPrefix}-${index}">${name}</div>`;
+            }).join('');
+            return `
+            <div class="w-full flex-1 flex flex-col bg-black/20 rounded-2xl p-4 overflow-hidden mt-4">
+                <div class="flex-1 overflow-y-auto grid grid-cols-5 gap-3 md:gap-4 content-start">
+                    ${listItems}
+                </div>
+            </div>`;
+        }
+
+        function getFunRandomPickerTemplate(grade) {
+            return `
+                <div class="h-screen w-full flex flex-col p-4 bg-gray-900">
+                    <div class="flex items-center justify-between gap-4 bg-white/10 p-3 rounded-2xl backdrop-blur z-50 shrink-0">
+                        ${getFunBackButton()}
+                        <div id="random-name-display" class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white text-2xl md:text-3xl font-bold py-2 px-6 rounded-xl shadow-inner transition-all duration-300 min-w-[200px] text-center flex-1 mx-4">Click Start</div>
+                        <div class="flex gap-2 items-center shrink-0">
+                            <button id="random-start-button" class="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg hover:scale-105 transition-transform text-sm uppercase tracking-wider whitespace-nowrap">🚀 Start Picking</button>
+                            <button id="random-reset-button" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-xl shadow-lg hover:bg-gray-500 text-sm uppercase tracking-wider whitespace-nowrap">🔄 Reset</button>
+                            <div id="random-timer" class="text-xl font-bold text-white px-4 py-1 bg-black/30 rounded-xl min-w-[100px] text-center whitespace-nowrap">Ready!</div>
+                        </div>
+                    </div>
+                    ${getFunStudentListHTML(classes.find(c=>c.id===grade).students, 'random')}
+                </div>
+            `;
+        }
+
+        function initFunRandomPicker(container, students, grade) {
+            const nameDisplay = container.querySelector("#random-name-display");
+            const startButton = container.querySelector("#random-start-button");
+            const resetButton = container.querySelector("#random-reset-button");
+            const timerDisplay = container.querySelector("#random-timer");
+            let isPicking = false, pickingInterval, timerInterval;
+            
+            const studentElements = container.querySelectorAll('.student-list-item');
+
+            function updateStudentListView() {
+                studentElements.forEach(el => {
+                    if (pickedStudentsHistory[grade].includes(el.textContent)) el.classList.add('picked');
+                    else el.classList.remove('picked');
+                });
+            }
+
+            function startPicking() {
+                if (isPicking) return;
+                const availableStudents = students.filter(s => !pickedStudentsHistory[grade].includes(s));
+                if (availableStudents.length === 0) {
+                    nameDisplay.textContent = "All Done!";
+                    nameDisplay.style.color = 'white';
+                    return;
+                }
+
+                isPicking = true;
+                startButton.disabled = true; resetButton.disabled = true;
+                startButton.textContent = 'Picking...';
+                nameDisplay.style.color = 'white';
+                
+                // 6 second timer
+                let timeLeft = 6;
+                timerDisplay.textContent = `⏱️ ${timeLeft}s`;
+
+                timerInterval = setInterval(() => {
+                    timeLeft--; timerDisplay.textContent = `⏱️ ${timeLeft}s`;
+                }, 1000);
+
+                const shuffledAvailable = secureShuffle([...availableStudents]);
+                let highlightIndex = 0;
+
+                pickingInterval = setInterval(() => {
+                    const currentName = shuffledAvailable[highlightIndex % shuffledAvailable.length];
+                    nameDisplay.textContent = currentName;
+                    
+                    studentElements.forEach(el => el.classList.remove('highlight'));
+                    const studentToHighlight = Array.from(studentElements).find(el => el.textContent === currentName);
+                    if(studentToHighlight) studentToHighlight.classList.add('highlight');
+                    
+                    playSFX('click');
+                    highlightIndex++;
+                }, 150);
+
+                setTimeout(() => {
+                    clearInterval(pickingInterval);
+                    clearInterval(timerInterval);
+                    isPicking = false;
+                    startButton.disabled = false;
+                    resetButton.disabled = false;
+                    startButton.textContent = '🚀 Start Again';
+                    
+                    const winner = shuffledAvailable[Math.floor(Math.random() * shuffledAvailable.length)];
+                    nameDisplay.textContent = winner;
+                    nameDisplay.style.color = studentGenders[winner] === 'F' ? '#e879f9' : '#60a5fa';
+                    pickedStudentsHistory[grade].push(winner);
+                    updateStudentListView();
+                    
+                    studentElements.forEach(el => el.classList.remove('highlight'));
+                    const winnerElement = Array.from(studentElements).find(el => el.textContent === winner);
+                    if(winnerElement) winnerElement.classList.add('highlight');
+
+                    playSFX('tada');
+                    triggerHugeCelebration(winner);
+                    timerDisplay.textContent = 'Winner!';
+                    setTimeout(() => { 
+                        nameDisplay.style.color = 'white';
+                        timerDisplay.textContent = 'Ready!';
+                        if(winnerElement) winnerElement.classList.remove('highlight');
+                    }, 5000);
+                }, 6000);
+            }
+            
+            startButton.onclick = startPicking;
+            resetButton.onclick = () => { pickedStudentsHistory[grade] = []; updateStudentListView(); nameDisplay.textContent = 'Ready to Pick!'; nameDisplay.style.color = 'white'; };
+            updateStudentListView();
+            return () => { clearInterval(pickingInterval); clearInterval(timerInterval); };
+        }
+
+        function getFunFishingTemplate(grade) {
+             return `
+                <div class="h-screen w-full flex flex-col p-4 bg-gradient-to-b from-blue-300 to-blue-800 relative">
+                    <div class="flex items-center justify-between gap-4 mb-4 bg-white/20 p-3 rounded-2xl backdrop-blur z-50 shrink-0">
+                        ${getFunBackButton()}
+                        <div class="flex gap-2 items-center flex-1 justify-end">
+                            <button id="fishing-start-button" class="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg hover:scale-105 text-sm uppercase tracking-wider whitespace-nowrap">🎣 Start Fishing</button>
+                            <button id="fishing-reset-button" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg hover:bg-gray-600 text-sm uppercase tracking-wider whitespace-nowrap">🔄 Reset</button>
+                            <div id="fishing-timer" class="text-lg font-bold text-slate-800 bg-white/90 rounded-xl px-4 py-1.5 shadow-sm min-w-[150px] text-center whitespace-nowrap">Ready to fish!</div>
+                        </div>
+                    </div>
+                    <!-- Expanded Lake size with restored boat and fisherman -->
+                    <div id="lake" class="relative flex-1 w-full bg-gradient-to-b from-blue-400 to-blue-900 rounded-[30px] overflow-hidden shadow-2xl border-8 border-yellow-700">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[waterShimmer_3s_ease-in-out_infinite] pointer-events-none"></div>
+                        <div class="absolute top-0 left-0 w-full h-[30px] bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.1)_0px,rgba(255,255,255,0.2)_10px,rgba(255,255,255,0.1)_20px)] animate-[waveMotion_2s_linear_infinite] pointer-events-none"></div>
+                        
+                        <!-- SCENERY Elements -->
+                        <div id="boat" class="absolute top-[20px] left-[10%] w-[120px] h-[80px] animate-[boatFloat_4s_ease-in-out_infinite] z-20 pointer-events-none">
+                            <div class="absolute bottom-0 left-[10px] w-[100px] h-[25px] bg-yellow-800 rounded-b-full shadow-lg"></div>
+                            <div class="absolute bottom-[25px] left-[55px] w-[4px] h-[40px] bg-yellow-800 rounded-sm"></div>
+                            <div class="absolute bottom-[35px] left-[25px] w-[35px] h-[25px] bg-gray-100 rounded-l-md shadow-md animate-[sailFlutter_3s_ease-in-out_infinite]"></div>
+                        </div>
+                        <div id="fisherman" class="absolute top-[10px] right-[15%] w-[100px] h-[120px] z-20 pointer-events-none">
+                            <div class="absolute bottom-[85px] left-[32px] w-[35px] h-[15px] bg-red-500 rounded-full"></div>
+                            <div class="absolute bottom-[75px] left-[35px] w-[30px] h-[30px] bg-yellow-200 rounded-full"></div>
+                            <div class="absolute bottom-[20px] left-[30px] w-[40px] h-[60px] bg-yellow-800 rounded-2xl"></div>
+                            <div class="absolute bottom-[40px] left-[60px] w-[4px] h-[80px] bg-gradient-to-t from-yellow-900 to-yellow-700 rounded-sm shadow-md origin-bottom animate-[rodCast_4s_ease-in-out_infinite]"></div>
+                        </div>
+                        <div id="fishing-line" class="absolute w-[2px] h-[300px] bg-white/60 top-[50px] right-[calc(15%+45px)] origin-top animate-[lineSwing_4s_ease-in-out_infinite] z-10 pointer-events-none">
+                           <div class="absolute bottom-[-10px] left-[-3px] w-[8px] h-[12px] bg-gray-400 rounded-b-full border border-gray-500"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initFunFishingGame(container, students, grade) {
+            const lake = container.querySelector("#lake");
+            const startButton = container.querySelector("#fishing-start-button");
+            const resetButton = container.querySelector("#fishing-reset-button");
+            const timerDisplay = container.querySelector("#fishing-timer");
+            let fishElements = [], animationFrameId, timerInterval, isFishing = false;
+
+            function updateFishView() {
+                fishElements.forEach(fish => {
+                    const fishName = fish.element.querySelector('.f-name').textContent;
+                    if (pickedStudentsHistory[grade].includes(fishName)) {
+                        fish.element.style.opacity = '0.2'; fish.element.style.pointerEvents = 'none';
+                    } else {
+                        fish.element.style.opacity = '1'; fish.element.style.pointerEvents = 'auto';
+                    }
+                });
+            }
+
+            function createFish() {
+                // IMPORTANT: Only clear the fish elements, do not destroy the fisherman or boat!
+                lake.querySelectorAll('.fish').forEach(f => f.remove());
+                fishElements = [];
+                students.forEach(student => {
+                    const fish = document.createElement('div');
+                    fish.className = 'fish'; // Mark as a fish element for easy cleanup
+                    fish.style.cssText = `position: absolute; display: flex; align-items: center; font-size: 2.5rem; transition: all 0.3s ease; left: ${Math.random() * (lake.offsetWidth - 150)}px; top: ${150 + Math.random() * (lake.offsetHeight - 250)}px; animation: fish-bob ${2 + Math.random() * 2}s ease-in-out infinite; z-index: 15;`;
+                    let nameColor = studentGenders[student] === 'F' ? 'color: #f472b6;' : 'color: #38bdf8;';
+                    fish.innerHTML = `<span>🐟</span><span class="f-name" style="font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.7); padding: 3px 8px; border-radius: 6px; margin-left: 2px; ${nameColor}">${student}</span>`;
+                    lake.appendChild(fish);
+                    fishElements.push({ element: fish, x: parseFloat(fish.style.left), y: parseFloat(fish.style.top), speedX: (Math.random() - 0.5) * 2, speedY: (Math.random() - 0.5) });
+                });
+                updateFishView();
+            }
+
+            function animateFish() {
+                fishElements.forEach(f => {
+                    f.x += f.speedX; f.y += f.speedY;
+                    if (f.x <= 0 || f.x >= lake.offsetWidth - 100) f.speedX *= -1;
+                    if (f.y <= 60 || f.y >= lake.offsetHeight - 50) f.speedY *= -1;
+                    f.element.style.left = `${f.x}px`; f.element.style.top = `${f.y}px`;
+                    f.element.firstElementChild.style.transform = f.speedX < 0 ? 'scaleX(-1)' : 'scaleX(1)';
+                });
+                animationFrameId = requestAnimationFrame(animateFish);
+            }
+            
+            function startFishing() {
+                if (isFishing) return;
+                const availableStudents = students.filter(s => !pickedStudentsHistory[grade].includes(s));
+                if (availableStudents.length === 0) { timerDisplay.textContent = "All fish caught!"; return; }
+                isFishing = true; startButton.disabled = true; resetButton.disabled = true;
+                startButton.textContent = 'Fishing...';
+                let timeLeft = 12;
+
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft > 8) timerDisplay.textContent = `Casting... ${timeLeft}s`;
+                    else if (timeLeft > 4) { timerDisplay.textContent = `Biting... ${timeLeft}s`; playSFX('click'); }
+                    else if (timeLeft > 0) timerDisplay.textContent = `Reeling! ${timeLeft}s`;
+                    if (timeLeft <= 0) catchFish(availableStudents);
+                }, 1000);
+            }
+
+            function catchFish(availableStudents) {
+                clearInterval(timerInterval);
+                const winner = availableStudents[Math.floor(Math.random() * availableStudents.length)];
+                const caughtFish = fishElements.find(f => f.element.querySelector('.f-name').textContent === winner);
+                if(caughtFish) caughtFish.element.style.animation = 'fishCaught 2s ease-out forwards';
+                
+                playSFX('tada'); pickedStudentsHistory[grade].push(winner); updateFishView();
+                triggerHugeCelebration(winner);
+                
+                setTimeout(() => {
+                    isFishing = false; startButton.disabled = false; resetButton.disabled = false;
+                    startButton.textContent = '🎣 Start Fishing'; timerDisplay.textContent = 'Ready to fish!';
+                }, 5000);
+            }
+
+            startButton.onclick = startFishing;
+            resetButton.onclick = () => { pickedStudentsHistory[grade] = []; updateFishView(); timerDisplay.textContent = "Pool restocked!"; };
+            
+            setTimeout(() => { createFish(); animateFish(); }, 100);
+            
+            return () => { cancelAnimationFrame(animationFrameId); clearInterval(timerInterval); };
+        }
+
+        function getFunTimerTemplate(grade) {
+            return `
+                <div class="h-screen w-full flex flex-col p-4 bg-gradient-to-br from-indigo-900 to-purple-900">
+                    <div class="flex items-center justify-between gap-4 bg-white/10 p-3 rounded-2xl backdrop-blur z-50 shrink-0">
+                        ${getFunBackButton()}
+                        <div class="flex items-center gap-4 bg-black/20 p-2 rounded-xl flex-1 justify-center mx-4">
+                            <div class="text-xs text-purple-200 font-bold uppercase tracking-widest hidden md:block">Now Speaking</div>
+                            <div id="timer-speaker-name" class="text-2xl md:text-4xl font-bold text-white min-w-[200px] text-center drop-shadow-lg">Ready...</div>
+                            <div id="timer-display" class="text-3xl md:text-5xl font-black text-cyan-400 w-20 text-center drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]">0</div>
+                        </div>
+                        <div class="flex gap-2 shrink-0">
+                            <button class="duration-btn bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-lg hover:scale-105 transition-all whitespace-nowrap">30s Auto</button>
+                            <button class="duration-btn bg-gradient-to-r from-blue-400 to-indigo-500 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-lg hover:scale-105 transition-all whitespace-nowrap">40s Auto</button>
+                            <button class="duration-btn bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-lg hover:scale-105 transition-all whitespace-nowrap">50s Auto</button>
+                            <button id="timer-stop-btn" class="hidden bg-red-600 text-white font-bold py-2 px-4 rounded-xl text-sm shadow-lg hover:bg-red-500 transition-all whitespace-nowrap">⏹️ Stop</button>
+                        </div>
+                    </div>
+                    ${getFunStudentListHTML(classes.find(c=>c.id===grade).students, 'timer')}
+                </div>
+            `;
+        }
+
+        function initFunSpeakingTimer(container, students, grade) {
+            let timeLeft = 0; 
+            let timerInterval = null; 
+            let currentSpeaker = null;
+            let autoPilotQueue = [];
+            let autoPilotMode = false;
+            
+            const speakerName = container.querySelector("#timer-speaker-name");
+            const timerDisplay = container.querySelector("#timer-display");
+            const studentElements = container.querySelectorAll('.student-list-item');
+            const durationBtns = container.querySelectorAll('.duration-btn');
+            const stopBtn = container.querySelector('#timer-stop-btn');
+
+            function updateView() {
+                studentElements.forEach(el => {
+                    el.classList.remove('highlight');
+                    if (pickedStudentsHistory[grade] && pickedStudentsHistory[grade].includes(el.textContent)) el.classList.add('picked');
+                    else el.classList.remove('picked');
+                });
+
+                if (currentSpeaker) {
+                    speakerName.textContent = currentSpeaker;
+                    speakerName.style.color = studentGenders[currentSpeaker] === 'F' ? '#e879f9' : '#60a5fa';
+                    const speakerElement = Array.from(studentElements).find(el => el.textContent === currentSpeaker);
+                    if (speakerElement) speakerElement.classList.add('highlight');
+                } else {
+                     speakerName.style.color = 'white';
+                     speakerName.textContent = "Ready...";
+                }
+                timerDisplay.textContent = timeLeft;
+            }
+
+            function nextAutoPilot(seconds) {
+                if (autoPilotQueue.length === 0) {
+                    speakerName.textContent = "All Done!";
+                    autoPilotMode = false;
+                    stopBtn.classList.add('hidden');
+                    durationBtns.forEach(btn => btn.classList.remove('hidden'));
+                    return;
+                }
+                currentSpeaker = autoPilotQueue.shift();
+                pickedStudentsHistory[grade].push(currentSpeaker);
+                timeLeft = seconds;
+                updateView();
+                playSFX('click');
+                
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval); timerInterval = null;
+                        playSFX('bell'); triggerHugeCelebration(currentSpeaker, true);
+                        currentSpeaker = null; timeLeft = 0; updateView();
+                        
+                        setTimeout(() => {
+                            if (autoPilotMode) nextAutoPilot(seconds);
+                        }, 5000);
+                        
+                    } else { timerDisplay.textContent = timeLeft; }
+                }, 1000);
+            }
+
+            function startAutoPilot(seconds) {
+                if (timerInterval) clearInterval(timerInterval);
+                autoPilotMode = true;
+                
+                const availableStudents = students.filter(s => !pickedStudentsHistory[grade] || !pickedStudentsHistory[grade].includes(s));
+                if (availableStudents.length === 0) {
+                    pickedStudentsHistory[grade] = []; 
+                }
+                
+                const currentAvailable = students.filter(s => !pickedStudentsHistory[grade].includes(s));
+                autoPilotQueue = secureShuffle([...currentAvailable]);
+                
+                durationBtns.forEach(btn => btn.classList.add('hidden'));
+                stopBtn.classList.remove('hidden');
+                
+                nextAutoPilot(seconds);
+            }
+
+            durationBtns[0].onclick = () => startAutoPilot(30);
+            durationBtns[1].onclick = () => startAutoPilot(40);
+            durationBtns[2].onclick = () => startAutoPilot(50);
+            
+            stopBtn.onclick = () => {
+                autoPilotMode = false;
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = null;
+                timeLeft = 0;
+                currentSpeaker = null;
+                updateView();
+                stopBtn.classList.add('hidden');
+                durationBtns.forEach(btn => btn.classList.remove('hidden'));
+            }
+
+            updateView(); return () => { clearInterval(timerInterval); autoPilotMode = false; };
+        }
+
+        function getFunTeamsTemplate(grade) {
+            return `
+                <div class="h-screen w-full flex flex-col p-4 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
+                    <div class="flex items-center justify-between gap-4 mb-4 bg-white/10 p-3 rounded-2xl backdrop-blur z-50 shrink-0">
+                        <div class="flex items-center gap-4 shrink-0">
+                            ${getFunBackButton()}
+                            <h1 class="text-xl font-black text-white drop-shadow-md m-0 uppercase tracking-widest hidden lg:block">Team Generator</h1>
+                        </div>
+                        <div class="flex gap-2 flex-wrap justify-end flex-1">
+                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="2">Pairs</button>
+                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="3">Trios</button>
+                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="4">Quads</button>
+                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="5">Groups of 5</button>
+                            <button class="menu-button text-sm px-4 py-2 whitespace-nowrap" data-size="6">Groups of 6</button>
+                        </div>
+                    </div>
+                    <div id="fun-teams-display" class="w-full flex-1 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 overflow-y-auto content-start p-2"></div>
+                </div>
+            `;
+        }
+
+        function initFunTeamPicker(container, students, grade) {
+            const teamsDisplay = container.querySelector('#fun-teams-display');
+            const buttons = container.querySelectorAll('.menu-button');
+
+            function generateTeams(size) {
+                playSFX('shuffle');
+                
+                let males = secureShuffle(students.filter(s => studentGenders[s] === 'M'));
+                let females = secureShuffle(students.filter(s => studentGenders[s] === 'F'));
+                teamsDisplay.innerHTML = '';
+                
+                let numGroups = Math.floor(students.length / parseInt(size));
+                if (numGroups === 0) numGroups = 1;
+                let groups = Array.from({length: numGroups}, () => []);
+                
+                // Distribute perfectly mixing genders
+                let currentIndex = 0;
+                females.forEach(student => {
+                    groups[currentIndex % numGroups].push(student);
+                    currentIndex++;
+                });
+                males.forEach(student => {
+                    groups[currentIndex % numGroups].push(student);
+                    currentIndex++;
+                });
+
+                groups.forEach((team, index) => {
+                    const teamCard = document.createElement('div');
+                    teamCard.className = 'bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20 shadow-xl flex flex-col justify-start';
+                    const teamMembers = team.map(name => {
+                        let color = studentGenders[name] === 'F' ? '#f472b6' : '#38bdf8';
+                        return `<div class="bg-black/30 my-1 p-2 rounded text-center text-lg md:text-xl" style="color: ${color}; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">${name}</div>`;
+                    }).join('');
+                    teamCard.innerHTML = `<h3 class="text-xs font-black mb-2 text-center text-white/90 uppercase tracking-widest border-b border-white/20 pb-1">Group ${index + 1}</h3>${teamMembers}`;
+                    teamsDisplay.appendChild(teamCard);
+                });
+            }
+            
+            buttons.forEach(button => button.onclick = () => generateTeams(button.dataset.size));
+            return () => {};
+        }
+
+        function triggerHugeCelebration(winnerName, isTimer = false) {
+            const celebrationContainer = document.getElementById('celebration-container');
+            const winnerText = isTimer ? `🎉 ${winnerName}'s<br>Time is Up! 🎉` : `🎉 WINNER! 🎉<br>${winnerName}`;
+            celebrationContainer.innerHTML = `<div class="celebration-overlay"></div><div class="winner-display">${winnerText}</div>`;
+            const winnerDisplay = celebrationContainer.querySelector('.winner-display');
+            winnerDisplay.style.display = 'block';
+
+            const overlay = celebrationContainer.querySelector('.celebration-overlay');
+            const fireworkColors = ['#ff6b6b', '#4ecdc4', '#feca57', '#ff9ff3', '#54a0ff'];
+            const confettiShapes = ['🎊', '🎉', '⭐', '💫', '✨', '🌟'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * window.innerWidth; const y = Math.random() * window.innerHeight * 0.7;
+                    for (let j = 0; j < 15; j++) {
+                        const p = document.createElement('div'); p.className = 'firework';
+                        p.style.left = x + 'px'; p.style.top = y + 'px';
+                        p.style.backgroundColor = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
+                        const angle = (j * 24) * Math.PI / 180; const distance = 120 + Math.random() * 150;
+                        p.style.animation = 'fireworkExplode 1.5s ease-out forwards';
+                        p.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+                        overlay.appendChild(p); setTimeout(() => p.remove(), 1500);
+                    }
+                }, i * 200);
+            }
+
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div'); c.className = 'confetti';
+                    c.style.left = Math.random() * window.innerWidth + 'px';
+                    c.innerHTML = confettiShapes[Math.floor(Math.random() * confettiShapes.length)];
+                    c.style.animation = `confettiFall ${3 + Math.random() * 3}s linear forwards`;
+                    overlay.appendChild(c); setTimeout(() => c.remove(), 6000);
+                }, i * 30);
+            }
+
+            setTimeout(() => { celebrationContainer.innerHTML = ''; }, 5000);
+        }
+
+        // Initialize dashboard View
         switchView('dashboard');
     </script>
 </body>
