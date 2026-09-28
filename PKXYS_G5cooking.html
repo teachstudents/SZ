@@ -358,8 +358,10 @@
 
         function loadVoices() {
             const voices = synth.getVoices();
-            // Try to find a good English voice, preferably Microsoft or Google
-            englishVoice = voices.find(voice => voice.lang.includes('en-US') && (voice.name.includes('Microsoft') || voice.name.includes('Google'))) 
+            // Try to find the specific Microsoft Andrew Multilingual voice
+            englishVoice = voices.find(voice => voice.name.includes('Microsoft Andrew Multilingual Online (Natural)'))
+                        || voices.find(voice => voice.name.includes('Andrew') && voice.lang.includes('en-US'))
+                        || voices.find(voice => voice.lang.includes('en-US') && (voice.name.includes('Microsoft') || voice.name.includes('Google'))) 
                         || voices.find(voice => voice.lang.includes('en-US')) 
                         || voices[0];
         }
