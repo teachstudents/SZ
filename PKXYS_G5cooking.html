@@ -60,7 +60,7 @@
         }
     </style>
 </head>
-<body class="h-screen text-gray-800 p-2 md:p-4 relative overflow-hidden">
+<body class="h-screen text-gray-800 p-0 relative overflow-hidden bg-white">
 
     <div class="fixed top-20 left-4 text-4xl rotating-emoji opacity-50">🍎</div>
     <div class="fixed top-1/3 right-4 text-4xl rotating-emoji-reverse opacity-50">🥦</div>
@@ -69,69 +69,70 @@
     <div class="fixed top-2/3 left-2 text-4xl rotating-emoji opacity-50">🍤</div>
     <div class="fixed top-10 right-10 text-4xl rotating-emoji-reverse opacity-50">🥚</div>
 
-    <div class="w-full h-full max-w-[98%] xl:max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-amber-400 flex flex-col">
+    <div class="w-full h-full mx-auto bg-white overflow-hidden flex flex-row">
         
-        <!-- Header -->
-        <header class="bg-amber-400 p-2 md:p-3 flex flex-wrap items-center justify-between shrink-0 gap-2">
-            <div class="flex items-center gap-2 md:gap-4">
-                <div class="text-3xl md:text-4xl chef-avatar">👨‍🍳</div>
+        <!-- Left Master Sidebar -->
+        <aside class="w-56 md:w-64 bg-amber-50 border-r-4 border-amber-400 flex flex-col overflow-y-auto shrink-0 z-10 shadow-lg p-2 md:p-3 gap-3 md:gap-4">
+            
+            <!-- Header Info -->
+            <div class="flex flex-col items-center text-center gap-1 border-b border-amber-200 pb-2">
+                <div class="text-4xl md:text-5xl chef-avatar">👨‍🍳</div>
                 <div>
-                    <h1 class="text-xl md:text-2xl font-bold text-black drop-shadow-sm leading-tight">Chef Master's English Kitchen</h1>
-                    <p class="text-gray-900 font-semibold text-xs md:text-sm">Grade 5 Public Speaking Rotation</p>
+                    <h1 class="text-lg md:text-xl font-black text-amber-900 drop-shadow-sm leading-tight">Chef Master's<br/>English Kitchen</h1>
+                    <p class="text-amber-700 font-bold text-[10px] md:text-xs mt-1">Grade 5 Public Speaking</p>
                 </div>
             </div>
 
-            <!-- Navigation now in Header -->
-            <nav class="flex bg-white/40 rounded-xl p-1 shadow-sm border border-white/50">
-                <button id="tab-teach" class="px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base font-bold rounded-lg bg-amber-500 text-white shadow transition-all">📚 Teach & Learn</button>
-                <button id="tab-practice" class="px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base font-bold rounded-lg text-gray-700 hover:bg-white/50 transition-all">🎤 Practice & Speak</button>
-                <button id="tab-class" class="px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base font-bold rounded-lg text-gray-700 hover:bg-white/50 transition-all">📝 Class List</button>
+            <!-- Navigation -->
+            <nav class="flex flex-col gap-1.5 md:gap-2">
+                <button id="tab-teach" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm font-bold rounded-lg bg-amber-500 text-white shadow-md transition-all">📚 Teach & Learn</button>
+                <button id="tab-practice" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm font-bold rounded-lg text-amber-800 hover:bg-amber-200 transition-all border border-transparent">🎤 Practice & Speak</button>
+                <button id="tab-class" class="px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm font-bold rounded-lg text-amber-800 hover:bg-amber-200 transition-all border border-transparent">📝 Class List</button>
             </nav>
 
-            <div class="flex gap-4">
-                <!-- Timer Widget -->
-                <div class="bg-white/30 p-2 rounded-xl border border-white/50 backdrop-blur-sm text-center min-w-[120px]">
-                    <div class="flex justify-between items-center mb-1">
-                        <div class="text-xs text-amber-900 font-bold uppercase tracking-wider">Timer</div>
-                        <select id="time-selector" class="text-xs bg-white text-black rounded px-1 outline-none font-bold">
-                            <option value="60">1 Min</option>
-                            <option value="120">2 Min</option>
-                            <option value="180" selected>3 Min</option>
-                            <option value="240">4 Min</option>
-                            <option value="300">5 Min</option>
-                        </select>
-                    </div>
-                    <div id="timer-display" class="text-2xl font-mono text-black font-bold tracking-widest drop-shadow-sm">03:00</div>
-                    <div class="flex justify-center gap-2 mt-1">
-                        <button id="btn-start-timer" class="text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded">▶️ Start</button>
-                        <button id="btn-reset-timer" class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded">🔄 Reset</button>
-                    </div>
+            <!-- Timer Widget -->
+            <div class="bg-white/80 p-2 rounded-xl border border-amber-200 shadow-sm text-center">
+                <div class="flex justify-between items-center mb-1 px-1">
+                    <div class="text-[10px] md:text-xs text-amber-900 font-bold uppercase tracking-wider">Timer</div>
+                    <select id="time-selector" class="text-[10px] md:text-xs bg-amber-50 text-black rounded px-1 py-0.5 outline-none font-bold border border-amber-200">
+                        <option value="60">1 Min</option>
+                        <option value="120">2 Min</option>
+                        <option value="180">3 Min</option>
+                        <option value="240">4 Min</option>
+                        <option value="300" selected>5 Min</option>
+                    </select>
+                </div>
+                <div id="timer-display" class="text-2xl md:text-3xl font-mono text-black font-black tracking-widest drop-shadow-sm my-1">05:00</div>
+                <div class="flex justify-center gap-1 md:gap-2">
+                    <button id="btn-start-timer" class="flex-1 text-[10px] md:text-xs bg-green-500 hover:bg-green-600 text-white px-1 py-1.5 md:px-2 rounded-lg font-bold shadow-sm transition-colors">▶️️ Start</button>
+                    <button id="btn-reset-timer" class="flex-1 text-[10px] md:text-xs bg-red-500 hover:bg-red-600 text-white px-1 py-1.5 md:px-2 rounded-lg font-bold shadow-sm transition-colors">🔄 Reset</button>
                 </div>
             </div>
-        </header>
 
-        <main class="p-2 md:p-4 flex-1 h-0 overflow-hidden flex flex-col">
+            <!-- Station Selector -->
+            <div id="sidebar-stations" class="flex flex-col gap-1.5 md:gap-2 mt-1 pt-2 md:pt-4 border-t border-amber-200 flex-1">
+                <p class="text-[10px] md:text-xs font-bold text-amber-800 uppercase tracking-wider text-center mb-0.5">Stations</p>
+                <button class="station-btn active w-full text-left px-2 py-1.5 md:px-3 md:py-2 bg-amber-500 text-white rounded-xl font-bold shadow-md hover:bg-amber-600 text-xs md:text-sm transition-all" data-station="1">🍎 1: Fruits</button>
+                <button class="station-btn w-full text-left px-2 py-1.5 md:px-3 md:py-2 bg-white text-gray-700 rounded-xl font-bold hover:bg-gray-100 text-xs md:text-sm shadow-sm transition-all border border-gray-200" data-station="2">🥦 2: Veggies</button>
+                <button class="station-btn w-full text-left px-2 py-1.5 md:px-3 md:py-2 bg-white text-gray-700 rounded-xl font-bold hover:bg-gray-100 text-xs md:text-sm shadow-sm transition-all border border-gray-200" data-station="3">🥩 3: Meats</button>
+                <button class="station-btn w-full text-left px-2 py-1.5 md:px-3 md:py-2 bg-white text-gray-700 rounded-xl font-bold hover:bg-gray-100 text-xs md:text-sm shadow-sm transition-all border border-gray-200" data-station="4">🐟 4: Seafood</button>
+                <button class="station-btn w-full text-left px-2 py-1.5 md:px-3 md:py-2 bg-white text-gray-700 rounded-xl font-bold hover:bg-gray-100 text-xs md:text-sm shadow-sm transition-all border border-gray-200" data-station="5">🍗 5: Poultry</button>
+                <button class="station-btn w-full text-left px-2 py-1.5 md:px-3 md:py-2 bg-white text-gray-700 rounded-xl font-bold hover:bg-gray-100 text-xs md:text-sm shadow-sm transition-all border border-gray-200" data-station="6">🍝 6: Grains</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 h-full overflow-hidden flex flex-col relative">
             
-            <section id="section-teach" class="flex h-full flex-col space-y-2 overflow-hidden">
+            <section id="section-teach" class="flex h-full flex-col overflow-hidden">
                 
-                <!-- Station Selector -->
-                <div class="flex overflow-x-auto gap-2 pb-1 shrink-0 scrollbar-hide">
-                    <button class="station-btn active px-4 py-2 bg-amber-500 text-white rounded-full font-bold whitespace-nowrap shadow-md hover:bg-amber-600" data-station="1">🍎 Station 1: Fruits</button>
-                    <button class="station-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-bold whitespace-nowrap hover:bg-gray-300" data-station="2">🥦 Station 2: Veggies</button>
-                    <button class="station-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-bold whitespace-nowrap hover:bg-gray-300" data-station="3">🥩 Station 3: Meats</button>
-                    <button class="station-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-bold whitespace-nowrap hover:bg-gray-300" data-station="4">🐟 Station 4: Seafood</button>
-                    <button class="station-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-bold whitespace-nowrap hover:bg-gray-300" data-station="5">🍗 Station 5: Poultry</button>
-                    <button class="station-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-bold whitespace-nowrap hover:bg-gray-300" data-station="6">🍝 Station 6: Grains</button>
-                </div>
-
-                <!-- Station Visual Cues Grid -->
-                <div id="station-content" class="bg-white rounded-2xl shadow-sm border border-gray-200 flex-1 overflow-hidden flex flex-col">
+                <!-- Station Visual Cues Grid (Full Main Area Now) -->
+                <div id="station-content" class="bg-white flex-1 overflow-hidden flex flex-col">
                     <!-- Populated by JS -->
                 </div>
 
             </section>
 
-            <section id="section-practice" class="hidden h-full flex-col space-y-4 overflow-y-auto">
+            <section id="section-practice" class="hidden h-full flex-col space-y-4 overflow-y-auto p-4">
                 
                 <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 flex flex-col gap-4 shrink-0">
                     <div class="text-center font-bold text-blue-800 uppercase tracking-wide text-sm border-b border-blue-200 pb-2">2-Person Roleplay Practice</div>
@@ -227,10 +228,9 @@
                         </div>
                     </div>
                 </div>
-
             </section>
 
-            <section id="section-class" class="hidden h-full flex-col space-y-6 overflow-y-auto">
+            <section id="section-class" class="hidden h-full flex-col space-y-6 overflow-y-auto p-4">
                 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                     <div class="bg-gray-50 border-2 border-gray-200 rounded-xl p-6 mb-6 flex flex-col items-center justify-center min-h-[150px] relative overflow-hidden group cursor-pointer" id="random-caller-box">
@@ -506,35 +506,35 @@
             const container = document.getElementById('station-content');
             
             let html = `
-                <div class="bg-amber-100 px-3 py-1.5 md:px-4 md:py-2 border-b border-amber-200 flex justify-between items-center shrink-0">
+                <div class="bg-amber-50 px-3 py-2 md:px-5 md:py-3 border-b border-amber-200 flex justify-between items-center shrink-0">
                     <div>
-                        <h2 class="text-lg md:text-xl font-black text-amber-900">${station.title}</h2>
-                        <p class="text-amber-700 font-bold text-xs">${station.subtitle}</p>
+                        <h2 class="text-xl md:text-3xl font-black text-amber-900 leading-none mb-1">${station.title}</h2>
+                        <p class="text-amber-700 font-bold text-sm md:text-base">${station.subtitle}</p>
                     </div>
-                    <button onclick="speakText('${station.frame}')" class="bg-amber-500 hover:bg-amber-600 text-white p-1.5 md:p-2 rounded-full shadow-md flex items-center justify-center transition-transform hover:scale-110" title="Listen to Frame">
-                        <span class="text-xl md:text-2xl">🗣️</span>
+                    <button onclick="speakText('${station.frame.replace(/'/g, "\\'")}')" class="bg-amber-500 hover:bg-amber-600 text-white p-2 md:p-3 rounded-full shadow flex items-center justify-center transition-transform hover:scale-110" title="Listen to Frame">
+                        <span class="text-2xl md:text-3xl">🗣️</span>
                     </button>
                 </div>
                 
-                <div class="flex-1 p-1 md:p-2 flex flex-col justify-center overflow-hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 relative h-full">
+                <div class="flex-1 p-2 md:p-4 flex flex-col justify-center overflow-hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 relative h-full">
                         <!-- Divider Line for Desktop -->
-                        <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 bg-gray-200 -translate-x-1/2 rounded-full"></div>
+                        <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-1.5 bg-gray-100 -translate-x-1/2 rounded-full"></div>
 
                         <!-- Left Column: Verbs & Tools -->
                         <div class="flex flex-col h-full justify-between">
-                            <div class="flex items-center gap-1 md:gap-2 mb-1 border-b-2 border-amber-200 pb-1 shrink-0">
-                                <span class="text-xl md:text-2xl">${station.emojiLeft}</span>
-                                <h3 class="text-lg md:text-xl font-bold text-gray-800 uppercase tracking-wide">Action & Tool</h3>
+                            <div class="flex items-center gap-2 mb-2 border-b-2 border-amber-200 pb-1 md:pb-2 shrink-0">
+                                <span class="text-3xl md:text-4xl">${station.emojiLeft}</span>
+                                <h3 class="text-xl md:text-2xl font-black text-gray-800 uppercase tracking-wide">Action & Tool</h3>
                             </div>
-                            <ul class="flex-1 flex flex-col justify-evenly gap-1">
+                            <ul class="flex-1 flex flex-col justify-between gap-1 md:gap-2">
                                 ${station.items.map(item => `
-                                    <li class="station-card bg-gray-50 border border-gray-200 rounded-lg p-1.5 md:p-2 flex items-center justify-between cursor-pointer group" onclick="speakText('${item.verb} with a ${item.tool}')">
-                                        <div class="leading-tight overflow-hidden">
-                                            <span class="font-black text-base md:text-lg text-amber-600 block group-hover:text-amber-500 truncate">${item.verb}</span>
-                                            <span class="text-[10px] md:text-xs text-gray-500 font-bold truncate block">(with/in/on a ${item.tool})</span>
+                                    <li class="station-card bg-gray-50 border-2 border-gray-200 rounded-xl p-2 md:p-3 flex items-center justify-between cursor-pointer group flex-1" onclick="speakText('${item.verb} with a ${item.tool}')">
+                                        <div class="leading-tight overflow-hidden flex-1 flex flex-col justify-center">
+                                            <span class="font-black text-xl md:text-2xl text-amber-600 block group-hover:text-amber-500 truncate leading-none mb-0.5">${item.verb}</span>
+                                            <span class="text-xs md:text-sm text-gray-500 font-bold truncate block">(with/in/on a ${item.tool})</span>
                                         </div>
-                                        <div class="text-2xl md:text-3xl bg-white p-1 rounded-md shadow-sm group-hover:bg-amber-50 transition-colors shrink-0 ml-1">${item.actionEmoji}</div>
+                                        <div class="text-3xl md:text-4xl bg-white p-1.5 rounded-xl shadow-sm group-hover:bg-amber-50 transition-colors shrink-0 ml-2 flex items-center justify-center">${item.actionEmoji}</div>
                                     </li>
                                 `).join('')}
                             </ul>
@@ -542,15 +542,15 @@
 
                         <!-- Right Column: Food -->
                         <div class="flex flex-col h-full justify-between">
-                            <div class="flex items-center gap-1 md:gap-2 mb-1 border-b-2 border-green-200 pb-1 shrink-0">
-                                <span class="text-xl md:text-2xl">${station.emojiRight}</span>
-                                <h3 class="text-lg md:text-xl font-bold text-gray-800 uppercase tracking-wide">Ingredients / Dish</h3>
+                            <div class="flex items-center gap-2 mb-2 border-b-2 border-green-200 pb-1 md:pb-2 shrink-0">
+                                <span class="text-3xl md:text-4xl">${station.emojiRight}</span>
+                                <h3 class="text-xl md:text-2xl font-black text-gray-800 uppercase tracking-wide">Ingredients / Dish</h3>
                             </div>
-                            <ul class="flex-1 flex flex-col justify-evenly gap-1">
+                            <ul class="flex-1 flex flex-col justify-between gap-1 md:gap-2">
                                 ${station.items.map(item => `
-                                    <li class="station-card bg-gray-50 border border-gray-200 rounded-lg p-1.5 md:p-2 flex items-center justify-between cursor-pointer group" onclick="speakText('${item.food}')">
-                                        <span class="font-bold text-base md:text-lg text-green-700 block group-hover:text-green-600 leading-tight truncate">${item.food}</span>
-                                        <div class="text-2xl md:text-3xl bg-white p-1 rounded-md shadow-sm group-hover:bg-green-50 transition-colors shrink-0 ml-1">${item.foodEmoji}</div>
+                                    <li class="station-card bg-gray-50 border-2 border-gray-200 rounded-xl p-2 md:p-3 flex items-center justify-between cursor-pointer group flex-1" onclick="speakText('${item.food}')">
+                                        <span class="font-bold text-lg md:text-xl text-green-700 block group-hover:text-green-600 leading-tight truncate whitespace-normal flex-1 pr-2">${item.food}</span>
+                                        <div class="text-3xl md:text-4xl bg-white p-1.5 rounded-xl shadow-sm group-hover:bg-green-50 transition-colors shrink-0 ml-2 flex items-center justify-center">${item.foodEmoji}</div>
                                     </li>
                                 `).join('')}
                             </ul>
@@ -564,13 +564,9 @@
             // Update active state on buttons
             document.querySelectorAll('.station-btn').forEach(btn => {
                 if(btn.dataset.station == stationId) {
-                    btn.classList.replace('bg-gray-200', 'bg-amber-500');
-                    btn.classList.replace('text-gray-700', 'text-white');
-                    btn.classList.add('shadow-md');
+                    btn.className = 'station-btn active w-full text-left px-2 py-1.5 md:px-3 md:py-2 bg-amber-500 text-white rounded-xl font-bold shadow-md hover:bg-amber-600 text-xs md:text-sm transition-all';
                 } else {
-                    btn.classList.replace('bg-amber-500', 'bg-gray-200');
-                    btn.classList.replace('text-white', 'text-gray-700');
-                    btn.classList.remove('shadow-md');
+                    btn.className = 'station-btn w-full text-left px-2 py-1.5 md:px-3 md:py-2 bg-white text-gray-700 rounded-xl font-bold hover:bg-gray-100 text-xs md:text-sm shadow-sm transition-all border border-gray-200';
                 }
             });
 
@@ -825,16 +821,30 @@
                     tabs[key].classList.add('hidden');
                     tabs[key].classList.remove('flex');
                     
-                    tabBtns[key].classList.remove('bg-amber-500', 'text-white', 'shadow');
-                    tabBtns[key].classList.add('text-gray-700');
+                    // Reset styling for inactive tabs
+                    tabBtns[key].classList.remove('bg-amber-500', 'text-white', 'shadow-md');
+                    tabBtns[key].classList.add('text-amber-800', 'hover:bg-amber-200', 'border-transparent');
                 });
                 
-                // Show active
+                // Show active content
                 tabs[activeTab].classList.remove('hidden');
                 tabs[activeTab].classList.add('flex');
                 
-                tabBtns[activeTab].classList.remove('text-gray-700');
-                tabBtns[activeTab].classList.add('bg-amber-500', 'text-white', 'shadow');
+                // Style active button
+                tabBtns[activeTab].classList.remove('text-amber-800', 'hover:bg-amber-200', 'border-transparent');
+                tabBtns[activeTab].classList.add('bg-amber-500', 'text-white', 'shadow-md');
+                
+                // Keep station selector visible only when teach mode is active for clarity
+                const sidebarStations = document.getElementById('sidebar-stations');
+                if (sidebarStations) {
+                    if (activeTab === 'teach') {
+                        sidebarStations.classList.remove('hidden');
+                        sidebarStations.classList.add('flex');
+                    } else {
+                        sidebarStations.classList.add('hidden');
+                        sidebarStations.classList.remove('flex');
+                    }
+                }
             }
 
             tabBtns['teach'].addEventListener('click', () => switchTab('teach'));
