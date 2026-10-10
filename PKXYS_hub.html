@@ -206,9 +206,22 @@
             <!-- Dashboard View -->
             <div id="view-dashboard" class="p-2 md:p-4 max-w-7xl mx-auto space-y-4">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-slate-800 px-4 py-2 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                        <h2 class="text-white font-display text-lg font-bold flex items-center gap-2">(MITCHELL)</h2>
-                        <span class="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-xs font-bold border border-slate-600">Term Starts: Week of Sept 1</span>
+                    <div class="bg-slate-800 px-3 sm:px-4 py-2 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-white font-display text-lg font-bold flex items-center gap-2">(MITCHELL)</h2>
+                            <span class="bg-slate-700 text-slate-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-slate-600 hidden md:inline">Term Starts: Week of Sept 1</span>
+                        </div>
+                        
+                        <!-- Week Navigation Controls -->
+                        <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-900/90 px-2 sm:px-3 py-1 rounded-xl border border-slate-700 shadow-inner">
+                            <button onclick="changeWeek(-1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white flex items-center justify-center font-bold text-xs sm:text-sm transition-colors border border-slate-600 active:scale-95 cursor-pointer" title="Previous Week (Left Arrow)">◀</button>
+                            <div class="text-center min-w-[170px] sm:min-w-[210px] px-1">
+                                <div id="week-display-title" class="text-white font-bold text-xs sm:text-sm tracking-wide">Week 7 (Oct 12 – Oct 16)</div>
+                                <div id="week-display-sub" class="text-[10px] text-indigo-300 font-mono">Curriculum Plans Active</div>
+                            </div>
+                            <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white flex items-center justify-center font-bold text-xs sm:text-sm transition-colors border border-slate-600 active:scale-95 cursor-pointer" title="Next Week (Right Arrow)">▶</button>
+                            <button onclick="resetToCurrentWeek()" class="ml-1 px-2 py-0.5 bg-indigo-600/70 hover:bg-indigo-600 text-white rounded-md text-[10px] font-bold transition-colors border border-indigo-400/40 cursor-pointer" title="Jump to Current Week">Current</button>
+                        </div>
                     </div>
                     <div class="p-0 overflow-x-auto" id="timetable-container">
                         <!-- Timetable injected by JS to save file space -->
@@ -409,338 +422,646 @@
         });
 
         
+        
         // =========================================================================
-        // PKXYS DETAILED LESSON PLANS STORE (Mapped to 5M2 & 6H2 Timetable Slots)
+        // PKXYS MULTI-WEEK LESSON PLANS STORE & WEEKLY NAVIGATION SYSTEM
         // =========================================================================
-        const lessonPlans = {
-            // --- 5M2 ENGLISH (Grade 5, 23 Students) ---
-            "mon_p6_5m2": {
-                classTitle: "5M2 English",
-                badge: "Grade 5 (23 Students)",
-                meta: "Mon • Period 6 (13:15 - 13:55) • Room 105",
-                unit: "Unit 2: Detective Inquiry & Schema Activation",
-                icon: "🕵️‍♂️",
-                objective: "I can understand and pronounce 5 key detective words (crime scene, fingerprints, evidence, prison, robbery) and explain what a detective investigates.",
-                skill: "Vocabulary Acquisition, Phonetic Accuracy & Schema Building (Detective Terms)",
-                activity: `
-                    <div><strong>Phase 1: Hook & Schema (5m):</strong> Display magnifying glass graphic. Think-Pair-Share: <em>'What does a detective mean?'</em> Share favorite detective stories (Sherlock, Conan).</div>
-                    <div><strong>Phase 2: Explicit Input (10m):</strong> Present dictionary definition and visual icon map (fingerprint, money bag, prison bars, robber mask). Students create a 'Detective Concept Map' in notebooks linking all 5 core words.</div>
-                    <div><strong>Phase 3: Collaborative Pair Application (15m):</strong> Watch 'Kid Detectives' video clip. Dyads pause at clues (cracked diamond, spilled cup, shattered birdbath). Partner A identifies evidence (<em>'I see a footprint'</em>); Partner B predicts the crime (<em>'Maybe a robbery happened'</em>). Target: ≥2 vocabulary words per pause!</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Independent writing in notebooks: Write 2 original sentences defining what a 'Kid Detective' investigates using target vocabulary.</div>
-                    <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Celebrate strong student hypotheses and preview tomorrow's crime scene investigation.</div>
-                `,
-                assessment: "Formative Notebook Check: 2 original definition sentences using target vocabulary. Verified by teacher circulation.",
-                homework: "Review your Detective Concept Map and write 3 sentences guessing what happened in your favorite mystery story."
+                let currentWeekNum = 7; // Entering Week 7 next Monday (Oct 12 – Oct 16)
+        const week6Monday = new Date(2026, 9, 5); // Week 6 Monday was Oct 05, 2026
+
+        function getWeekDates(weekNum) {
+            const mon = new Date(week6Monday);
+            mon.setDate(week6Monday.getDate() + (weekNum - 6) * 7);
+            const days = [];
+            for (let i = 0; i < 5; i++) {
+                const cur = new Date(mon);
+                cur.setDate(mon.getDate() + i);
+                days.push(cur);
+            }
+            return days;
+        }
+
+        const weeklyLessonPlans = {
+            // =====================================================================
+            // WEEK 6 (Oct 05 – Oct 09, 2026) - JUST FINISHED
+            // =====================================================================
+            6: {
+                // 5M2 Detective Unit Foundations
+                "mon_p6_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Detective Inquiry & Schema Activation",
+                    icon: "🕵️‍♂️",
+                    objective: "I can understand and pronounce 5 key detective words (crime scene, fingerprints, evidence, prison, robbery) and explain what a detective investigates.",
+                    skill: "Vocabulary Acquisition, Phonetic Accuracy & Schema Building (Detective Terms)",
+                    activity: `
+                        <div><strong>Phase 1: Hook & Schema (5m):</strong> Display magnifying glass graphic. Think-Pair-Share: What does a detective do? Share favorite detective stories (Sherlock, Conan).</div>
+                        <div><strong>Phase 2: Explicit Input (10m):</strong> Present dictionary definition and visual icon map (fingerprint, money bag, prison bars, robber mask). Students create a 'Detective Concept Map' in notebooks.</div>
+                        <div><strong>Phase 3: Collaborative Pair Application (15m):</strong> Watch 'Kid Detectives' video clip. Dyads pause at clues. Partner A identifies evidence ('I see a footprint'); Partner B predicts the crime ('Maybe a robbery happened').</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Independent writing: Write 2 original sentences defining what a 'Kid Detective' investigates using target vocabulary.</div>
+                        <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Celebrate strong student hypotheses and preview crime scene investigation.</div>
+                    `,
+                    assessment: "Formative Notebook Check: 2 original definition sentences using target vocabulary.",
+                    homework: "Review your Detective Concept Map and write 3 sentences guessing what happened in your favorite mystery story."
+                },
+                "mon_p7_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Observation & Comparative Speaking",
+                    icon: "🔍",
+                    objective: "I can spot differences in crime scene photos and explain clues using: 'They are the same,' 'They are similar,' or 'They are different because...'.",
+                    skill: "Comparative Speaking & Epistemic Friction in Dyads (Visual Observation)",
+                    activity: `
+                        <div><strong>Phase 1: Activation (5m):</strong> Welcome Young Detectives. Objective: Sharpen visual observation skills by comparing two similar crime scenes under time pressure.</div>
+                        <div><strong>Phase 2: Direct Input & Syntax Modeling (10m):</strong> Teacher models Round 1 and Round 2. Think-aloud demonstration: 'I look at Scene A and B. They are different because Scene B has hair on the chair.'</div>
+                        <div><strong>Phase 3: Collaborative Pair Application (15m):</strong> 10-second rapid-fire rounds on screen. Partner A spots and states finding ('They are different because...'); Partner B verifies and adds a detail. Role swap every round!</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Display Round 11 (Footprints & Gloves). Students independently write 1 'similar' sentence and 1 'different because' sentence in notebooks.</div>
+                        <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Delayed error recast on pluralization ('The footprints are...' vs 'The footprint is...').</div>
+                    `,
+                    assessment: "Notebook Exit Check: Round 11 comparison statements. Peer-audited oral responses during 10-second spot-the-difference rounds.",
+                    homework: "Find two similar items at home and write 3 comparison sentences using 'They are similar/different because...'."
+                },
+                "tue_p1_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Grammar & Mechanics (Reported Speech Rules)",
+                    icon: "🗣️",
+                    objective: "I can rewrite direct speech into reported speech by shifting pronouns (I → he/she) and moving present tense verbs into the past tense (want → wanted).",
+                    skill: "Grammar Syntax & Mechanics: Pronoun Shifting & Tense Backshifts",
+                    activity: `
+                        <div><strong>Phase 1: Activation & Hook (5m):</strong> 'Telephone' whisper routine. Teacher whispers: 'I am hungry.' Class responds: 'He said that he was hungry.'</div>
+                        <div><strong>Phase 2: Direct Explicit Input (15m):</strong> Core formula: [Speaker] said that [New Pronoun] + [Past Verb]. T-chart linking direct pronouns (I/we) to reported pronouns (he/she/they). Model tense backshifts.</div>
+                        <div><strong>Phase 3: Collaborative Pair Application (10m):</strong> Talk Aloud Problem Solving (TAPS). Pairs solve 3 practice lines. Partner A identifies pronoun and verb; Partner B applies formula.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Whiteboard Flash! Project: The boy said, 'I have a dog.' Students write reported sentence and flash simultaneously.</div>
+                        <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Address common whiteboard errors; preview Bank Robbery case.</div>
+                    `,
+                    assessment: "Whiteboard Flash diagnostic check. Formative verification of pronoun shift and verb backshift accuracy.",
+                    homework: "Complete Grammar Help Sheet items 1–4 (convert 4 direct speech dialogue quotes into reported speech)."
+                },
+                "tue_p2_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Applied Grammar (The Bank Robbery Mystery)",
+                    icon: "🏦",
+                    objective: "I can solve a bank robbery case by reporting witness and suspect statements using correct gender pronouns and past tense verbs.",
+                    skill: "Higher-Order Grammar Application & Contextual Pronoun Selection",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Display bank robbery scene photo. Prompt: 'The police just arrived! How do witnesses report what happened? Through reported speech!'</div>
+                        <div><strong>Phase 2: Direct Input (10m):</strong> Distribute case worksheet. Deconstruct Example 1 with think-aloud identifying speaker gender (male robber) and listener (female cashier).</div>
+                        <div><strong>Phase 3: Pair Investigation (15m):</strong> Pairs complete Sentences 2–5. Epistemic friction challenge on negative verbs (don't → didn't, won't → wouldn't).</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Unseen mystery prompt on back of sheet: The bank manager (M) said, 'I am calling the police.'</div>
+                        <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Double-Loop Feedback: Intentional error sentence analysis on board.</div>
+                    `,
+                    assessment: "Independent completion of the bank manager prompt on worksheet. Peer audit of witness statements.",
+                    homework: "Finalize Bank Robbery Case Report worksheet and highlight shifted pronouns in green and shifted verbs in yellow."
+                },
+                // 6H2 Persuasive Foundations
+                "mon_p1_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 3: Persuasive Reading & Rhetoric",
+                    icon: "🎯",
+                    objective: "I can distinguish between a verifiable fact and an author's opinion in a persuasive article and highlight textual evidence.",
+                    skill: "Critical Reading & Analytical Distinctions (Fact vs. Opinion)",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Headline Clash on screen: 'School uniforms reduce bullying' vs 'School uniforms are boring.' Class votes: Fact or Opinion?</div>
+                        <div><strong>Phase 2: Direct Modeling (10m):</strong> Model analyzing an article excerpt. Highlight facts in yellow (supported by data) and opinions in blue (value judgements).</div>
+                        <div><strong>Phase 3: Paired Sorting (15m):</strong> Pairs examine 8 statement cards from a youth editorial. Partner A categorizes; Partner B challenges with: 'How can you prove it's a fact?'</div>
+                        <div><strong>Phase 4: Formative Check (5m):</strong> Exit Slip: Write 1 fact and 1 opinion about today's debate topic.</div>
+                        <div><strong>Phase 5: Closure (5m):</strong> Share common misconceptions regarding public opinions vs empirical facts.</div>
+                    `,
+                    assessment: "Exit Slip: 1 fact and 1 opinion correctly categorized with supporting textual justification.",
+                    homework: "Find 1 news headline at home and explain whether it is presented as a fact or an opinion."
+                },
+                "mon_p2_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 3: Persuasive Writing & Rhetorical Devices",
+                    icon: "🗣️",
+                    objective: "I can identify and use rhetorical questions and emotive adjectives to make my argument more convincing.",
+                    skill: "Rhetorical Devices: Emotive Language & Rhetorical Questions",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Compare two speeches on saving energy. Which one makes you want to act immediately? Why?</div>
+                        <div><strong>Phase 2: Explicit Instruction (10m):</strong> Deconstruct persuasive tools: Rhetorical Questions ('How would you feel if...?') and Power Adjectives ('devastating', 'essential').</div>
+                        <div><strong>Phase 3: Pair Speech Makeover (15m):</strong> Pairs transform 3 bland sentences into persuasive power sentences using at least one rhetorical question and two emotive words.</div>
+                        <div><strong>Phase 4: Mini-Podium Share (5m):</strong> 3 student pairs read their upgraded sentences aloud using expressive vocal tone.</div>
+                        <div><strong>Phase 5: Closure (5m):</strong> Quick recap of how voice modulation and word choice enhance persuasive writing.</div>
+                    `,
+                    assessment: "Peer critique of upgraded persuasive sentences against the 2-device rubric.",
+                    homework: "Write a 4-sentence mini-paragraph persuading parents to let you stay up 30 minutes later on Friday."
+                }
             },
 
-            "mon_p7_5m2": {
-                classTitle: "5M2 English",
-                badge: "Grade 5 (23 Students)",
-                meta: "Mon • Period 7 (14:10 - 14:50) • Room 105",
-                unit: "Unit 2: Observation & Comparative Speaking",
-                icon: "🔍",
-                objective: "I can spot differences in crime scene photos and explain clues using: 'They are the same,' 'They are similar,' or 'They are different because...'.",
-                skill: "Comparative Speaking & Epistemic Friction in Dyads (Visual Observation)",
-                activity: `
-                    <div><strong>Phase 1: Activation (5m):</strong> Welcome Young Detectives. Objective: Sharpen visual observation skills by comparing two similar crime scenes under time pressure.</div>
-                    <div><strong>Phase 2: Direct Input & Syntax Modeling (10m):</strong> Teacher models Round 1 (Broken Window) and Round 2 (Spilled Cup). Think-aloud demonstration: <em>'I look at Scene A and B. They are different because Scene B has hair on the chair.'</em></div>
-                    <div><strong>Phase 3: Collaborative Pair Application (15m):</strong> 10-second rapid-fire rounds on screen (Rounds 4, 5, 6, 8: Clocks, blood, missing notebook, paint spill, handcuffs). Partner A spots and states finding (<em>'They are different because...'</em>); Partner B verifies and adds a supporting detail. Role swap every round!</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Display Round 11 (Footprints & Gloves). Students independently write 1 'similar' sentence and 1 'different because' sentence in notebooks.</div>
-                    <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Delayed error recast on pluralization (<em>'The footprints are...'</em> vs <em>'The footprint is...'</em>).</div>
-                `,
-                assessment: "Notebook Exit Check: Round 11 comparison statements. Peer-audited oral responses during 10-second spot-the-difference rounds.",
-                homework: "Find two similar items at home (shoes, mugs, or pens) and write 3 comparison sentences using 'They are similar/different because...'."
+            // =====================================================================
+            // WEEK 7 (Oct 12 – Oct 16, 2026) - ENTERING NEXT MONDAY
+            // =====================================================================
+            7: {
+                // 5M2 Unit 2 Master Schedule Week 7 (Cuisines & Need vs Need To)
+                "mon_p6_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Speaking Task Intro — World Cuisines & Dish Origins",
+                    icon: "🍲",
+                    objective: "I can watch a video about world cuisines, identify dish origins on a world map, and name 3 ingredients in English.",
+                    skill: "Listening Comprehension & Schema Building (World Cuisines)",
+                    activity: `
+                        <div><strong>Phase 1: Activation & Hook (5m):</strong> World Food Map. Display photos of 4 dishes (tacos, sushi, pasta, dim sum). Students match dishes to flags.</div>
+                        <div><strong>Phase 2: Direct Input (10m):</strong> Watch World Cuisines video excerpt. Model pronunciation of target vocabulary (cuisine, origin, traditional, ingredients, spicy).</div>
+                        <div><strong>Phase 3: Collaborative Pair Task (15m):</strong> Dyads receive country profile cards. Partner A asks: 'Where does [dish] come from?'; Partner B identifies origin and explains key ingredients.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> 1-Minute Quiz: Match 4 world dishes to their country of origin and primary flavor profile.</div>
+                        <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Preview next period's fun facts research.</div>
+                    `,
+                    assessment: "Mini-quiz check on dish origins and target culinary vocabulary.",
+                    homework: "Ask your family what their favorite international dish is and write down 2 ingredients."
+                },
+                "mon_p7_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Background Facts & Presentation Hooks (SP BLT P.1-2)",
+                    icon: "✨",
+                    objective: "I can extract 2 interesting background facts about a dish and write an engaging oral presentation hook with my partner.",
+                    skill: "Collaborative Information Extraction & Oral Hook Construction",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Boring opening ('Today I talk about pizza') vs Catchy Hook ('Did you know the world's largest pizza was 1,200 square meters?').</div>
+                        <div><strong>Phase 2: Direct Modeling (10m):</strong> Deconstruct mentor fact sheets (SP BLT P.1-2). Model formula: 'Did you know that [Surprising Fact]? In today's presentation, we will explore...'</div>
+                        <div><strong>Phase 3: Dyad Negotiation (15m):</strong> Partners read short culinary vignettes. Extract 2 interesting historical/cultural facts and draft a 2-sentence presentation hook.</div>
+                        <div><strong>Phase 4: Formative Check (5m):</strong> 3 pairs read their hooks aloud from their desks; class votes on most captivating opening.</div>
+                        <div><strong>Phase 5: Closure (5m):</strong> Feedback on expressive intonation.</div>
+                    `,
+                    assessment: "Written presentation hook draft evaluated on student engagement and grammatical accuracy.",
+                    homework: "Practice reading your 2-sentence presentation hook aloud twice at home."
+                },
+                "tue_p1_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Lesson Plan A — Dish Evaluation & Descriptive Adjectives",
+                    icon: "⭐",
+                    objective: "I can categorize descriptive adjectives into Food, Atmosphere, or Service and express my opinion about a restaurant dish using 'because'.",
+                    skill: "Descriptive Sensory Adjectives & Opinion Justification (Food, Atmosphere, Service)",
+                    activity: `
+                        <div><strong>Phase 1: Schema Hook (5m):</strong> Catchy review headlines slide ('A Taste of Italy', 'Disappointing Service', 'Mouthwatering BBQ'). Thumbs up/down check.</div>
+                        <div><strong>Phase 2: Direct Input & Chunking (10m):</strong> Distribute Writing Help Sheet. Break down review into 3 categories: Food (crispy, juicy, bland), Service (attentive, slow), Atmosphere (cozy, noisy). Model formula: 'My favourite dish was [X] because it was [Y].'</div>
+                        <div><strong>Phase 3: Epistemic Pair Challenge (15m):</strong> 'The Restaurant Critic Challenge.' Partner A (Critic) describes a meal; Partner B (Editor) enforces linking words (because, but, however) to expand sentences.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Whiteboard conclusion frame: 'Overall, I [enjoyed/did not enjoy] my meal at [X] because [Reason].'</div>
+                        <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Highlight a student board using 'however' for mixed experiences.</div>
+                    `,
+                    assessment: "Whiteboard check: Correct mapping of sensory adjectives and proper causal connector usage.",
+                    homework: "Write a 3-sentence review of last night's dinner using at least 2 target adjectives."
+                },
+                "tue_p2_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Recipe Sequencing & Justifying Recommendations (SP BLT P.8-9)",
+                    icon: "📋",
+                    objective: "I can sequence 4 steps of a recipe using sequence linkers (First, Next, Then, Finally) and justify why others should try it.",
+                    skill: "Procedural Sequencing & Justification (First, Next, Then, Finally)",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Scrambled pancake recipe on screen. What happens if you cook before mixing?</div>
+                        <div><strong>Phase 2: Direct Modeling (10m):</strong> Teach recipe sequence markers: First, Next, Then, Finally. Model recipe card layout and rating justification.</div>
+                        <div><strong>Phase 3: Pair Inquiry (15m):</strong> Dyads sequence recipe strips for a favorite dish and draft a 2-sentence justification defending their 5-star rating.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Exit Slip: Complete a 4-step sequence organizer with correct transition words.</div>
+                        <div><strong>Phase 5: Closure (5m):</strong> Review sequence marker comma punctuation.</div>
+                    `,
+                    assessment: "Exit Slip: Sequence marker accuracy and chronological sentence flow.",
+                    homework: "Write down the 4 recipe steps for making your favorite drink or snack."
+                },
+                "wed_p1_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Reading Strategy — Main Ideas using First/Last Sentences",
+                    icon: "📑",
+                    objective: "I can scan the first and last sentences of a paragraph to find the main idea and summarize it in under 8 words.",
+                    skill: "Reading Strategy: Paragraph Margin Scanning & Main Idea Synthesis (Reading WB P.6-7)",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Margin scanning demo on visualizer. Show how first/last sentences act as road signs.</div>
+                        <div><strong>Phase 2: Direct Modeling (10m):</strong> Reading Workbook P.6. Teacher models boxing the topic sentence and underlining concluding summary.</div>
+                        <div><strong>Phase 3: Guided Pair Practice (15m):</strong> Pairs read Paragraphs 2 & 3. Partner A reads first sentence; Partner B summarizes key idea in ≤8 words in the margin.</div>
+                        <div><strong>Phase 4: Formative Check (5m):</strong> Quick Whiteboard Check: 1-sentence summary of Paragraph 4's main idea.</div>
+                        <div><strong>Phase 5: Wrap-up (5m):</strong> Whole-class discussion on how skimming saves time on exams.</div>
+                    `,
+                    assessment: "Whiteboard main idea check & margin annotation verification.",
+                    homework: "Reading Workbook page 7: Read passage and answer Questions 1–4."
+                },
+                "wed_p2_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Lesson Plan B — Syntactic Accuracy (Need vs. Need To)",
+                    icon: "🎒",
+                    objective: "I can choose correctly between 'need' (when followed by a noun) and 'need to' (when followed by a verb) in past and present tense.",
+                    skill: "Syntactic Accuracy & Morphological Parsing (Jason's Botanical Garden Diary)",
+                    activity: `
+                        <div><strong>Phase 1: Activation (5m):</strong> Heavy backpack visual hook. 'I need a map (noun). I need to find a guide (verb).' Choral response: noun vs verb!</div>
+                        <div><strong>Phase 2: Structural Input (10m):</strong> Formulas: [Subject] + need(s)/needed + [Noun] vs [Subject] + need(s) to/needed to + [Base Verb]. Model Blank (2) on visualizer.</div>
+                        <div><strong>Phase 3: Collaborative Pair Cloze (15m):</strong> Partner A (Syntax Scout) identifies if word after blank is noun/verb; Partner B (Grammar Guard) determines tense and form. Negotiate Blanks 4 & 7.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Board prompt challenge: 1. 'The plants were dry, so the gardener ____ (water) them.' 2. 'My camera is full, so I ____ (a memory card).'</div>
+                        <div><strong>Phase 5: Targeted Closure (5m):</strong> Address common error ('didn't need to ask'). Preview tomorrow's Reading FA.</div>
+                    `,
+                    assessment: "Mini-whiteboard check for the 2 board sentences. Pair agreement audit on worksheet.",
+                    homework: "Complete items 5–8 on the Need vs. Need To grammar consolidation sheet."
+                },
+                "thu_p3_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Reading Diagnostic Assessment (Sarah's Restaurant Review)",
+                    icon: "📝",
+                    objective: "I can read Sarah's Restaurant Review independently and answer comprehension questions within the 30-minute time limit.",
+                    skill: "Evaluative Reading Comprehension & Timed Diagnostic Pacing",
+                    activity: `
+                        <div><strong>Phase 1: Pre-Assessment Setup (5m):</strong> Distribute test papers, review instructions, and emphasize pacing.</div>
+                        <div><strong>Phase 2: Timed Reading FA (30m):</strong> Silent, independent completion of Sarah's Restaurant Review diagnostic assessment under timed conditions.</div>
+                        <div><strong>Phase 3: Metacognitive Debrief (5m):</strong> Collect assessment papers. Quick thumbs up/middle/down reflection on test pacing.</div>
+                    `,
+                    assessment: "Formative Reading Assessment diagnostic score and individual item analysis.",
+                    homework: "Review reading target vocabulary list and highlight 5 words to practice."
+                },
+                "thu_p4_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Reading for Pleasure & Self-Regulated Learning",
+                    icon: "📚",
+                    objective: "I can choose an English reader at my reading level, read silently for 30 minutes, and record my favorite new vocabulary words in my reading log.",
+                    skill: "Sustained Silent Reading (SSR) & Lexile-Appropriate Book Selection",
+                    activity: `
+                        <div><strong>Phase 1: Library Entry & Selection (5m):</strong> Browse English reading corner and select a leveled reader.</div>
+                        <div><strong>Phase 2: Sustained Silent Reading (30m):</strong> Independent reading. Teacher conducts 1-on-1 reading conferences with target students.</div>
+                        <div><strong>Phase 3: Reading Log & Reflection (10m):</strong> Log page progress and write down 2 new interesting vocabulary words with their sentence contexts.</div>
+                    `,
+                    assessment: "Teacher reading conference notes and verification of student reading log entries.",
+                    homework: "Read 15 pages of your library book and get your reading log signed."
+                },
+
+                // 6H2 Unit 4 Formal Complaint Letters (Part 1)
+                "mon_p1_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Sensory Defects & Appliance Malfunctions",
+                    icon: "⚡",
+                    objective: "I can identify and use 5 sensory word pairs (e.g., 'burning plastic odor', 'metallic grinding noise') to describe a broken home appliance.",
+                    skill: "Domain-Specific Sensory Collocations & Perception Verbs (Feel, Emit, Smell, Hear)",
+                    activity: `
+                        <div><strong>Phase 1: Hook & Schema (5m):</strong> Play 3 mysterious appliance audio-visual clips (flickering screen, screeching motor, hissing pipes). Students guess the defect.</div>
+                        <div><strong>Phase 2: Direct Input & Modeling (10m):</strong> Teach core vocabulary: appliance, defect, malfunction, model number. Model sensory collocations: sight (ice buildup), sound (metallic grinding noise), smell (burning plastic odor). Formula: [Subject] + [Perception Verb: feels/emits] + [Sensory Noun Phrase].</div>
+                        <div><strong>Phase 3: Epistemic Pair Challenge (15m):</strong> 'Defective Appliance Investigation.' Partner A (Inspector) describes 3 symptoms of a broken machine; Partner B (Technician) records and classifies symptoms into Visual, Auditory, or Olfactory clues.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> 3-Item Exit Slip: 1 recognition matching, 1 sentence transformation, 1 original symptom description using perception verbs.</div>
+                        <div><strong>Phase 5: Delayed Feedback & Closure (5m):</strong> Anonymous error recast on collocation slips. FeedForward to tomorrow's symptom narration.</div>
+                    `,
+                    assessment: "Exit Slip: Accurate production of 2 sensory collocations + 1 perception verb sentence.",
+                    homework: "Inspect one household appliance at home. Write down its model number and 2 sensory descriptions of how it operates."
+                },
+                "mon_p2_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Past Continuous + Past Simple Narratives",
+                    icon: "⏱️",
+                    objective: "I can write sentences combining Past Continuous and Past Simple with 'while' or 'when' to describe what went wrong with an appliance.",
+                    skill: "Complex Sentence Syntax: Interrupted Actions (While [Past Continuous], [Past Simple])",
+                    activity: `
+                        <div><strong>Phase 1: Activation & Hook (5m):</strong> Timeline prompt: 'The washing machine was spinning. Suddenly, it started leaking!' Connect two actions.</div>
+                        <div><strong>Phase 2: Direct Input & Syntax Modeling (10m):</strong> Formula: While + [Subject] + was/were [Verb-ing], [Subject] + [Past Simple Verb]. Exemplar: 'While the AC unit was running, it began blowing warm air.' Contrast L1 transfer errors.</div>
+                        <div><strong>Phase 3: Collaborative Pair Duel (15m):</strong> Incident Reconstruction. Dyads receive 4 appliance breakdown timelines. Partner A reads background action; Partner B identifies sudden defect and constructs unified 'While...' sentence.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Whiteboard Flash: Combine 'The computer was updating' + 'The screen went blue' using target syntax.</div>
+                        <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Double-loop feedback on tense agreement (was running vs ran).</div>
+                    `,
+                    assessment: "Whiteboard Flash check: Correct conjunction placement and tense backshifting in interrupted clauses.",
+                    homework: "Grammar sheet: Combine 4 pairs of breakdown events into 'While...' complex sentences."
+                },
+                "tue_p3_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Cause & Effect with Mechanical Action Verbs",
+                    icon: "⚙️",
+                    objective: "I can link an appliance defect to its negative result using mechanical verbs (jam, leak, screech, lock) and 'so' or 'because'.",
+                    skill: "Cause-and-Effect Clauses (so / because) & Mechanical Action Verbs",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Dilemma scenario: Wet laundry trapped inside a washing machine. Prompt: 'What caused this disaster?'</div>
+                        <div><strong>Phase 2: Direct Input (10m):</strong> Mechanical verbs: leak, overflow, vibrate, screech, trap, lock. Contrast syntax: [Cause] + so + [Effect] vs [Effect] + because + [Cause]. Exemplar: 'The door lock jammed, so the wet laundry remained trapped inside.'</div>
+                        <div><strong>Phase 3: Pair Problem Solving (15m):</strong> Case File Matching. Pairs evaluate 5 breakdown reports. Partner A drafts 'because' statement; Partner B converts it into 'so' statement and audits mechanical verb accuracy.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Exit Ticket: Write 2 cause-and-effect sentences linking a hardware defect to its daily life consequence.</div>
+                        <div><strong>Phase 5: Closure & FeedForward (5m):</strong> Praise precise verbs (screeched instead of made noise). Preview Library research on technical terms.</div>
+                    `,
+                    assessment: "Exit Ticket: Correct causal connectors (so vs because) and mechanical verb conjugation.",
+                    homework: "Write 3 cause-and-effect sentences explaining the impact of a spoiled refrigerator on family dinner."
+                },
+                "tue_p4_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Technical Compound Nouns & Research",
+                    icon: "💻",
+                    objective: "I can research and identify 4 technical compound nouns (e.g., 'blue screen error', 'thermal shutdown', 'cooling fan') in warranty manuals.",
+                    skill: "Technical Lexis Acquisition & Non-Fiction Manual Information Retrieval",
+                    activity: `
+                        <div><strong>Phase 1: Library Orientation (5m):</strong> Setting research parameters: Locating product troubleshooting guides and warranty booklets.</div>
+                        <div><strong>Phase 2: Guided Extraction (25m):</strong> In pairs, students examine product user manuals for laptop computers and air conditioners. Extract technical compound nouns (cooling fan, startup beep, thermal shutdown, boot loop) and record definitions.</div>
+                        <div><strong>Phase 3: Silent Reading & Teacher Conferencing (15m):</strong> Transition to silent reading of sample consumer complaint articles; teacher conducts 1-on-1 reading checks.</div>
+                    `,
+                    assessment: "Inspection of technical term glossary in student research logs.",
+                    homework: "Select 3 technical compound nouns from today's manual and write their definitions in simple English."
+                },
+                "wed_p6_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Chronological Sequence Timeline (Paragraph 2)",
+                    icon: "📅",
+                    objective: "I can organize a 5-step breakdown history into a chronological paragraph using discourse markers: 'First, Then, Second, Third, Finally'.",
+                    skill: "Discourse Markers & Chronological Paragraph Architecture (5-Step Weekly Timeline)",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Jumbled story on screen: A week of disaster with a smoking microwave. Why is chronological order essential in a legal/complaint letter?</div>
+                        <div><strong>Phase 2: Direct Input & Flow Modeling (10m):</strong> Teach 5 sequence discourse markers: First, Then, Second, Third, Finally. Deconstruct Paragraph 2 mentor structure showing progression from minor noise to complete system failure.</div>
+                        <div><strong>Phase 3: Collaborative Paragraph Assembly (15m):</strong> Pairs receive 5 scrambled defect cards (Day 1 to Day 7). Partners negotiate chronological order and draft cohesive 5-sentence timeline paragraph using required sequence markers.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Peer Audit: Swap paragraphs and check if all 5 sequence markers are used with proper comma punctuation.</div>
+                        <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Recast common transition punctuation errors.</div>
+                    `,
+                    assessment: "Peer audit checklist & teacher verification of chronological sequence markers.",
+                    homework: "Draft the 5-sentence breakdown timeline (Paragraph 2) for your chosen appliance on lined paper."
+                },
+                "wed_p7_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Conditionals for Troubleshooting & Hazards",
+                    icon: "⚠️",
+                    objective: "I can use Zero and First Conditionals ('If you..., it...') to evaluate safety hazards and explain failed troubleshooting steps.",
+                    skill: "Conditional Syntax (Zero & First Conditionals) for Evaluative Argumentation",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Troubleshooting warning symbols. Ask: 'What happens if you spray water on an electrical defect?'</div>
+                        <div><strong>Phase 2: Direct Input (10m):</strong> Formulas on board: Zero Conditional (General facts): If + Present, Present ('If you spray water inside, it creates an electrical hazard'); First Conditional (Future consequence): If + Present, will + Verb ('If you do not replace the unit, I will contact Consumer Protection.')</div>
+                        <div><strong>Phase 3: Epistemic Pair Inquiry (15m):</strong> Troubleshooting Audit. Pairs evaluate 4 troubleshooting actions. Partner A drafts 'If...' condition; Partner B predicts safety outcome or functional result using correct conditional tense.</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Exit Slip: Complete 2 conditional sentences regarding appliance maintenance and safety.</div>
+                        <div><strong>Phase 5: Closure (5m):</strong> Review if-clause comma rules. Preview formal register for letter openings and closings.</div>
+                    `,
+                    assessment: "Exit Slip: Accuracy of verb tenses in conditional clauses (present vs will + base verb).",
+                    homework: "Write 2 conditional safety warning sentences for your complaint letter's troubleshooting section."
+                },
+                "thu_p1_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Formal Register & Strategic Sentence Starters",
+                    icon: "✍️",
+                    objective: "I can replace informal spoken phrases with polite, firm formal register formulas ('I am writing to formally complain...', 'Under the warranty, I request...').",
+                    skill: "Formal Register, Sociolinguistic Appropriacy & Consumer Rights Formulas",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Tone Clash! Compare angry text message vs formal customer service letter. Which gets a refund faster? Why?</div>
+                        <div><strong>Phase 2: Direct Input & Register Mapping (10m):</strong> Teach formal letter conventions: Greeting ('Dear Customer Service Manager'), Purpose ('I am writing to formally complain about...'), Warranty claim ('Under the 1-year warranty, I request a full refund or immediate replacement'), Sign-off ('Yours sincerely').</div>
+                        <div><strong>Phase 3: Pair Register Makeover (15m):</strong> Informal-to-Formal conversion cards. Pairs transform 4 colloquial sentences ('Give me my money back!' → 'Under the terms of the warranty, I request a full refund of the purchase price.')</div>
+                        <div><strong>Phase 4: Formative Assessment (5m):</strong> Mini-Whiteboard: Write the formal opening sentence for a defect complaint including product name and model number.</div>
+                        <div><strong>Phase 5: Closure (5m):</strong> Praise academic tone. Preview full letter drafting tomorrow.</div>
+                    `,
+                    assessment: "Whiteboard check: Correct capitalization, punctuation, and formal opening formula.",
+                    homework: "Draft Paragraph 1 (Purpose & Purchase Details) and Paragraph 4 (Action Demanded & Warranty Request)."
+                },
+                "fri_p1_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — 150-Word Full Letter Assembly & Drafting",
+                    icon: "📄",
+                    objective: "I can draft a complete 150-word, 5-paragraph formal complaint letter integrating sensory evidence, chronological breakdown, and warranty requests.",
+                    skill: "Extended Written Composition & Structural Synthesis (Handbook 5-Paragraph Structure)",
+                    activity: `
+                        <div><strong>Phase 1: Setting Criteria & Rubric (5m):</strong> Display 5-mark band descriptor on screen. Review paragraph structure: P1 (Purpose/Model), P2 (Timeline & Defect), P3 (Impact on Life), P4 (Remedy Demanded), P5 (Sign-off).</div>
+                        <div><strong>Phase 2: Sustained Silent Drafting (20m):</strong> Students draft their formal letter independently in examination conditions (~150 words). Teacher provides silent desk-side guidance.</div>
+                        <div><strong>Phase 3: Peer Double-Loop Editing (10m):</strong> Partners exchange drafts. Check criteria: (1) Formal starters used? (2) Sequence markers present? (3) Past continuous + past simple correct? (4) Cause-and-effect present?</div>
+                        <div><strong>Phase 4: Metacognitive Log (5m):</strong> Students record their personal editing priority on their draft header.</div>
+                    `,
+                    assessment: "Completed draft evaluation against the Handbook 5-Mark Band Descriptor.",
+                    homework: "Revise and produce clean handwritten or typed final copy of your 150-word complaint letter."
+                },
+                "fri_p2_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Consumer Rights Roleplay & Case Resolution",
+                    icon: "⚖️",
+                    objective: "I can role-play a customer service negotiation, politely presenting my letter's claims and defending my right to a refund or replacement under warranty.",
+                    skill: "Spoken Formal Register, Polite Negotiation & Communicative Pragmatics",
+                    activity: `
+                        <div><strong>Phase 1: Role Briefing (5m):</strong> Customer vs Customer Service Manager protocols. Review polite disagreement stems ('I understand your policy, however under consumer warranty...').</div>
+                        <div><strong>Phase 2: Pair Negotiation Rounds (20m):</strong> Dyads simulate customer service counter. Partner A (Customer) presents defects from letter; Partner B (Manager) attempts troubleshooting. Customer justifies why refund/replacement is legally required. Swap roles at 10m!</div>
+                        <div><strong>Phase 3: Showcase Resolution (10m):</strong> 2 pairs perform negotiation in front of class; audience votes on whether the customer successfully earned a refund based on evidence.</div>
+                        <div><strong>Phase 4: Weekend Synthesis (5m):</strong> Collect final complaint letters for teacher assessment. Celebrate student mastery of real-world formal English.</div>
+                    `,
+                    assessment: "Peer negotiation rating card + submission of final 150-word complaint letter.",
+                    homework: "Have a wonderful weekend! Unit completed."
+                }
             },
 
-            "tue_p1_5m2": {
-                classTitle: "5M2 English",
-                badge: "Grade 5 (23 Students)",
-                meta: "Tue • Period 1 (08:30 - 09:10) • Room 105",
-                unit: "Unit 2: Grammar & Mechanics (Reported Speech Rules)",
-                icon: "🗣️",
-                objective: "I can rewrite direct speech into reported speech by correctly shifting pronouns (I → he/she) and moving present tense verbs into past tense (want → wanted).",
-                skill: "Grammar Syntax & Mechanics: Pronoun Shifting & Tense Backshifts",
-                activity: `
-                    <div><strong>Phase 1: Activation & Hook (5m):</strong> 'Telephone' whisper routine. Teacher whispers: <em>'I am hungry.'</em> Class responds: <em>'He said that he was hungry.'</em></div>
-                    <div><strong>Phase 2: Direct Explicit Input (15m):</strong> Core formula: <code>[Speaker] said that [New Pronoun] + [Past Verb]</code>. T-chart linking direct pronouns (I/we) to reported pronouns (he/she/they). Model tense backshifting rules (am/is → was, want → wanted, like → liked).</div>
-                    <div><strong>Phase 3: Collaborative Pair Application (10m):</strong> Talk Aloud Problem Solving (TAPS). Pairs solve 3 practice lines. Partner A identifies pronoun and verb; Partner B applies the formula to rewrite.</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Whiteboard Flash! Project: The boy said, 'I have a dog.' All 23 students write reported sentence on mini-whiteboards and flash simultaneously.</div>
-                    <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Address common whiteboard errors (forgetting 'that' or forgetting pronoun change). Preview the Bank Robbery mystery in Period 2.</div>
-                `,
-                assessment: "Whiteboard Flash diagnostic check across all 23 students. Formative verification of pronoun shift and verb backshift accuracy.",
-                homework: "Complete Grammar Help Sheet items 1–4 (convert 4 direct speech dialogue quotes into reported speech)."
-            },
+            // =====================================================================
+            // WEEK 8 (Oct 19 – Oct 23, 2026)
+            // =====================================================================
+            8: {
+                // 5M2 Speaking & Writing FA Master Schedule (from docx)
+                "mon_p6_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: 2nd Draft Handout & Error Autopsy (Speaking FA Prep)",
+                    icon: "📝",
+                    objective: "I can analyze common errors on our 2nd draft and execute double-loop corrections before our Speaking Assessment.",
+                    skill: "Scaffolded Corrective Feedback & Double-Loop Error Correction",
+                    activity: `
+                        <div><strong>Phase 1: Activation (5m):</strong> Whole-class error autopsy on anonymized student drafts.</div>
+                        <div><strong>Phase 2: Direct Input (10m):</strong> Review descriptive adjectives and sentence flow. Model double-loop correction.</div>
+                        <div><strong>Phase 3: Pair Editing (15m):</strong> Students partner to polish oral speaking scripts and prepare visual cue cards.</div>
+                        <div><strong>Phase 4: Formative Check (5m):</strong> Practice 30-second presentation with partner.</div>
+                        <div><strong>Phase 5: Closure (5m):</strong> Set high expectations for tomorrow's Speaking FA.</div>
+                    `,
+                    assessment: "Student script revision and pronunciation check.",
+                    homework: "Rehearse your dish presentation 3 times in front of a mirror."
+                },
+                "mon_p7_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Speaking FA Execution (Part 1 - Presentations & Voting)",
+                    icon: "🎙️",
+                    objective: "I can deliver a 60-second oral presentation of my dish and actively listen to vote for my top 3 favorite dishes.",
+                    skill: "Oral Presentation Fluency & Active Listening Evaluation (WR BLT P.16)",
+                    activity: `
+                        <div><strong>Phase 1: Assessment Briefing (5m):</strong> Review rubrics and active listener voting sheets.</div>
+                        <div><strong>Phase 2: Presentations Group 1 (25m):</strong> First cohort of students deliver 60-second presentations while peers record notes.</div>
+                        <div><strong>Phase 3: Peer Voting & Feedback (10m):</strong> Students vote for their top dishes and write 1 justification sentence.</div>
+                    `,
+                    assessment: "Formal Speaking Assessment diagnostic rubrics and peer scorecards.",
+                    homework: "Prepare for Part 2 presentations tomorrow."
+                },
+                "tue_p1_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Speaking FA Execution (Part 2 - Audience Justifications)",
+                    icon: "🎙️",
+                    objective: "I can deliver my oral presentation confidently and write clear justification sentences for peer votes.",
+                    skill: "Oral Delivery & Justification Sentence Construction",
+                    activity: `
+                        <div><strong>Phase 1: Warm-up (5m):</strong> Vocal warm-up and review of justification frames.</div>
+                        <div><strong>Phase 2: Presentations Group 2 (25m):</strong> Second cohort of student presentations; peers score delivery and content.</div>
+                        <div><strong>Phase 3: Peer Voting & Synthesis (10m):</strong> Formulate justification sentences using 'because' and 'due to'.</div>
+                    `,
+                    assessment: "Speaking FA scoring matrix & peer justification slips.",
+                    homework: "Review 3rd draft notes for writing assessment."
+                },
+                "tue_p2_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Speaking FA (Part 3) & Collect 3rd Draft",
+                    icon: "📥",
+                    objective: "I can finalize our speaking presentations and submit our 3rd writing draft for moderation marking.",
+                    skill: "Presentation Completion & Moderation Submission",
+                    activity: `
+                        <div><strong>Phase 1: Final Presenters (20m):</strong> Final cohort delivers presentations.</div>
+                        <div><strong>Phase 2: Whole-Class Tally (10m):</strong> Tally audience votes for top 3 dishes across 5M2.</div>
+                        <div><strong>Phase 3: Draft Collection (10m):</strong> Final review and submission of 3rd drafts for marking.</div>
+                    `,
+                    assessment: "Moderation collection of 3rd writing drafts and speaking scores.",
+                    homework: "Rest and prepare for tomorrow's class discussion."
+                },
+                "wed_p1_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Speaking FA Synthesis & Top Dish Defense",
+                    icon: "🏆",
+                    objective: "I can defend our top 3 dish selections in class debate using comparative vocabulary (better, richer, more authentic).",
+                    skill: "Synthesis & Class-Wide Comparative Discourse",
+                    activity: `
+                        <div><strong>Phase 1: Reveal Winners (5m):</strong> Announce top 3 dishes voted by the class.</div>
+                        <div><strong>Phase 2: Debate Preparation (10m):</strong> Review comparative structures: 'X is richer than Y because...'.</div>
+                        <div><strong>Phase 3: Class Discussion (20m):</strong> Structured debate defending why each top dish deserves 1st place.</div>
+                        <div><strong>Phase 4: Closure (5m):</strong> Summarize key persuasive expressions.</div>
+                    `,
+                    assessment: "Oral debate participation and comparative adjective accuracy.",
+                    homework: "Review marking criteria for tomorrow's Writing FA."
+                },
+                "wed_p2_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Hand out 3rd Draft & Metacognitive Review for Writing FA",
+                    icon: "🎯",
+                    objective: "I can review my teacher feedback on Draft 3 and set 2 specific writing goals for tomorrow's exam.",
+                    skill: "Metacognitive Review & Assessment Readiness",
+                    activity: `
+                        <div><strong>Phase 1: Hand out Draft 3 (5m):</strong> Return marked drafts with descriptive comments.</div>
+                        <div><strong>Phase 2: Exemplar Deconstruction (10m):</strong> Examine high-scoring mentor student text.</div>
+                        <div><strong>Phase 3: Goal Setting & Strategy Practice (20m):</strong> Students analyze their personal error patterns and write 2 exam targets.</div>
+                        <div><strong>Phase 4: Wrap-up (5m):</strong> Teacher Q&A on tomorrow's test parameters.</div>
+                    `,
+                    assessment: "Student exam goal slips and error correction notes.",
+                    homework: "Review your personal target list and get a good night's sleep."
+                },
+                "thu_p3_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Unit 2: Writing Formative Assessment (35 Mins)",
+                    icon: "✍️",
+                    objective: "I can independently write a complete 120-word restaurant and dish review under timed examination conditions.",
+                    skill: "Independent Extended Writing Diagnostic Assessment",
+                    activity: `
+                        <div><strong>Phase 1: Exam Briefing (5m):</strong> Instructions, silence protocol, and time management pacing.</div>
+                        <div><strong>Phase 2: Timed Writing FA (35m):</strong> Silent, independent writing under strict diagnostic conditions.</div>
+                    `,
+                    assessment: "Formal Writing Assessment diagnostic paper.",
+                    homework: "No homework tonight! Congratulations on finishing your Writing FA."
+                },
+                "thu_p4_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5 (23 Students)",
+                    unit: "Library Lesson / Self-Regulated Learning (SRL Journaling)",
+                    icon: "📖",
+                    objective: "I can write a 5-sentence reflection in my English journal evaluating my writing performance and read quietly.",
+                    skill: "Self-Regulated Learning (SRL) & Metacognitive Journaling",
+                    activity: `
+                        <div><strong>Phase 1: Journal Entry (10m):</strong> SRL prompt: What was your greatest success on the writing exam? What will you practice next?</div>
+                        <div><strong>Phase 2: Silent Reading (30m):</strong> Independent reading and teacher 1-on-1 reading checks.</div>
+                        <div><strong>Phase 3: Exit Log (5m):</strong> Sign reading logs.</div>
+                    `,
+                    assessment: "SRL journal entry and silent reading conference notes.",
+                    homework: "Enjoy your weekend!"
+                },
 
-            "tue_p2_5m2": {
-                classTitle: "5M2 English",
-                badge: "Grade 5 (23 Students)",
-                meta: "Tue • Period 2 (09:10 - 09:50) • Room 105",
-                unit: "Unit 2: Applied Grammar (The Bank Robbery Mystery)",
-                icon: "🏦",
-                objective: "I can solve a bank robbery case by reporting witness and suspect statements using correct gender pronouns and past tense verbs.",
-                skill: "Higher-Order Grammar Application & Contextual Pronoun Selection",
-                activity: `
-                    <div><strong>Phase 1: Activation & Hook (5m):</strong> Display bank robbery scene photo. Teacher prompt: <em>'The police just arrived! How do witnesses report what happened? Through reported speech!'</em></div>
-                    <div><strong>Phase 2: Direct Input & Deconstruction (10m):</strong> Distribute case worksheet. Deconstruct Example 1: The robber said, 'I want you to put all the money in the bag.' Step-by-step think-aloud identifying speaker gender (male robber) and listener (female cashier).</div>
-                    <div><strong>Phase 3: Collaborative Pair Investigation (15m):</strong> Pairs work through Sentences 2–5. Epistemic friction challenge: Sentence 2 (guard says 'I don't have a gun' → didn't have) and Sentence 3 (female robber says 'I won't hurt you' → she would not hurt him). Partners audit each other's work.</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Unseen mystery prompt on back of sheet: The bank manager (M) said, 'I am calling the police.' Students complete independently.</div>
-                    <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Double-Loop Feedback: Teacher writes an intentional error sentence on board (<em>'The female robber said that I wouldn't hurt you'</em>). Students identify why pronoun failed to shift.</div>
-                `,
-                assessment: "Independent completion of the bank manager prompt on worksheet. Peer audit of the 4 witness statements.",
-                homework: "Finalize Bank Robbery Case Report worksheet and highlight all shifted pronouns in green and shifted verbs in yellow."
-            },
-
-            "wed_p1_5m2": {
-                classTitle: "5M2 English",
-                badge: "Grade 5 (23 Students)",
-                meta: "Wed • Period 1 (08:30 - 09:10) • Room 105",
-                unit: "Unit 2: Reading Strategies & Comprehension",
-                icon: "📑",
-                objective: "I can skim and scan a text to find the main idea of each paragraph by examining the first and last sentences.",
-                skill: "Reading Strategy: Paragraph Margin Scanning & Main Idea Synthesis (Reading WB P.6-7)",
-                activity: `
-                    <div><strong>Warm-up & Hook (5m):</strong> Margin scanning demonstration on visualizer. Show how topic sentences guide readers like signposts.</div>
-                    <div><strong>Direct Modeling (10m):</strong> Reading Workbook P.6. Teacher models boxing the first sentence and underlining the concluding sentence to isolate the main idea.</div>
-                    <div><strong>Guided Dyad Practice (15m):</strong> Pairs read Paragraphs 2 & 3. Partner A reads the opening sentence aloud; Partner B summarizes key message in ≤8 words. Write main idea notes in paragraph margins.</div>
-                    <div><strong>Formative Check (5m):</strong> Quick Whiteboard Check: Write a 1-sentence summary of Paragraph 4's main idea.</div>
-                    <div><strong>Wrap-up & Reflection (5m):</strong> Discuss how identifying main ideas saves time during reading assessments.</div>
-                `,
-                assessment: "Whiteboard main idea summary check. Teacher circulation verifying margin annotations in Reading Workbook.",
-                homework: "Reading Workbook page 7: Read text excerpt and answer Questions 1–4."
-            },
-
-            "wed_p2_5m2": {
-                classTitle: "5M2 English",
-                badge: "Grade 5 (23 Students)",
-                meta: "Wed • Period 2 (09:10 - 09:50) • Room 105",
-                unit: "Unit 2: Syntactic Accuracy (Need vs. Need To)",
-                icon: "🎒",
-                objective: "I can choose correctly between 'need' (when followed by a noun) and 'need to' (when followed by an action verb) in past and present tense.",
-                skill: "Syntactic Accuracy & Morphological Parsing (Jason's Botanical Garden Diary)",
-                activity: `
-                    <div><strong>Phase 1: Activation & Hook (5m):</strong> Heavy backpack visual hook. <em>'I need a map (noun). I need to find a guide (verb).'</em> Choral response identifying nouns vs verbs.</div>
-                    <div><strong>Phase 2: Structural Formulas (10m):</strong> Formulas on board: <code>[Subject] + need(s)/needed + [Noun/Object]</code> vs <code>[Subject] + need(s) to/needed to + [Base Verb]</code>. Model Blank (2) on visualizer: 'stay' is a verb → 'needs to stay'.</div>
-                    <div><strong>Phase 3: Collaborative Pair Cloze (15m):</strong> Partner A (Syntax Scout) identifies if word after blank is noun or verb. Partner B (Grammar Guard) determines tense and form (needed vs needed to). Negotiate Blank (4) and negative form in Blank (7) ('didn't need').</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Board prompt challenge: 1. 'The plants were dry, so the gardener ____ (water) them.' 2. 'My camera is full, so I ____ (a memory card).'</div>
-                    <div><strong>Phase 5: Targeted Closure (5m):</strong> Address Blank (3) common error ('didn't need' vs 'didn't need to ask'). Preview tomorrow's 30-minute Reading FA.</div>
-                `,
-                assessment: "Mini-whiteboard response check for the 2 board sentences. Pair agreement audit on Jason's Diary worksheet.",
-                homework: "Complete items 5–8 on the Need vs. Need To grammar consolidation sheet."
-            },
-
-            "thu_p3_5m2": {
-                classTitle: "5M2 English",
-                badge: "Grade 5 (23 Students)",
-                meta: "Thu • Period 3 (10:05 - 10:45) • Room 105",
-                unit: "Unit 2: Reading Diagnostic Assessment",
-                icon: "📝",
-                objective: "I can read Sarah's Restaurant Review independently and answer comprehension questions within the 30-minute time limit.",
-                skill: "Evaluative Reading Comprehension & Timed Assessment Pacing",
-                activity: `
-                    <div><strong>Pre-Assessment Setup (5m):</strong> Distribute test papers, review instructions, and emphasize pacing (skimming for main ideas first).</div>
-                    <div><strong>Timed Reading FA (30m):</strong> Silent, independent completion of Sarah's Restaurant Review diagnostic assessment under timed conditions.</div>
-                    <div><strong>Metacognitive Debrief (5m):</strong> Collect assessment papers. Quick thumbs up/middle/down self-reflection on time management and question difficulty.</div>
-                `,
-                assessment: "Formative Reading Assessment diagnostic score and individual question analysis.",
-                homework: "Review reading target vocabulary list and highlight 5 words to practice."
-            },
-
-            "thu_p4_5m2": {
-                classTitle: "5M2 English",
-                badge: "Grade 5 (23 Students)",
-                meta: "Thu • Period 4 (10:45 - 11:30) • Library 6F-B",
-                unit: "Reading for Pleasure & Self-Regulated Learning",
-                icon: "📚",
-                objective: "I can choose an English reader at my reading level, read silently for 30 minutes, and record my favorite new vocabulary words in my reading log.",
-                skill: "Sustained Silent Reading (SSR) & Lexile-Appropriate Book Selection",
-                activity: `
-                    <div><strong>Library Entry & Selection (5m):</strong> Browse English reading corner and select a leveled reader.</div>
-                    <div><strong>Sustained Silent Reading (30m):</strong> Independent reading. Teacher conducts 1-on-1 reading conferences with target students (fluency and comprehension checks).</div>
-                    <div><strong>Reading Log & Reflection (10m):</strong> Log page progress and write down 2 new interesting vocabulary words with their sentence contexts.</div>
-                `,
-                assessment: "Teacher reading conference notes and verification of student reading log entries.",
-                homework: "Read 15 pages of your library book and get your reading log signed."
-            },
-
-                        // --- 6H2 ENGLISH (Grade 6, 33 Students) - Unit: Formal Complaint Letters (Appliance Defects) ---
-            "mon_p1_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Mon • Period 1 (08:30 - 09:10) • Room 202",
-                unit: "Unit: Formal Complaint Letters — Sensory Defects & Appliance Malfunctions",
-                icon: "⚡",
-                objective: "I can identify and use 5 sensory word pairs (e.g., 'burning plastic odor', 'metallic grinding noise') to describe a broken home appliance.",
-                skill: "Domain-Specific Sensory Collocations & Perception Verbs (Feel, Emit, Smell, Hear)",
-                activity: `
-                    <div><strong>Phase 1: Hook & Schema (5m):</strong> Play 3 mysterious appliance sound/visual clips (flickering screen, screeching motor, hissing pipes). Students guess the defect.</div>
-                    <div><strong>Phase 2: Direct Input & Modeling (10m):</strong> Teach core vocabulary: <em>appliance, defect, malfunction, model number</em>. Model sensory collocations: sight (<em>ice buildup</em>), sound (<em>metallic grinding noise</em>), smell (<em>burning plastic odor</em>). Formula: <code>[Subject] + [Perception Verb: feels/emits] + [Sensory Noun Phrase]</code>.</div>
-                    <div><strong>Phase 3: Epistemic Pair Challenge (15m):</strong> 'Defective Appliance Investigation.' Partner A (Inspector) describes 3 symptoms of a broken refrigerator or laptop; Partner B (Technician) records and classifies symptoms into Visual, Auditory, or Olfactory clues on the Diagnostic Chart.</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> 3-Item Exit Slip: 1 recognition matching, 1 sentence transformation, 1 original symptom description using perception verbs.</div>
-                    <div><strong>Phase 5: Delayed Feedback & Closure (5m):</strong> Anonymous error recast on collocation slips. FeedForward to tomorrow's symptom narration.</div>
-                `,
-                assessment: "Exit Slip: Accurate production of 2 sensory collocations + 1 perception verb sentence.",
-                homework: "Inspect one household appliance at home. Write down its model number and 2 sensory descriptions of how it operates."
-            },
-
-            "mon_p2_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Mon • Period 2 (09:10 - 09:50) • Room 202",
-                unit: "Unit: Formal Complaint Letters — Past Continuous + Past Simple Narratives",
-                icon: "⏱️",
-                objective: "I can write sentences combining Past Continuous and Past Simple with 'while' or 'when' to describe what went wrong with an appliance.",
-                skill: "Complex Sentence Syntax: Interrupted Actions (While [Past Continuous], [Past Simple])",
-                activity: `
-                    <div><strong>Phase 1: Activation & Hook (5m):</strong> Timeline prompt: <em>'The washing machine was spinning. Suddenly, it started leaking!'</em> Connect two actions.</div>
-                    <div><strong>Phase 2: Direct Input & Syntax Modeling (10m):</strong> Formula: <code>While + [Subject] + was/were [Verb-ing], [Subject] + [Past Simple Verb]</code>. Exemplar: <em>'While the AC unit was running, it began blowing warm air.'</em> Contrast L1 transfer errors.</div>
-                    <div><strong>Phase 3: Collaborative Pair Duel (15m):</strong> Incident Reconstruction. Dyads receive 4 appliance breakdown timelines. Partner A reads background action; Partner B identifies sudden defect and constructs the unified 'While...' sentence.</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Whiteboard Flash: Combine <em>'The computer was updating'</em> + <em>'The screen went blue'</em> using target syntax.</div>
-                    <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Double-loop feedback on tense agreement (was running vs ran).</div>
-                `,
-                assessment: "Whiteboard Flash check: Correct conjunction placement and tense backshifting in interrupted clauses.",
-                homework: "Grammar sheet: Combine 4 pairs of breakdown events into 'While...' complex sentences."
-            },
-
-            "tue_p3_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Tue • Period 3 (10:05 - 10:45) • Room 202",
-                unit: "Unit: Formal Complaint Letters — Cause & Effect with Mechanical Action Verbs",
-                icon: "⚙️",
-                objective: "I can link an appliance defect to its negative result using mechanical verbs (jam, leak, screech, lock) and 'so' or 'because'.",
-                skill: "Cause-and-Effect Clauses (so / because) & Mechanical Action Verbs",
-                activity: `
-                    <div><strong>Phase 1: Hook (5m):</strong> Dilemma scenario: Wet laundry trapped inside a washing machine. Prompt: <em>'What caused this disaster?'</em></div>
-                    <div><strong>Phase 2: Direct Input (10m):</strong> Mechanical verbs: <em>leak, overflow, vibrate, screech, trap, lock</em>. Contrast syntax: <code>[Cause] + so + [Effect]</code> vs <code>[Effect] + because + [Cause]</code>. Exemplar: <em>'The door lock jammed, so the wet laundry remained trapped inside.'</em></div>
-                    <div><strong>Phase 3: Pair Problem Solving (15m):</strong> Case File Matching. Pairs evaluate 5 breakdown reports. Partner A drafts 'because' statement; Partner B converts it into a 'so' statement and audits mechanical verb accuracy.</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Exit Ticket: Write 2 cause-and-effect sentences linking a hardware defect to its daily life consequence.</div>
-                    <div><strong>Phase 5: Closure & FeedForward (5m):</strong> Praise precise verbs (screeched instead of made noise). Preview Library research on technical terms.</div>
-                `,
-                assessment: "Exit Ticket: Correct causal connectors (so vs because) and mechanical verb conjugation.",
-                homework: "Write 3 cause-and-effect sentences explaining the impact of a spoiled refrigerator on family dinner."
-            },
-
-            "tue_p4_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Tue • Period 4 (10:45 - 11:30) • Library 6F-B",
-                unit: "Unit: Formal Complaint Letters — Technical Compound Nouns & Research",
-                icon: "💻",
-                objective: "I can research and identify 4 technical compound nouns (e.g., 'blue screen error', 'thermal shutdown', 'cooling fan') in warranty manuals.",
-                skill: "Technical Lexis Acquisition & Non-Fiction Manual Information Retrieval",
-                activity: `
-                    <div><strong>Phase 1: Library Orientation (5m):</strong> Setting research parameters: Locating product troubleshooting guides and warranty booklets.</div>
-                    <div><strong>Phase 2: Guided Extraction (25m):</strong> In pairs, students examine product user manuals for laptop computers and air conditioners. Extract technical compound nouns (<em>cooling fan, startup beep, thermal shutdown, boot loop</em>) and record definitions.</div>
-                    <div><strong>Phase 3: Silent Reading & Teacher Conferencing (15m):</strong> Transition to silent reading of sample consumer complaint articles; teacher conducts 1-on-1 reading checks.</div>
-                `,
-                assessment: "Inspection of technical term glossary in student research logs.",
-                homework: "Select 3 technical compound nouns from today's manual and write their definitions in simple English."
-            },
-
-            "wed_p6_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Wed • Period 6 (13:15 - 13:55) • Room 202",
-                unit: "Unit: Formal Complaint Letters — Chronological Sequence Timeline (Paragraph 2)",
-                icon: "📅",
-                objective: "I can organize a 5-step breakdown history into a chronological paragraph using discourse markers: 'First, Then, Second, Third, Finally'.",
-                skill: "Discourse Markers & Chronological Paragraph Architecture (5-Step Weekly Timeline)",
-                activity: `
-                    <div><strong>Phase 1: Hook (5m):</strong> Jumbled story on screen: A week of disaster with a smoking microwave. Why is chronological order essential in a legal/complaint letter?</div>
-                    <div><strong>Phase 2: Direct Input & Flow Modeling (10m):</strong> Teach 5 sequence discourse markers: <em>First, Then, Second, Third, Finally</em>. Deconstruct Paragraph 2 mentor structure showing progression from minor noise to complete system failure.</div>
-                    <div><strong>Phase 3: Collaborative Paragraph Assembly (15m):</strong> Pairs receive 5 scrambled defect cards (Day 1 to Day 7). Partners negotiate chronological order and draft a cohesive 5-sentence timeline paragraph using required sequence markers.</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Peer Audit: Swap paragraphs and check if all 5 sequence markers are used with proper comma punctuation.</div>
-                    <div><strong>Phase 5: Metacognitive Closure (5m):</strong> Recast common transition punctuation errors.</div>
-                `,
-                assessment: "Peer audit checklist & teacher verification of chronological sequence markers.",
-                homework: "Draft the 5-sentence breakdown timeline (Paragraph 2) for your chosen appliance on lined paper."
-            },
-
-            "wed_p7_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Wed • Period 7 (14:10 - 14:50) • Room 202",
-                unit: "Unit: Formal Complaint Letters — Conditionals for Troubleshooting & Hazards",
-                icon: "⚠️",
-                objective: "I can use Zero and First Conditionals ('If you..., it...') to evaluate safety hazards and explain failed troubleshooting steps.",
-                skill: "Conditional Syntax (Zero & First Conditionals) for Evaluative Argumentation",
-                activity: `
-                    <div><strong>Phase 1: Hook (5m):</strong> Troubleshooting warning symbols. Ask: <em>'What happens if you spray water on an electrical defect?'</em></div>
-                    <div><strong>Phase 2: Direct Input (10m):</strong> Formulas on board: Zero Conditional (General facts): <code>If + Present, Present</code> (<em>'If you spray water inside, it creates an electrical hazard'</em>); First Conditional (Future consequence): <code>If + Present, will + Verb</code> (<em>'If you do not replace the unit, I will contact Consumer Protection.'</em>)</div>
-                    <div><strong>Phase 3: Epistemic Pair Inquiry (15m):</strong> Troubleshooting Audit. Pairs evaluate 4 troubleshooting actions. Partner A drafts 'If...' condition; Partner B predicts safety outcome or functional result using correct conditional tense.</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Exit Slip: Complete 2 conditional sentences regarding appliance maintenance and safety.</div>
-                    <div><strong>Phase 5: Closure (5m):</strong> Review if-clause comma rules. Preview formal register for letter openings and closings.</div>
-                `,
-                assessment: "Exit Slip: Accuracy of verb tenses in conditional clauses (present vs will + base verb).",
-                homework: "Write 2 conditional safety warning sentences for your complaint letter's troubleshooting section."
-            },
-
-            "thu_p1_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Thu • Period 1 (08:30 - 09:10) • Room 202",
-                unit: "Unit: Formal Complaint Letters — Formal Register & Strategic Sentence Starters",
-                icon: "✍️",
-                objective: "I can replace informal spoken phrases with polite, firm formal register formulas ('I am writing to formally complain...', 'Under the warranty, I request...').",
-                skill: "Formal Register, Sociolinguistic Appropriacy & Consumer Rights Formulas",
-                activity: `
-                    <div><strong>Phase 1: Hook (5m):</strong> Tone Clash! Compare angry text message vs formal customer service letter. Which gets a refund faster? Why?</div>
-                    <div><strong>Phase 2: Direct Input & Register Mapping (10m):</strong> Teach formal letter conventions: Greeting (<em>'Dear Customer Service Manager'</em>), Purpose (<em>'I am writing to formally complain about...'</em>), Warranty claim (<em>'Under the 1-year warranty, I request a full refund or immediate replacement'</em>), Sign-off (<em>'Yours sincerely'</em>).</div>
-                    <div><strong>Phase 3: Pair Register Makeover (15m):</strong> Informal-to-Formal conversion cards. Pairs transform 4 colloquial sentences (<em>'Give me my money back!'</em> → <em>'Under the terms of the warranty, I request a full refund of the purchase price.'</em>)</div>
-                    <div><strong>Phase 4: Formative Assessment (5m):</strong> Mini-Whiteboard: Write the formal opening sentence for a defect complaint including product name and model number.</div>
-                    <div><strong>Phase 5: Closure (5m):</strong> Praise academic tone. Preview full letter drafting tomorrow.</div>
-                `,
-                assessment: "Whiteboard check: Correct capitalization, punctuation, and formal opening formula.",
-                homework: "Draft Paragraph 1 (Purpose & Purchase Details) and Paragraph 4 (Action Demanded & Warranty Request)."
-            },
-
-            "fri_p1_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Fri • Period 1 (08:30 - 09:10) • Room 202",
-                unit: "Unit: Formal Complaint Letters — 150-Word Full Letter Assembly & Drafting",
-                icon: "📄",
-                objective: "I can draft a complete 150-word, 5-paragraph formal complaint letter integrating sensory evidence, chronological breakdown, and warranty requests.",
-                skill: "Extended Written Composition & Structural Synthesis (Handbook 5-Paragraph Structure)",
-                activity: `
-                    <div><strong>Phase 1: Setting Criteria & Rubric (5m):</strong> Display 5-mark band descriptor on screen. Review paragraph structure: P1 (Purpose/Model), P2 (Timeline & Defect), P3 (Impact on Life), P4 (Remedy Demanded), P5 (Sign-off).</div>
-                    <div><strong>Phase 2: Sustained Silent Drafting (20m):</strong> Students draft their formal letter independently in examination conditions (~150 words). Teacher provides silent desk-side guidance.</div>
-                    <div><strong>Phase 3: Peer Double-Loop Editing (10m):</strong> Partners exchange drafts. Check criteria: (1) Formal starters used? (2) Sequence markers present? (3) Past continuous + past simple correct? (4) Cause-and-effect present?</div>
-                    <div><strong>Phase 4: Metacognitive Log (5m):</strong> Students record their personal editing priority on their draft header.</div>
-                `,
-                assessment: "Completed draft evaluation against the Handbook 5-Mark Band Descriptor.",
-                homework: "Revise and produce clean handwritten or typed final copy of your 150-word complaint letter."
-            },
-
-            "fri_p2_6h2": {
-                classTitle: "6H2 English",
-                badge: "Grade 6 (33 Students)",
-                meta: "Fri • Period 2 (09:10 - 09:50) • Room 202",
-                unit: "Unit: Formal Complaint Letters — Consumer Rights Roleplay & Case Resolution",
-                icon: "⚖️",
-                objective: "I can role-play a customer service negotiation, politely presenting my letter's claims and defending my right to a refund or replacement under warranty.",
-                skill: "Spoken Formal Register, Polite Negotiation & Communicative Pragmatics",
-                activity: `
-                    <div><strong>Phase 1: Role Briefing (5m):</strong> Customer vs Customer Service Manager protocols. Review polite disagreement stems (<em>'I understand your policy, however under consumer warranty...'</em>).</div>
-                    <div><strong>Phase 2: Pair Negotiation Rounds (20m):</strong> Dyads simulate customer service counter. Partner A (Customer) presents defects from letter; Partner B (Manager) attempts troubleshooting. Customer justifies why refund/replacement is legally required. Swap roles at 10m!</div>
-                    <div><strong>Phase 3: Showcase Resolution (10m):</strong> 2 pairs perform negotiation in front of class; audience votes on whether the customer successfully earned a refund based on evidence.</div>
-                    <div><strong>Phase 4: Weekend Synthesis (5m):</strong> Collect final complaint letters for teacher assessment. Celebrate student mastery of real-world formal English.</div>
-                `,
-                assessment: "Peer negotiation rating card + submission of final 150-word complaint letter.",
-                homework: "Have a wonderful weekend! Unit completed."
+                // 6H2 Week 8 Writing Showcase
+                "mon_p1_6h2": {
+                    classTitle: "6H2 English",
+                    badge: "Grade 6 (33 Students)",
+                    unit: "Unit 4: Formal Complaint Letters — Refinement & Legal Warranty Standards",
+                    icon: "📜",
+                    objective: "I can revise my complaint letter to include formal consumer rights references and legal warranty clauses.",
+                    skill: "Advanced Formal Register & Legal Consumer Vocabulary",
+                    activity: `
+                        <div><strong>Phase 1: Hook (5m):</strong> Consumer Protection Agency rights excerpt.</div>
+                        <div><strong>Phase 2: Direct Input (10m):</strong> Model statutory phrases: 'merchantable quality', 'fitness for purpose', 'formal dispute'.</div>
+                        <div><strong>Phase 3: Pair Editing (15m):</strong> Pairs integrate 2 statutory warranty rights into their existing drafts.</div>
+                        <div><strong>Phase 4: Formative Check (5m):</strong> Quick whiteboards: Translate 2 consumer rights into formal English.</div>
+                        <div><strong>Phase 5: Closure (5m):</strong> Feedback on formal tone.</div>
+                    `,
+                    assessment: "Draft enhancement check against formal legal rubric.",
+                    homework: "Proofread Paragraphs 1 to 4 for consumer protection vocabulary."
+                }
             }
         };
 
-// Modal Controller Functions
+        // Fallback generator for any week (past or future)
+        function getPlanForCell(weekNum, planKey, dayName, dateObj, classLabel, roomLabel) {
+            if (weeklyLessonPlans[weekNum] && weeklyLessonPlans[weekNum][planKey]) {
+                const p = weeklyLessonPlans[weekNum][planKey];
+                const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                return {
+                    classTitle: p.classTitle,
+                    badge: p.badge,
+                    meta: `Week ${weekNum} • ${dateStr} • Room ${roomLabel === '!' ? 'TBD' : roomLabel}`,
+                    unit: p.unit,
+                    icon: p.icon || '📖',
+                    objective: p.objective,
+                    skill: p.skill,
+                    activity: p.activity,
+                    assessment: p.assessment,
+                    homework: p.homework
+                };
+            }
+            
+            // Graceful fallback for other weeks
+            const is6h2 = planKey.includes('6h2');
+            const dateStr = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            return {
+                classTitle: is6h2 ? "6H2 English" : "5M2 English",
+                badge: is6h2 ? "Grade 6 (33 Students)" : "Grade 5 (23 Students)",
+                meta: `Week ${weekNum} • ${dateStr} • Room ${roomLabel === '!' ? 'TBD' : roomLabel}`,
+                unit: is6h2 ? `Unit: Grade 6 English Core Curriculum (Week ${weekNum})` : `Unit: Grade 5 English Core Curriculum (Week ${weekNum})`,
+                icon: is6h2 ? "📘" : "📗",
+                objective: is6h2 
+                    ? `I can analyze and apply Week ${weekNum}'s target English grammar and vocabulary with my partner.` 
+                    : `I can practice our Week ${weekNum} lesson target and complete our pair activity.`,
+                skill: is6h2 
+                    ? `Grade 6 Academic English & Discourse Skills (Week ${weekNum})` 
+                    : `Grade 5 Communicative Language Development (Week ${weekNum})`,
+                activity: `
+                    <div><strong>Phase 1: Hook & Schema (5m):</strong> Thematic warm-up and activation for Week ${weekNum}.</div>
+                    <div><strong>Phase 2: Direct Input & Modeling (10m):</strong> Explicit instruction on core linguistic targets and structural rules.</div>
+                    <div><strong>Phase 3: Collaborative Pair Practice (15m):</strong> Structured dyad problem-solving and epistemic friction negotiation.</div>
+                    <div><strong>Phase 4: Formative Assessment (5m):</strong> 3-Item diagnostic check measuring individual understanding.</div>
+                    <div><strong>Phase 5: Feedback & Closure (5m):</strong> Whole-class error recast and metacognitive reflection.</div>
+                `,
+                assessment: `Formative evaluation aligned with Week ${weekNum} success criteria.`,
+                homework: `Review today's lesson notes in student workbook.`
+            };
+        }
+
+        // Modal Controller Functions
         let currentOpenPlanKey = null;
 
         function openLessonPlanModal(planKey) {
-            const plan = lessonPlans[planKey];
+            const dayCodes = ["mon", "tue", "wed", "thu", "fri"];
+            const weekDates = getWeekDates(currentWeekNum);
+            
+            // Extract day index from planKey
+            const dayPrefix = planKey.split('_')[0];
+            const dayIdx = dayCodes.indexOf(dayPrefix);
+            const dateObj = (dayIdx !== -1) ? weekDates[dayIdx] : weekDates[0];
+            const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+            const dayName = (dayIdx !== -1) ? dayNames[dayIdx] : "Mon";
+            
+            const is6h2 = planKey.includes('6h2');
+            const classLabel = is6h2 ? "6H2 ENG" : "5M2 ENG";
+            const roomLabel = is6h2 ? "202" : "105";
+
+            const plan = getPlanForCell(currentWeekNum, planKey, dayName, dateObj, classLabel, roomLabel);
             if (!plan) return;
             currentOpenPlanKey = planKey;
 
             document.getElementById('lpModalIcon').innerText = plan.icon || '📖';
-            document.getElementById('lpModalTitle').innerText = plan.classTitle;
+            document.getElementById('lpModalTitle').innerText = `${plan.classTitle} (Week ${currentWeekNum})`;
             document.getElementById('lpModalBadge').innerText = plan.badge;
             document.getElementById('lpModalMeta').innerText = plan.meta;
             document.getElementById('lpModalUnit').innerText = plan.unit;
@@ -749,12 +1070,10 @@
             document.getElementById('lpModalActivity').innerHTML = plan.activity;
             document.getElementById('lpModalAssessment').innerText = plan.assessment;
             document.getElementById('lpModalHomework').innerText = plan.homework;
-            const openLink = document.getElementById('lpModalOpenPage');
+            
+                                                            const openLink = document.getElementById('lpModalOpenPage');
             if (openLink) openLink.href = `lessons/${planKey}.html`;
-            const openLink = document.getElementById('lpModalOpenPage');
-            if (openLink) openLink.href = `lessons/${planKey}.html`;
-
-            const modal = document.getElementById('lessonPlanModal');
+const modal = document.getElementById('lessonPlanModal');
             modal.classList.remove('hidden');
             playSFX('ding');
         }
@@ -783,18 +1102,29 @@
         });
 
         function copyCurrentLessonPlanText() {
-            if (!currentOpenPlanKey || !lessonPlans[currentOpenPlanKey]) return;
-            const p = lessonPlans[currentOpenPlanKey];
+            if (!currentOpenPlanKey) return;
+            const weekDates = getWeekDates(currentWeekNum);
+            const dayCodes = ["mon", "tue", "wed", "thu", "fri"];
+            const dayPrefix = currentOpenPlanKey.split('_')[0];
+            const dayIdx = dayCodes.indexOf(dayPrefix);
+            const dateObj = (dayIdx !== -1) ? weekDates[dayIdx] : weekDates[0];
+            const is6h2 = currentOpenPlanKey.includes('6h2');
+            const p = getPlanForCell(currentWeekNum, currentOpenPlanKey, "Day", dateObj, is6h2 ? "6H2" : "5M2", "101");
+            
             const cleanActivity = p.activity.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
-            const text = `${p.classTitle} - ${p.meta}\nUnit: ${p.unit}\n\n🎯 Student Goal: ${p.objective}\n⚡ 40-Min Skill: ${p.skill}\n📝 Activities: ${cleanActivity}\n✅ Assessment: ${p.assessment}\n🏠 Homework: ${p.homework}`;
+            const text = `${p.classTitle} (Week ${currentWeekNum}) - ${p.meta}\nUnit: ${p.unit}\n\n🎯 Student Goal: ${p.objective}\n⚡ 40-Min Skill: ${p.skill}\n📝 Activities: ${cleanActivity}\n✅ Assessment: ${p.assessment}\n🏠 Homework: ${p.homework}`;
             navigator.clipboard.writeText(text).then(() => {
                 playSFX('coin');
-                alert('Lesson Plan copied to clipboard!');
+                alert(`Week ${currentWeekNum} Lesson Plan copied to clipboard!`);
             }).catch(() => {
                 alert('Copying failed, please select and copy manually.');
             });
         }
 
+        // =========================================================================
+        // TIMETABLE RENDERING FUNCTION WITH DYNAMIC WEEKLY DATES
+        // =========================================================================
+        
         const tt = [
             ["MR 08:00-08:30","","6H2 MR|amber|202","6H2 MR|amber|202","6H2 MR|amber|202","6H2 MR|amber|202"],
             ["P1 08:30-09:10","6H2 ENG|blue|202","5M2 ENG|emerald|105","5M2 ENG|emerald|105","6H2 ENG|blue|202","6H2 ENG|blue|202"],
@@ -814,37 +1144,93 @@
             ["16:30","","Dismissal|rose|!","Dismissal|rose|!","Dismissal|rose|!",""],
             ["19:00-20:30","","","9M4 Night Duty|indigo|!","",""]
         ];
-        // Renders timetable with interactive Lesson Plan trigger buttons for 5M2 & 6H2
-        const dayCodes = ["mon", "tue", "wed", "thu", "fri"];
-        let tHTML = `<table class="w-full text-sm text-left border-collapse min-w-[850px]"><thead><tr class="bg-slate-50 text-slate-500 uppercase tracking-wider text-xs border-b border-slate-200"><th class="px-2 py-1 text-center font-bold">Period</th><th class="px-2 py-1 font-bold w-1/5 text-center">Mon</th><th class="px-2 py-1 font-bold w-1/5 text-center">Tue</th><th class="px-2 py-1 font-bold w-1/5 text-center">Wed</th><th class="px-2 py-1 font-bold w-1/5 text-center">Thu</th><th class="px-2 py-1 font-bold w-1/5 text-center">Fri</th></tr></thead><tbody class="divide-y divide-slate-100 bg-white">`;
-        tt.forEach(r => {
-            tHTML += `<tr><td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">${r[0]}</td>`;
-            if(r.length === 2) tHTML += `<td class="px-1 py-0.5 timetable-cell bg-slate-100/80 text-center text-[11px] text-slate-400 font-bold uppercase tracking-widest" colspan="5">${r[1]}</td>`;
-            else {
-                const periodCode = r[0].split(' ')[0].toLowerCase(); // e.g. 'p1', 'p2', 'p6'
-                for(let i=1;i<=5;i++) {
-                    if(!r[i]) tHTML += `<td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>`;
-                    else if(r[i]==="Lunch"||r[i]==="Break") tHTML += `<td class="px-1 py-0.5 timetable-cell bg-slate-100/80 text-center text-[11px] text-slate-400 font-bold uppercase tracking-widest">${r[i]}</td>`;
-                    else {
-                        const pts = r[i].split('|'); 
-                        const day = dayCodes[i-1];
-                        let planKey = null;
-                        if (pts[0].includes("6H2 ENG")) planKey = `${day}_${periodCode}_6h2`;
-                        else if (pts[0].includes("5M2 ENG")) planKey = `${day}_${periodCode}_5m2`;
 
-                        const hasPlan = planKey && (typeof lessonPlans !== 'undefined') && lessonPlans[planKey];
-                        const planBtn = hasPlan ? `<button onclick="event.stopPropagation(); openLessonPlanModal('${planKey}')" class="plan-btn-tag text-${pts[1]}-700 hover:text-${pts[1]}-900 hover:bg-white border-${pts[1]}-300 active:scale-95 ml-1" title="View Detailed Lesson Plan">📋 Plan</button>` : '';
-                        const cardClick = hasPlan ? `onclick="openLessonPlanModal('${planKey}')" role="button"` : '';
-                        const cardHover = hasPlan ? 'plan-card-hover' : '';
+        function renderTimetable() {
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+            const dayCodes = ["mon", "tue", "wed", "thu", "fri"];
+            const weekDates = getWeekDates(currentWeekNum);
 
-                        tHTML += `<td class="px-1 py-1 timetable-cell"><div ${cardClick} class="${cardHover} bg-${pts[1]}-50 border border-${pts[1]}-200 text-${pts[1]}-800 p-1 rounded text-center whitespace-nowrap flex items-center justify-between gap-1 px-1.5"><span class="font-bold">${pts[0]} <span class="${pts[2]==='!'?'hidden':''} font-normal text-${pts[1]}-600">${pts[2]}</span></span>${planBtn}</div></td>`;
+            // Update Week Navigation Banner
+            const startStr = `${months[weekDates[0].getMonth()]} ${weekDates[0].getDate()}`;
+            const endStr = `${months[weekDates[4].getMonth()]} ${weekDates[4].getDate()}`;
+            const weekTitleEl = document.getElementById('week-display-title');
+            const weekSubEl = document.getElementById('week-display-sub');
+            if (weekTitleEl) weekTitleEl.innerText = `Week ${currentWeekNum} (${startStr} – ${endStr})`;
+            if (weekSubEl) weekSubEl.innerText = weeklyLessonPlans[currentWeekNum] ? "Curriculum Plans Active" : "Scheduled School Week";
+
+            // Generate Day Column Headers with Specific Dates
+            let thCols = `<th class="px-2 py-1.5 text-center font-bold">Period</th>`;
+            for (let i = 0; i < 5; i++) {
+                const d = weekDates[i];
+                const dateLabel = `${months[d.getMonth()]} ${d.getDate()}`;
+                thCols += `<th class="px-2 py-1.5 font-bold w-1/5 text-center leading-tight">${dayNames[i]}<span class="block text-[10px] sm:text-[11px] text-slate-400 font-mono font-normal">${dateLabel}</span></th>`;
+            }
+
+            let tHTML = `<table class="w-full text-sm text-left border-collapse min-w-[850px]"><thead><tr class="bg-slate-50 text-slate-500 uppercase tracking-wider text-xs border-b border-slate-200">${thCols}</tr></thead><tbody class="divide-y divide-slate-100 bg-white">`;
+
+            tt.forEach(r => {
+                tHTML += `<tr><td class="px-1 py-1 text-center font-bold text-slate-400 border-r border-slate-100 bg-slate-50/50 text-[11px] whitespace-nowrap">${r[0]}</td>`;
+                if (r.length === 2) {
+                    tHTML += `<td class="px-1 py-0.5 timetable-cell bg-slate-100/80 text-center text-[11px] text-slate-400 font-bold uppercase tracking-widest" colspan="5">${r[1]}</td>`;
+                } else {
+                    const periodCode = r[0].split(' ')[0].toLowerCase(); // e.g. 'p1', 'p2', 'p6'
+                    for (let i = 1; i <= 5; i++) {
+                        if (!r[i]) {
+                            tHTML += `<td class="px-1 py-1 timetable-cell bg-slate-50/30"></td>`;
+                        } else if (r[i] === "Lunch" || r[i] === "Break") {
+                            tHTML += `<td class="px-1 py-0.5 timetable-cell bg-slate-100/80 text-center text-[11px] text-slate-400 font-bold uppercase tracking-widest">${r[i]}</td>`;
+                        } else {
+                            const pts = r[i].split('|'); 
+                            const day = dayCodes[i-1];
+                            let planKey = null;
+                            if (pts[0].includes("6H2 ENG")) planKey = `${day}_${periodCode}_6h2`;
+                            else if (pts[0].includes("5M2 ENG")) planKey = `${day}_${periodCode}_5m2`;
+
+                            const hasPlan = !!planKey;
+                            // Clean icon button ONLY (no text "plan"!)
+                            const planBtn = hasPlan ? `<button onclick="event.stopPropagation(); openLessonPlanModal('${planKey}')" class="plan-btn-tag text-${pts[1]}-700 hover:text-${pts[1]}-900 hover:bg-white border-${pts[1]}-300 active:scale-95 ml-1 text-xs" title="View Detailed Lesson Plan">📋</button>` : '';
+                            const cardClick = hasPlan ? `onclick="openLessonPlanModal('${planKey}')" role="button"` : '';
+                            const cardHover = hasPlan ? 'plan-card-hover' : '';
+
+                            tHTML += `<td class="px-1 py-1 timetable-cell"><div ${cardClick} class="${cardHover} bg-${pts[1]}-50 border border-${pts[1]}-200 text-${pts[1]}-800 p-1 rounded text-center whitespace-nowrap flex items-center justify-between gap-1 px-1.5 cursor-pointer" title="${hasPlan ? `Week ${currentWeekNum} Lesson Plan` : ''}"><span class="font-bold">${pts[0]} <span class="${pts[2]==='!'?'hidden':''} font-normal text-${pts[1]}-600">${pts[2]}</span></span>${planBtn}</div></td>`;
+                        }
                     }
                 }
+                tHTML += `</tr>`;
+            });
+
+            tHTML += `</tbody></table>`;
+            const container = document.getElementById('timetable-container');
+            if (container) container.innerHTML = tHTML;
+        }
+
+        function changeWeek(delta) {
+            currentWeekNum = Math.max(1, Math.min(24, currentWeekNum + delta));
+            playSFX('sweep');
+            renderTimetable();
+        }
+
+        function resetToCurrentWeek() {
+            currentWeekNum = 7;
+            playSFX('click');
+            renderTimetable();
+        }
+
+        // Keyboard Arrow Navigation for Weeks
+        document.addEventListener('keydown', (e) => {
+            const dashView = document.getElementById('view-dashboard');
+            if (dashView && !dashView.classList.contains('hidden')) {
+                const modal = document.getElementById('lessonPlanModal');
+                if (!modal || modal.classList.contains('hidden')) {
+                    if (e.key === 'ArrowLeft') changeWeek(-1);
+                    else if (e.key === 'ArrowRight') changeWeek(1);
+                }
             }
-            tHTML += `</tr>`;
         });
-        tHTML += `</tbody></table>`;
-        document.getElementById('timetable-container').innerHTML = tHTML;
+
+        renderTimetable();
+
 
         const cr = [
             ["Class Monitor<br>Chi Leader", "16 Martin<br>26 Ming<br><span class='text-fuchsia-600'>11 Winnie</span><br>30 Sky", "Assist teachers in managing class discipline.<br>Assist Chinese teacher."],
@@ -1064,7 +1450,7 @@
                 <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">PKXYS Lesson Hub • Live Classroom View</span>
                 <div class="flex items-center gap-2 ml-auto">
                     <a id="lpModalOpenPage" href="#" target="_blank" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-indigo-200 active:scale-95" title="Open full lesson page in new tab">↗ Full Page</a>
-                    <button onclick="copyCurrentLessonPlanText()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-slate-300 active:scale-95">📋 Copy Plan</button>
+                    <button onclick="copyCurrentLessonPlanText()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1 border border-slate-300 active:scale-95">📋 Copy</button>
                     <button onclick="playSFX('click'); closeLessonPlanModal();" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition shadow-xs active:scale-95">Done</button>
                 </div>
             </div>
