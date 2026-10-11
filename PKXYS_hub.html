@@ -24,7 +24,52 @@
         .student-card { transition: all 0.2s ease; }
         .student-card:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
         .timetable-cell { border: 1px solid #f1f5f9; padding: 2px !important; white-space: nowrap !important; }
-        .timetable-cell div { padding: 4px !important; font-size: 15px !important; line-height: 1.3 !important; }
+        /* Educational Size 12 Font (12pt / 16px) Standards & Full-Width Layout */
+        html, body {
+            font-size: 12pt;
+            line-height: 1.5;
+        }
+        .timetable-cell {
+            border: 1px solid #f1f5f9;
+            padding: 3px !important;
+            white-space: nowrap !important;
+        }
+        .timetable-cell div {
+            padding: 5px 8px !important;
+            font-size: 12pt !important;
+            line-height: 1.35 !important;
+        }
+        .timetable-cell div span.font-bold {
+            font-size: 12pt !important;
+        }
+        
+        /* Lesson Plan 12pt Font Standards */
+        #lpModalObjective, #lpModalSkill, #lpModalActivity, #lpModalAssessment, #lpModalHomework {
+            font-size: 12pt !important;
+            line-height: 1.65 !important;
+        }
+        #lpModalActivity div, #lpModalActivity p {
+            font-size: 12pt !important;
+            line-height: 1.65 !important;
+            margin-bottom: 4px;
+        }
+        /* Deeper Architecture 12.5pt (12p5) Sizing */
+        #lpDeepDiveSection,
+        #lpDeepDiveContent,
+        .deep-dive-para, 
+        .phase-directive, 
+        .phase-action, 
+        .udl-desc,
+        .deep-dive-text {
+            font-size: 12.5pt !important;
+            line-height: 1.65 !important;
+        }
+        #lpDeepDiveContent p,
+        #lpDeepDiveContent .phase-directive-box p,
+        #lpDeepDiveContent .phase-action-box p {
+            font-size: 12.5pt !important;
+            line-height: 1.65 !important;
+        }
 
         .fun-bg { background: linear-gradient(-45deg, #0b021a, #200d49, #4a1a7c, #2c0b59); background-size: 400% 400%; animation: gradientBG 15s ease infinite; font-family: 'Inter', sans-serif; color: white; }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -233,7 +278,7 @@
         <main id="main-content" class="flex-1 w-full h-full overflow-y-auto bg-slate-50 relative z-0">
             
             <!-- Dashboard View -->
-            <div id="view-dashboard" class="p-2 md:p-4 max-w-7xl mx-auto space-y-4">
+            <div id="view-dashboard" class="p-2 md:p-6 w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto space-y-5">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="bg-slate-800 px-3 sm:px-4 py-2 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                         <div class="flex items-center gap-3">
@@ -282,7 +327,7 @@
 
             <!-- Class Roles View -->
             <div id="view-class-roles" class="hidden h-full flex flex-col bg-slate-50 overflow-y-auto">
-                <div class="p-4 md:p-8 max-w-6xl mx-auto w-full">
+                <div class="p-4 md:p-8 w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto">
                     <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
                         <div><h2 class="text-3xl font-display font-black text-indigo-900 tracking-tight">6H2 一人一職</h2><p class="text-slate-500 font-bold uppercase tracking-widest text-sm mt-1">One Person One Position</p></div>
                         <button onclick="switchView('dashboard')" class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg shadow-sm transition">Back</button>
@@ -325,7 +370,7 @@
 
             <!-- Awards View -->
             <div id="view-awards" class="hidden flex flex-col h-full bg-slate-50">
-                <div class="p-4 md:p-6 flex-1 flex flex-col max-w-7xl mx-auto w-full">
+                <div class="p-4 md:p-6 flex-1 flex flex-col w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto">
                     <div class="flex justify-center items-center mb-4">
                         <div class="flex gap-2 bg-white p-1 rounded-lg shadow-sm border border-slate-200 z-10 relative">
                             <button id="award-tab-6h2" onclick="renderAwards('6h2')" class="px-6 py-1.5 rounded font-bold transition-colors bg-indigo-100 text-indigo-700">6H2</button>
@@ -337,7 +382,7 @@
             </div>
 
             <div id="view-class" class="hidden flex flex-col h-full bg-slate-50">
-                <div class="p-4 md:p-6 flex-1 flex flex-col max-w-7xl mx-auto w-full">
+                <div class="p-4 md:p-6 flex-1 flex flex-col w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-slate-200 pb-4">
                         <div class="flex flex-col gap-2 w-full md:w-auto">
                             <h2 class="text-2xl font-display font-bold text-indigo-900 drop-shadow-sm">Group Organizer</h2>
@@ -3221,11 +3266,11 @@
                         <span class="text-[11px] font-mono bg-white/10 px-2.5 py-0.5 rounded-full border border-white/10">Cognitive Science • UDL • DI Scaffolds</span>
                     </div>
                     <h3 class="text-lg md:text-xl font-bold font-display text-white mb-2 leading-tight">${deepData.topic}</h3>
-                    <p class="text-xs md:text-sm text-slate-300 leading-relaxed mb-4 font-medium">${deepData.aim}</p>
+                    <p class="text-slate-200 leading-relaxed mb-4 font-medium" style="font-size: 12.5pt;">${deepData.aim}</p>
                     
                     <!-- Curricular Standards -->
                     <div class="flex flex-wrap gap-2 mb-4">
-                        ${deepData.curriculumObjs.map(obj => `<span class="bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 text-[11px] font-semibold px-2.5 py-1 rounded-lg">📜 ${obj}</span>`).join('')}
+                        ${deepData.curriculumObjs.map(obj => `<span class="bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 font-semibold px-2.5 py-1 rounded-lg" style="font-size: 12.5pt;">📜 ${obj}</span>`).join('')}
                     </div>
 
                     <!-- ICAP Ratio Distribution Bar -->
@@ -3255,19 +3300,19 @@
                         <div class="flex items-center gap-2 text-blue-900 font-extrabold text-xs uppercase tracking-wider mb-1.5">
                             <span>🎯</span> Declarative Knowledge (Form & Lexis)
                         </div>
-                        <p class="text-xs md:text-sm text-slate-800 leading-relaxed font-medium">${deepData.objectives.declarative}</p>
+                        <p class="text-slate-800 leading-relaxed font-medium" style="font-size: 12.5pt;">${deepData.objectives.declarative}</p>
                     </div>
                     <div class="bg-purple-50/90 border border-purple-200 border-l-4 border-l-purple-600 rounded-2xl p-4 shadow-xs">
                         <div class="flex items-center gap-2 text-purple-900 font-extrabold text-xs uppercase tracking-wider mb-1.5">
                             <span>⚙️</span> Procedural Skill (Interactive Negotiation)
                         </div>
-                        <p class="text-xs md:text-sm text-slate-800 leading-relaxed font-medium">${deepData.objectives.procedural}</p>
+                        <p class="text-slate-800 leading-relaxed font-medium" style="font-size: 12.5pt;">${deepData.objectives.procedural}</p>
                     </div>
                     <div class="bg-emerald-50/90 border border-emerald-200 border-l-4 border-l-emerald-600 rounded-2xl p-4 shadow-xs">
                         <div class="flex items-center gap-2 text-emerald-900 font-extrabold text-xs uppercase tracking-wider mb-1.5">
                             <span>🧠</span> Metacognitive Synthesis & Double-Loop
                         </div>
-                        <p class="text-xs md:text-sm text-slate-800 leading-relaxed font-medium">${deepData.objectives.metacognitive}</p>
+                        <p class="text-slate-800 leading-relaxed font-medium" style="font-size: 12.5pt;">${deepData.objectives.metacognitive}</p>
                     </div>
                 </div>
 
@@ -3299,24 +3344,24 @@
                                     <div class="font-bold text-slate-900 flex items-center gap-1.5 text-xs uppercase tracking-wider text-indigo-700">
                                         <span>📢</span> Teacher Directive ('I Do' / Framing)
                                     </div>
-                                    <p class="text-slate-800 leading-relaxed font-medium">${ph.directive}</p>
+                                    <p class="text-slate-800 leading-relaxed font-medium" style="font-size: 12.5pt;">${ph.directive}</p>
                                 </div>
                                 <div class="space-y-1.5 bg-indigo-50/50 p-3 rounded-xl border border-indigo-100/60">
                                     <div class="font-bold text-slate-900 flex items-center gap-1.5 text-xs uppercase tracking-wider text-purple-700">
                                         <span>👥</span> Student Action ('We Do' / 'You Do')
                                     </div>
-                                    <p class="text-slate-800 leading-relaxed font-medium">${ph.action}</p>
+                                    <p class="text-slate-800 leading-relaxed font-medium" style="font-size: 12.5pt;">${ph.action}</p>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-100 text-xs">
                                 <div class="flex items-start gap-2">
                                     <span class="text-slate-400 font-bold shrink-0">📋 Observable Artifact:</span>
-                                    <span class="text-slate-700 font-semibold">${ph.artifact}</span>
+                                    <span class="text-slate-700 font-semibold" style="font-size: 12.5pt;">${ph.artifact}</span>
                                 </div>
                                 <div class="flex items-start gap-2">
                                     <span class="text-slate-400 font-bold shrink-0">🔍 Compliance Check:</span>
-                                    <span class="text-slate-700 font-medium">${ph.compliance}</span>
+                                    <span class="text-slate-700 font-medium" style="font-size: 12.5pt;">${ph.compliance}</span>
                                 </div>
                             </div>
                         </div>
@@ -3332,15 +3377,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                         <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 space-y-1">
                             <span class="text-xs font-bold text-amber-900 uppercase tracking-wider block">🎨 Representation (Recognition)</span>
-                            <p class="text-xs text-slate-700 leading-relaxed font-medium">${deepData.udlRamps.representation}</p>
+                            <p class="text-slate-700 leading-relaxed font-medium" style="font-size: 12.5pt;">${deepData.udlRamps.representation}</p>
                         </div>
                         <div class="bg-sky-50/70 border border-sky-200/80 rounded-xl p-3.5 space-y-1">
                             <span class="text-xs font-bold text-sky-900 uppercase tracking-wider block">✍️ Action & Expression (Strategic)</span>
-                            <p class="text-xs text-slate-700 leading-relaxed font-medium">${deepData.udlRamps.actionExpression}</p>
+                            <p class="text-slate-700 leading-relaxed font-medium" style="font-size: 12.5pt;">${deepData.udlRamps.actionExpression}</p>
                         </div>
                         <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3.5 space-y-1">
                             <span class="text-xs font-bold text-emerald-900 uppercase tracking-wider block">❤️ Engagement (Affective)</span>
-                            <p class="text-xs text-slate-700 leading-relaxed font-medium">${deepData.udlRamps.engagement}</p>
+                            <p class="text-slate-700 leading-relaxed font-medium" style="font-size: 12.5pt;">${deepData.udlRamps.engagement}</p>
                         </div>
                     </div>
 
@@ -3350,13 +3395,13 @@
                             <span class="text-xs font-bold text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
                                 <span>🟦</span> Support Tier (Emerging Learners / A1+-A2)
                             </span>
-                            <p class="text-xs text-slate-700 leading-relaxed">${deepData.udlRamps.differentiation.support}</p>
+                            <p class="text-slate-700 leading-relaxed" style="font-size: 12.5pt;">${deepData.udlRamps.differentiation.support}</p>
                         </div>
                         <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1">
                             <span class="text-xs font-bold text-purple-800 uppercase tracking-wider flex items-center gap-1.5">
                                 <span>🟪</span> Extension Tier (Advanced Learners / B1)
                             </span>
-                            <p class="text-xs text-slate-700 leading-relaxed">${deepData.udlRamps.differentiation.extension}</p>
+                            <p class="text-slate-700 leading-relaxed" style="font-size: 12.5pt;">${deepData.udlRamps.differentiation.extension}</p>
                         </div>
                     </div>
                 </div>
@@ -3370,15 +3415,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                         <div class="bg-emerald-50/70 p-3 rounded-xl border border-emerald-200">
                             <strong class="text-emerald-900 block mb-1">1. FeedUp (Where am I going?)</strong>
-                            <span class="text-slate-700">${deepData.afl.feedUp}</span>
+                            <span class="text-slate-700" style="font-size: 12.5pt;">${deepData.afl.feedUp}</span>
                         </div>
                         <div class="bg-teal-50/70 p-3 rounded-xl border border-teal-200">
                             <strong class="text-teal-900 block mb-1">2. FeedBack (How am I doing?)</strong>
-                            <span class="text-slate-700">${deepData.afl.feedBack}</span>
+                            <span class="text-slate-700" style="font-size: 12.5pt;">${deepData.afl.feedBack}</span>
                         </div>
                         <div class="bg-cyan-50/70 p-3 rounded-xl border border-cyan-200">
                             <strong class="text-cyan-900 block mb-1">3. FeedForward (Where to next?)</strong>
-                            <span class="text-slate-700">${deepData.afl.feedForward}</span>
+                            <span class="text-slate-700" style="font-size: 12.5pt;">${deepData.afl.feedForward}</span>
                         </div>
                     </div>
 
@@ -3389,7 +3434,7 @@
                                 ${deepData.afl.traps.map(tr => `
                                     <div class="bg-white p-2.5 rounded-lg border border-rose-200/60 shadow-2xs">
                                         <strong class="text-rose-800 block mb-0.5">${tr.name}</strong>
-                                        <span class="text-slate-600 text-[11px] leading-relaxed block">${tr.desc}</span>
+                                        <span class="text-slate-600 leading-relaxed block" style="font-size: 12.5pt;">${tr.desc}</span>
                                     </div>
                                 `).join('')}
                             </div>
@@ -3400,7 +3445,7 @@
                 <!-- Cognitive Science Rationale & Citations -->
                 <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl p-5 shadow-xs text-xs space-y-2">
                     <span class="font-extrabold uppercase tracking-wider text-amber-300 block">📚 Empirical Cognitive Science Grounding</span>
-                    <p class="text-slate-200 leading-relaxed font-serif">${deepData.rationale}</p>
+                    <p class="text-slate-200 leading-relaxed font-serif" style="font-size: 12.5pt;">${deepData.rationale}</p>
                     <div class="text-[10px] text-slate-400 font-mono pt-2 border-t border-slate-800">
                         Citations: Chi & Wylie (2014) ICAP; Sweller et al. (2019) Cognitive Load; Vygotsky (1978) ZPD; Carless (2007) AfL; Swain Output Hypothesis.
                     </div>
@@ -3618,7 +3663,7 @@
             for (let i = 0; i < 5; i++) {
                 const d = weekDates[i];
                 const dateLabel = `${months[d.getMonth()]} ${d.getDate()}`;
-                thCols += `<th class="px-2 py-1.5 font-bold w-1/5 text-center leading-tight">${dayNames[i]}<span class="block text-[10px] sm:text-[11px] text-slate-400 font-mono font-normal">${dateLabel}</span></th>`;
+                thCols += `<th class="px-3 py-2 font-bold w-1/5 text-center leading-tight text-sm">${dayNames[i]}<span class="block text-xs text-slate-400 font-mono font-normal">${dateLabel}</span></th>`;
             }
 
             let tHTML = `<table class="w-full text-sm text-left border-collapse min-w-[850px]"><thead><tr class="bg-slate-50 text-slate-500 uppercase tracking-wider text-xs border-b border-slate-200">${thCols}</tr></thead><tbody class="divide-y divide-slate-100 bg-white">`;
@@ -3863,7 +3908,7 @@
 
             <!-- Full Page Scrollable Body -->
             <div id="lpScrollContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 bg-slate-100/70 custom-scrollbar">
-                <div class="max-w-5xl mx-auto space-y-6">
+                <div class="w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto space-y-6">
 
                     <!-- Top Sub-Header & Navigation Tabs -->
                     <div class="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
@@ -3884,7 +3929,7 @@
                             <div class="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-wider mb-1.5">
                                 <span>🎯</span> Student Learning Goal (What We're Learning)
                             </div>
-                            <p id="lpModalObjective" class="text-sm md:text-base text-slate-800 font-bold leading-snug"></p>
+                            <p id="lpModalObjective" class="text-slate-800 font-bold leading-snug" style="font-size: 12pt;"></p>
                         </div>
 
                         <!-- 40-Min Skill Focus -->
@@ -3892,7 +3937,7 @@
                             <div class="flex items-center gap-2 text-amber-900 font-bold text-xs uppercase tracking-wider mb-1.5">
                                 <span>⚡</span> 40-Minute Language Skill Focus
                             </div>
-                            <p id="lpModalSkill" class="text-xs md:text-sm text-slate-800 font-semibold leading-relaxed"></p>
+                            <p id="lpModalSkill" class="text-slate-800 font-semibold leading-relaxed" style="font-size: 12pt;"></p>
                         </div>
 
                         <!-- Timed Activities Breakdown -->
@@ -3903,7 +3948,7 @@
                                 </div>
                                 <span class="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">Active Sequence</span>
                             </div>
-                            <div id="lpModalActivity" class="text-xs md:text-sm text-slate-700 space-y-2.5 leading-relaxed"></div>
+                            <div id="lpModalActivity" class="text-slate-700 space-y-3 leading-relaxed" style="font-size: 12pt;"></div>
                         </div>
 
                         <!-- Feedback & Assessment -->
@@ -3911,7 +3956,7 @@
                             <div class="flex items-center gap-2 text-emerald-900 font-bold text-xs uppercase tracking-wider mb-1.5">
                                 <span>✅</span> Check & Consolidate (Assessment & Feedback)
                             </div>
-                            <p id="lpModalAssessment" class="text-xs md:text-sm text-slate-800 leading-relaxed"></p>
+                            <p id="lpModalAssessment" class="text-slate-800 leading-relaxed" style="font-size: 12pt;"></p>
                         </div>
 
                         <!-- Assigned Homework -->
@@ -3919,7 +3964,7 @@
                             <div class="flex items-center gap-2 text-pink-900 font-bold text-xs uppercase tracking-wider mb-1.5">
                                 <span>🏠</span> Assigned Homework
                             </div>
-                            <p id="lpModalHomework" class="text-xs md:text-sm text-slate-800 font-semibold leading-relaxed"></p>
+                            <p id="lpModalHomework" class="text-slate-800 font-semibold leading-relaxed" style="font-size: 12pt;"></p>
                         </div>
 
                         <!-- Callout Card to Go Deeper into Lesson Plan -->
