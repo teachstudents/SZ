@@ -644,6 +644,247 @@
     </div>
 
     <script>
+    /* =========================================================================
+       PRO CLASSROOM TIMER ENGINE
+       ========================================================================= */
+    let proTotalSeconds = 600;
+    let proRemainingSeconds = 600;
+    let proIsRunning = false;
+    let proTimerInterval = null;
+    let proAudioCtx = null;
+    let proAnnouncedTimes = new Set();
+
+    function adjustProSetupTime(amount) {
+        playSFX('click');
+        const input = document.getElementById('pro-time-input');
+        if (!input) return;
+        let val = parseInt(input.value) || 1;
+        val += amount;
+        if (val < 1) val = 1;
+        if (val > 240) val = 240;
+        input.value = val;
+    }
+
+    function startProTimer() {
+        playSFX('chime');
+        const input = document.getElementById('pro-time-input');
+        const mins = parseInt(input ? input.value : 10);
+        if (isNaN(mins) || mins <= 0) return;
+
+        proTotalSeconds = mins * 60;
+        proRemainingSeconds = proTotalSeconds;
+        proAnnouncedTimes.clear();
+
+        const setup = document.getElementById('pro-setup-view');
+        const timer = document.getElementById('pro-timer-view');
+        if (setup) setup.classList.add('hidden');
+        if (timer) {
+            timer.classList.remove('hidden');
+            timer.classList.add('flex');
+        }
+
+        updateProDisplay();
+        playPro();
+    }
+
+    function toggleProPlayPause() {
+        if (proIsRunning) pausePro();
+        else playPro();
+    }
+
+    function playPro() {
+        if (proRemainingSeconds <= 0) return;
+        if (proIsRunning) return;
+
+        proIsRunning = true;
+
+        const playIcon = document.getElementById('pro-icon-play');
+        const pauseIcon = document.getElementById('pro-icon-pause');
+        if (playIcon) playIcon.classList.add('hidden');
+        if (pauseIcon) pauseIcon.classList.remove('hidden');
+
+        proTimerInterval = setInterval(() => {
+            if (proRemainingSeconds > 0) {
+                proRemainingSeconds--;
+                updateProDisplay();
+
+                if (proRemainingSeconds <= 10 && !proAnnouncedTimes.has(10)) {
+                    proAnnouncedTimes.add(10);
+                    playProTick(true);
+                }
+                if (proRemainingSeconds <= 5 && !proAnnouncedTimes.has(5)) {
+                    proAnnouncedTimes.add(5);
+                    playProTick(false);
+                }
+                if (proRemainingSeconds <= 0) {
+                    finishProTimer();
+                }
+            } else {
+                finishProTimer();
+            }
+        }, 1000);
+    }
+
+    function pausePro() {
+        if (!proIsRunning) return;
+        proIsRunning = false;
+
+        if (proTimerInterval) {
+            clearInterval(proTimerInterval);
+            proTimerInterval = null;
+        }
+
+        const playIcon = document.getElementById('pro-icon-play');
+        const pauseIcon = document.getElementById('pro-icon-pause');
+        if (playIcon) playIcon.classList.remove('hidden');
+        if (pauseIcon) pauseIcon.classList.add('hidden');
+
+        playSFX('click');
+    }
+
+    function addProMinutes(mins) {
+        playSFX('click');
+        proRemainingSeconds += (mins * 60);
+        if (proTotalSeconds < proRemainingSeconds) proTotalSeconds = proRemainingSeconds;
+        if (proRemainingSeconds < 0) proRemainingSeconds = 0;
+        updateProDisplay();
+    }
+
+    function resetProTimer() {
+        pausePro();
+        const setup = document.getElementById('pro-setup-view');
+        const timer = document.getElementById('pro-timer-view');
+        const view = document.getElementById('view-pro-timer');
+
+        if (setup) setup.classList.remove('hidden');
+        if (timer) {
+            timer.classList.add('hidden');
+            timer.classList.remove('flex');
+        }
+        if (view) {
+            view.style.backgroundColor = '#0f172a';
+            view.classList.remove('pulse-danger');
+        }
+
+        proRemainingSeconds = proTotalSeconds;
+        updateProDisplay();
+        playSFX('sweep');
+    }
+
+    function formatProTime(secs) {
+        let m = Math.floor(secs / 60);
+        let s = secs % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function updateProDisplay() {
+        const timeDisplay = document.getElementById('pro-time-display');
+        const progressBar = document.getElementById('pro-progress-bar');
+        const car = document.getElementById('pro-car');
+        const view = document.getElementById('view-pro-timer');
+
+        if (timeDisplay) timeDisplay.innerText = formatProTime(proRemainingSeconds);
+
+        let percentage = proTotalSeconds > 0 ? (proRemainingSeconds / proTotalSeconds) * 100 : 0;
+        if (percentage < 0) percentage = 0;
+        if (percentage > 100) percentage = 100;
+
+        if (progressBar) progressBar.style.width = percentage + '%';
+
+        if (car) {
+            const left = 95 - (percentage * 0.9);
+            car.style.left = left + '%';
+        }
+
+        if (view) {
+            if (proRemainingSeconds <= 15) {
+                view.style.backgroundColor = '#3f0d0d';
+                view.classList.add('pulse-danger');
+            } else {
+                view.style.backgroundColor = '#0f172a';
+                view.classList.remove('pulse-danger');
+            }
+        }
+    }
+
+    function finishProTimer() {
+        pausePro();
+        proRemainingSeconds = 0;
+        updateProDisplay();
+
+        const view = document.getElementById('view-pro-timer');
+        const timeDisplay = document.getElementById('pro-time-display');
+
+        if (view) {
+            view.style.backgroundColor = '';
+            view.classList.add('pulse-danger');
+        }
+        if (timeDisplay) timeDisplay.classList.add('animate-bounce');
+
+        playProBuzzer();
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+        }
+    }
+
+    function toggleProFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+            document.exitFullscreen().catch(() => {});
+        }
+    }
+
+    function initProAudio() {
+        if (!proAudioCtx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) proAudioCtx = new AudioCtx();
+        }
+        if (proAudioCtx && proAudioCtx.state === 'suspended') proAudioCtx.resume();
+    }
+
+    function playProTick(isTock) {
+        initProAudio();
+        if (!proAudioCtx) return;
+
+        try {
+            const osc = proAudioCtx.createOscillator();
+            const gain = proAudioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(isTock ? 400 : 600, proAudioCtx.currentTime);
+            gain.gain.setValueAtTime(0.12, proAudioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, proAudioCtx.currentTime + 0.08);
+            osc.connect(gain);
+            gain.connect(proAudioCtx.destination);
+            osc.start();
+            osc.stop(proAudioCtx.currentTime + 0.08);
+        } catch (e) {}
+    }
+
+    function playProBuzzer() {
+        initProAudio();
+        if (!proAudioCtx) return;
+
+        try {
+            const osc = proAudioCtx.createOscillator();
+            const gain = proAudioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(180, proAudioCtx.currentTime);
+            gain.gain.setValueAtTime(0.18, proAudioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, proAudioCtx.currentTime + 0.35);
+            osc.connect(gain);
+            gain.connect(proAudioCtx.destination);
+            osc.start();
+            osc.stop(proAudioCtx.currentTime + 0.35);
+        } catch (e) {}
+    }
+</script>
+    
+    <script>
         const females6h2 = ['Elsa', 'Lily', 'Florence', 'Yao', 'Miya', 'Nadiia', 'Amara', 'Hitomi', 'Alice', 'Karina', 'Winnie', 'Bella', 'Sonia', 'Albee', 'Abby'];
         const males6h2 = ['Martin', 'Noah', 'Eric', 'Eden', 'Dominic', 'Austin', 'Charles', 'Hoho', 'Anders', 'Jimmy', 'Ming', 'Jason', 'Brendan', 'Charlie', 'Sky', 'Ryan', 'Ian', 'Biscuit'];
         const females5m2 = ["Julia", "Freya", "Anna", "Grace", "Avery", "Yihan", "Emma", "Abigail", "Susie", "Nina"];
