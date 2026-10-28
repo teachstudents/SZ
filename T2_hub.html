@@ -567,90 +567,78 @@
             </div>
 
             <!-- Pro Classroom Timer View -->
-            <div id="view-pro-timer" class="hidden bg-slate-900 text-white h-full w-full flex flex-col items-center justify-center overflow-hidden selection:bg-white selection:text-black relative z-0">
-                <!-- Back to Dashboard Button -->
-                <button onclick="switchView('dashboard')" class="absolute top-4 left-4 bg-white/15 hover:bg-white/25 backdrop-blur border border-white/30 text-white font-bold py-2 px-4 rounded-xl transition text-sm z-40 shadow-md cursor-pointer">&larr; Dashboard</button>
+<div id="view-pro-timer" class="hidden bg-slate-900 text-white h-full w-full flex flex-col items-center justify-center overflow-hidden selection:bg-white selection:text-black relative z-0">
+    <!-- Back to Dashboard Button -->
+    <button onclick="switchView('dashboard')" class="absolute top-4 left-4 bg-white/15 hover:bg-white/25 backdrop-blur border border-white/30 text-white font-bold py-2 px-4 rounded-xl transition duration-200 z-20">
+        ← Back
+    </button>
 
-                <!-- Confetti Canvas overlay -->
-                <canvas id="pro-confetti-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-50"></canvas>
+    <!-- Confetti Canvas overlay -->
+    <canvas id="pro-confetti-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-50"></canvas>
 
-                <div id="pro-main-container" class="w-full max-w-5xl px-6 relative z-10">
-                    
-                    <!-- SETUP VIEW -->
-                    <div id="pro-setup-view" class="glass-panel rounded-3xl p-10 max-w-md mx-auto shadow-2xl text-center">
-                        <div class="mb-8 mt-4">
-                            <div class="flex items-center justify-center space-x-4">
-                                <button onclick="adjustProSetupTime(-1)" class="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-xl font-bold transition flex items-center justify-center cursor-pointer">-</button>
-                                <input type="number" id="pro-time-input" value="10" min="1" max="120" class="w-24 text-center text-4xl font-bold bg-transparent border-b-2 border-white/50 focus:outline-none focus:border-white pb-2 text-white" />
-                                <button onclick="adjustProSetupTime(1)" class="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-xl font-bold transition flex items-center justify-center cursor-pointer">+</button>
-                            </div>
-                        </div>
-
-                        <button onclick="startProTimer()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-900 text-xl font-bold shadow-lg transform hover:scale-105 transition-all cursor-pointer">
-                            START TIMER
-                        </button>
-                    </div>
-
-                    <!-- TIMER VIEW -->
-                    <div id="pro-timer-view" class="hidden flex-col items-center w-full">
-                        
-                        <!-- Quick Management Top Bar -->
-                        <div class="flex flex-wrap items-center justify-between w-full mb-4 md:mb-10 gap-4">
-                            <div class="flex items-center space-x-2">
-                                <button onclick="addProMinutes(-1)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">-1 Min</button>
-                                <button onclick="addProMinutes(1)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">+1 Min</button>
-                                <button onclick="addProMinutes(5)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">+5 Min</button>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <button onclick="toggleProFullscreen()" class="text-white/70 hover:text-white transition cursor-pointer" title="Fullscreen (F)">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-                                </button>
-                                <button onclick="resetProTimer()" class="text-white/70 hover:text-white transition cursor-pointer" title="Reset">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Big Digital Countdown -->
-                        <div id="pro-time-display" class="font-mono text-[12vw] leading-none font-bold text-white drop-shadow-2xl mb-12 tracking-tight transition-transform duration-300">
-                            10:00
-                        </div>
-
-                        <!-- Animated Progress Bar -->
-                        <div class="w-full max-w-4xl h-6 bg-black/40 rounded-full overflow-hidden mb-8 border border-white/20 shadow-inner">
-                            <div id="pro-progress-bar" class="h-full w-full rounded-full progress-gradient transition-all duration-1000 ease-linear"></div>
-                        </div>
-
-                        <!-- Race Track Visual -->
-                        <div class="w-full max-w-4xl relative h-16 bg-slate-800 rounded-2xl flex items-center px-4 overflow-hidden border-4 border-slate-600 shadow-xl mb-10">
-                            <!-- Asphalt/Track Texture -->
-                            <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: repeating-linear-gradient(45deg, #000 0, #000 2px, transparent 2px, transparent 8px);"></div>
-                            <!-- Dashed Center Line -->
-                            <div class="absolute inset-0 w-full h-1 border-b-4 border-dashed border-yellow-400 top-1/2 -mt-0.5 opacity-60"></div>
-                            
-                            <!-- Finish Line (Left) -->
-                            <div class="absolute left-4 text-4xl z-10 drop-shadow-md">🏁</div>
-                            
-                            <!-- Moving Car -->
-                            <div id="pro-car" class="absolute text-5xl transition-all duration-1000 ease-linear z-10 transform -translate-x-1/2 -translate-y-2 origin-bottom" style="left: 95%;">
-                                🏎️
-                            </div>
-                            
-                            <!-- Start Flag (Right) -->
-                            <div class="absolute right-2 text-3xl opacity-50">🟢</div>
-                        </div>
-
-                        <!-- Main Play/Pause Button -->
-                        <button onclick="toggleProPlayPause()" id="pro-play-pause-btn" class="w-24 h-24 rounded-full bg-white text-slate-900 flex items-center justify-center hover:bg-slate-200 transition shadow-[0_0_40px_rgba(255,255,255,0.4)] transform hover:scale-105 active:scale-95 group mb-8 cursor-pointer">
-                            <!-- Play Icon -->
-                            <svg id="pro-icon-play" class="w-10 h-10 ml-2 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            <!-- Pause Icon -->
-                            <svg id="pro-icon-pause" class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                        </button>
-                    </div>
-                    
+    <div id="pro-main-container" class="w-full max-w-5xl px-6 relative z-10">
+        <!-- SETUP VIEW -->
+        <div id="pro-setup-view" class="glass-panel rounded-3xl p-10 max-w-md mx-auto shadow-2xl text-center">
+            <div class="mb-8 mt-4">
+                <div class="flex items-center justify-center space-x-4">
+                    <button onclick="adjustProSetupTime(-1)" class="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-xl font-bold transition flex items-center justify-center cursor-pointer">-</button>
+                    <input type="number" id="pro-time-input" value="10" min="1" max="240" class="w-24 text-center text-4xl font-bold bg-transparent border-b-2 border-white/50 focus:outline-none focus:border-white pb-2 text-white" />
+                    <button onclick="adjustProSetupTime(1)" class="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-xl font-bold transition flex items-center justify-center cursor-pointer">+</button>
                 </div>
             </div>
+
+            <button onclick="startProTimer()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-900 text-xl font-bold shadow-lg transform hover:scale-105 transition-all cursor-pointer">
+                START TIMER
+            </button>
+        </div>
+
+        <!-- TIMER VIEW -->
+        <div id="pro-timer-view" class="hidden flex-col items-center w-full">
+            <!-- Quick Management Top Bar -->
+            <div class="flex flex-wrap items-center justify-between w-full mb-4 md:mb-10 gap-4">
+                <div class="flex items-center space-x-2">
+                    <button onclick="addProMinutes(-1)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">-1 Min</button>
+                    <button onclick="addProMinutes(1)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">+1 Min</button>
+                    <button onclick="addProMinutes(5)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">+5 Min</button>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleProFullscreen()" class="text-white/70 hover:text-white transition cursor-pointer" title="Fullscreen (F)">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                    </button>
+                    <button onclick="resetProTimer()" class="text-white/70 hover:text-white transition cursor-pointer" title="Reset">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Big Digital Countdown -->
+            <div id="pro-time-display" class="font-mono text-[12vw] leading-none font-bold text-white drop-shadow-2xl mb-12 tracking-tight transition-transform duration-300">
+                10:00
+            </div>
+
+            <!-- Animated Progress Bar -->
+            <div class="w-full max-w-4xl h-6 bg-black/40 rounded-full overflow-hidden mb-8 border border-white/20 shadow-inner">
+                <div id="pro-progress-bar" class="h-full w-full rounded-full progress-gradient transition-all duration-1000 ease-linear"></div>
+            </div>
+
+            <!-- Race Track Visual -->
+            <div class="w-full max-w-4xl relative h-16 bg-slate-800 rounded-2xl flex items-center px-4 overflow-hidden border-4 border-slate-600 shadow-xl mb-10">
+                <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: repeating-linear-gradient(45deg, #000 0, #000 2px, transparent 2px, transparent 8px);"></div>
+                <div class="absolute inset-0 w-full h-1 border-b-4 border-dashed border-yellow-400 top-1/2 -mt-0.5 opacity-60"></div>
+                <div class="absolute left-4 text-4xl z-10 drop-shadow-md">🏁</div>
+                <div id="pro-car" class="absolute text-5xl transition-all duration-1000 ease-linear z-10 transform -translate-x-1/2 -translate-y-2 origin-bottom" style="left: 95%;">🏎️</div>
+                <div class="absolute right-2 text-3xl opacity-50">🟢</div>
+            </div>
+
+            <!-- Main Play/Pause Button -->
+            <button onclick="toggleProPlayPause()" id="pro-play-pause-btn" class="w-24 h-24 rounded-full bg-white text-slate-900 flex items-center justify-center hover:bg-slate-200 transition shadow-[0_0_40px_rgba(255,255,255,0.4)] transform hover:scale-105 active:scale-95 group mb-8 cursor-pointer">
+                <svg id="pro-icon-play" class="w-10 h-10 ml-2 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="pro-icon-pause" class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+        </div>
+    </div>
+</div>
 
         </main>
     </div>
