@@ -87,6 +87,24 @@
   }
   .score-label { font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
   .score-value { font-size: 16px; font-weight: 700; }
+  .header-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #f1f5f9;
+    border: 2px solid #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  .header-icon-btn:hover {
+    background: #e0e7ff;
+    border-color: #2563eb;
+    transform: translateY(-1px);
+  }
   .header-next-btn {
     padding: 8px 14px;
     background: #2563eb;
@@ -105,30 +123,33 @@
   .nav-right {
     display: flex;
     align-items: center;
-    gap: 8px;
     background: #0f172a;
-    color: #38bdf8;
-    padding: 6px 12px;
+    padding: 8px 16px;
     border-radius: 10px;
     border: 2px solid #334155;
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: all 0.2s;
   }
-  .timer-badge {
-    font-size: 10px;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 1.1;
-    text-align: right;
+  .nav-right:hover {
+    border-color: #38bdf8;
   }
   .digital-clock {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     color: #38bdf8;
-    min-width: 66px;
     text-align: center;
+    user-select: none;
+  }
+  .digital-clock.paused {
+    opacity: 0.6;
+    animation: pulseFade 1.5s infinite;
+  }
+  @keyframes pulseFade {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.2; }
   }
   .digital-clock.warning { color: #facc15; }
   .digital-clock.danger { color: #f87171; animation: pulseRed 1s infinite; }
@@ -136,19 +157,6 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
-  .timer-btn {
-    background: #1e293b;
-    color: #e2e8f0;
-    border: 1px solid #475569;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .timer-btn:hover { background: #334155; color: white; }
-  .timer-btn.running { background: #dc2626; border-color: #ef4444; color: white; }
 
   /* Main Container */
   .container {
@@ -291,15 +299,7 @@
     box-shadow: 0 10px 40px rgba(0,0,0,0.15);
     flex: 1;
     overflow-y: auto;
-    max-height: calc(100vh - 310px);
-  }
-  .options-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #2563eb;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #e0e7ff;
+    max-height: calc(100vh - 190px);
   }
   .option {
     background: #f8fafc;
@@ -334,13 +334,6 @@
   }
   .option.selected .option-letter { background: white; color: #2563eb; }
 
-  /* Controls */
-  .controls {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-  }
   .btn {
     width: 100%;
     padding: 11px;
@@ -361,9 +354,10 @@
 
   /* Feedback & Explanations */
   .feedback {
-    margin-top: 15px;
-    padding: 15px;
-    border-radius: 10px;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
     font-size: 13px;
     line-height: 1.6;
     display: none;
@@ -475,14 +469,16 @@
         <span class="score-value" id="pageNum">1/25</span>
       </div>
     </div>
+    <div id="practiceHeaderBtns" style="display: none; gap: 6px;">
+      <button class="header-icon-btn" onclick="checkAllAnswers()" title="Check All Answers">✓</button>
+      <button class="header-icon-btn" onclick="resetPage()" title="Reset Page">🔄</button>
+      <button class="header-icon-btn" onclick="showAnswers()" title="Show Answers & Logic">👁</button>
+    </div>
     <button class="header-next-btn" onclick="nextPage()">Mark Read & Next Page ➔</button>
   </div>
 
-  <div class="nav-right">
-    <div class="timer-badge">Rec. Timer<br><span id="recTimeLabel">8:00</span></div>
-    <div class="digital-clock" id="digitalClock">08:00</div>
-    <button class="timer-btn" id="timerStartStopBtn" onclick="toggleTimer()">Start</button>
-    <button class="timer-btn" onclick="resetTimer()">↺</button>
+  <div class="nav-right" onclick="toggleTimer()" title="Click to Start/Pause Timer">
+    <div class="digital-clock paused" id="digitalClock">08:00</div>
   </div>
 </div>
 
@@ -490,20 +486,9 @@
   <div class="left-panel" id="leftPanel"></div>
   <div class="right-panel">
     <div class="options-panel" id="optionsPanel">
-      <div class="options-title" id="optionsTitle">📝 Answer Options (A–G)</div>
       <div id="optionsList"></div>
     </div>
-    <div class="controls" id="controlsCard">
-      <div id="practiceControls">
-        <button class="btn btn-primary" onclick="checkAllAnswers()">✓ Check All Answers</button>
-        <button class="btn btn-secondary" onclick="resetPage()">🔄 Reset Page</button>
-        <button class="btn btn-success" onclick="showAnswers()">👁 Show Answers & Logic</button>
-      </div>
-      <div id="strategyControls" style="display:none;">
-        <button class="btn btn-primary" style="margin-bottom:0;" onclick="nextPage()">Mark Read & Next Page ➔</button>
-      </div>
-      <div class="feedback" id="feedback"></div>
-    </div>
+    <div class="feedback" id="feedback"></div>
   </div>
 </div>
 
@@ -571,6 +556,33 @@ function playClickSound() {
 function toggleSound() {
   soundEnabled = !soundEnabled;
   document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+  if (!soundEnabled && window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function speakPassage(text) {
+  if (!soundEnabled || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  
+  let cleanText = text.replace(/<[^>]*>?/gm, '');
+  cleanText = cleanText.replace(/___(\d+)___/g, " blank ");
+  
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  
+  const setVoiceAndSpeak = () => {
+    let voices = window.speechSynthesis.getVoices();
+    let voice = voices.find(v => v.name.includes('Andrew') && (v.name.includes('Multilingual') || v.name.includes('Online')));
+    if (!voice) voice = voices.find(v => v.name.includes('Andrew'));
+    if (voice) utterance.voice = voice;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
+  } else {
+    setVoiceAndSpeak();
+  }
 }
 
 // ============ PAGE DATA (5 STRATEGY + 15 PRACTICE) ============
@@ -1465,11 +1477,8 @@ function stopTimer() {
     timerInterval = null;
   }
   timerRunning = false;
-  const btn = document.getElementById('timerStartStopBtn');
-  if (btn) {
-    btn.textContent = 'Start';
-    btn.classList.remove('running');
-  }
+  const clockEl = document.getElementById('digitalClock');
+  if (clockEl) clockEl.classList.add('paused');
 }
 
 function startTimer() {
@@ -1478,11 +1487,9 @@ function startTimer() {
     timerSeconds = getRecommendedSeconds(pages[currentPageIndex]);
   }
   timerRunning = true;
-  const btn = document.getElementById('timerStartStopBtn');
-  if (btn) {
-    btn.textContent = 'Stop';
-    btn.classList.add('running');
-  }
+  const clockEl = document.getElementById('digitalClock');
+  if (clockEl) clockEl.classList.remove('paused');
+  
   timerInterval = setInterval(() => {
     if (timerSeconds > 0) {
       timerSeconds--;
@@ -1509,8 +1516,6 @@ function resetTimer() {
   stopTimer();
   const page = pages[currentPageIndex];
   timerSeconds = getRecommendedSeconds(page);
-  const recLabel = document.getElementById('recTimeLabel');
-  if (recLabel) recLabel.textContent = page.type === 'strategy' ? '3:00' : '8:00';
   updateClockDisplay();
 }
 
@@ -1546,26 +1551,21 @@ function loadPage(idx) {
   const state = pageStates[idx];
   const leftPanel = document.getElementById('leftPanel');
   const optionsList = document.getElementById('optionsList');
-  const optionsTitle = document.getElementById('optionsTitle');
-  const practiceControls = document.getElementById('practiceControls');
-  const strategyControls = document.getElementById('strategyControls');
+  const practiceHeaderBtns = document.getElementById('practiceHeaderBtns');
   const feedback = document.getElementById('feedback');
 
   if (pageChanged || (!timerRunning && timerSeconds === 480)) {
     stopTimer();
     timerSeconds = getRecommendedSeconds(page);
-    const recLabel = document.getElementById('recTimeLabel');
-    if (recLabel) recLabel.textContent = page.type === 'strategy' ? '3:00' : '8:00';
     updateClockDisplay();
   }
 
   feedback.className = 'feedback';
   feedback.innerHTML = '';
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
 
   if (page.type === 'strategy') {
-    practiceControls.style.display = 'none';
-    strategyControls.style.display = 'block';
-    optionsTitle.textContent = '🧭 Strategy Quick Summary';
+    if (practiceHeaderBtns) practiceHeaderBtns.style.display = 'none';
 
     leftPanel.innerHTML = `
       <div class="page-header">
@@ -1590,9 +1590,7 @@ function loadPage(idx) {
       </div>
     `;
   } else {
-    practiceControls.style.display = 'block';
-    strategyControls.style.display = 'none';
-    optionsTitle.textContent = '📝 Answer Options (Click Blank, Then Option)';
+    if (practiceHeaderBtns) practiceHeaderBtns.style.display = 'flex';
 
     // Format passage paragraphs and replace ___36___ etc. with interactive blanks
     const paragraphs = page.passage.split(/\n\s*\n/).map(para => {
@@ -1642,6 +1640,10 @@ function loadPage(idx) {
     `;
 
     renderOptions();
+    
+    if (pageChanged) {
+      speakPassage(page.passage);
+    }
   }
 
   leftPanel.scrollTop = 0;
