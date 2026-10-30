@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaokao 7-Choose-5 Master Class</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+  body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #1e293b; }
+
+  /* Top Navigation Header */
+  .top-nav {
+    background: rgba(255,255,255,0.98);
+    padding: 10px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .page-select {
+    padding: 8px 14px;
+    background: #f1f5f9;
+    border: 2px solid #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    outline: none;
+    transition: all 0.2s;
+    min-width: 240px;
+  }
+  .page-select:hover, .page-select:focus {
+    border-color: #2563eb;
+    background: #eff6ff;
+  }
+  .sound-toggle {
+    background: #f1f5f9;
+    border: 2px solid #cbd5e1;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .sound-toggle:hover {
+    background: #e0e7ff;
+    border-color: #2563eb;
+  }
+
+  /* Header Center Stats & Action */
+  .nav-center {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .header-score-display {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
+    color: white;
+  }
+  .score-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .score-label { font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
+  .score-value { font-size: 16px; font-weight: 700; }
+  .header-next-btn {
+    padding: 8px 14px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .header-next-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+
+  /* Digital Clock Timer in Right Corner */
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: 2px solid #334155;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .timer-badge {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    text-align: right;
+  }
+  .digital-clock {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #38bdf8;
+    min-width: 66px;
+    text-align: center;
+  }
+  .digital-clock.warning { color: #facc15; }
+  .digital-clock.danger { color: #f87171; animation: pulseRed 1s infinite; }
+  @keyframes pulseRed {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .timer-btn {
+    background: #1e293b;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .timer-btn:hover { background: #334155; color: white; }
+  .timer-btn.running { background: #dc2626; border-color: #ef4444; color: white; }
+
+  /* Main Container */
+  .container {
+    max-width: 1600px;
+    margin: 20px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 72% 28%;
+    gap: 20px;
+    min-height: calc(100vh - 110px);
+  }
+
+  /* Left Panel - Passage */
+  .left-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 35px 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+  }
+  .nav-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2563eb;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-title::before { content: "📚"; font-size: 28px; }
+  .nav-buttons {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+  }
+  .nav-buttons::-webkit-scrollbar { height: 6px; }
+  .nav-buttons::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .nav-btn {
+    padding: 8px 14px;
+    background: #f1f5f9;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { background: #e0e7ff; color: #2563eb; transform: translateY(-2px); }
+  .nav-btn.active { background: #2563eb; color: white; border-color: #1d4ed8; box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
+  .nav-btn.completed { background: #10b981; color: white; }
+  .nav-btn.completed::after { content: " ✓"; }
+
+  /* Main Container */
+  .container {
+    max-width: 1600px;
+    margin: 20px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 72% 28%;
+    gap: 20px;
+    min-height: calc(100vh - 140px);
+  }
+
+  /* Left Panel - Passage */
+  .left-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 35px 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    overflow-y: auto;
+    max-height: calc(100vh - 160px);
+  }
+  .page-header {
+    border-bottom: 3px solid #e0e7ff;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+  }
+  .page-category {
+    display: inline-block;
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .page-title {
+    font-size: 26px;
+    color: #1e293b;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .page-subtitle {
+    color: #64748b;
+    font-size: 14px;
+  }
+  .passage {
+    font-size: 16.5px;
+    line-height: 2;
+    color: #334155;
+    text-align: justify;
+  }
+  .passage p { margin-bottom: 18px; }
+  .blank {
+    display: inline-block;
+    background: #fef3c7;
+    border: 2px dashed #f59e0b;
+    color: #92400e;
+    padding: 2px 12px;
+    margin: 0 4px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 70px;
+    text-align: center;
+  }
+  .blank:hover { background: #fde68a; transform: scale(1.05); }
+  .blank.selected { background: #3b82f6; color: white; border-style: solid; border-color: #1d4ed8; box-shadow: 0 0 0 3px rgba(59,130,246,0.3); }
+  .blank.filled { background: #e0e7ff; color: #1e40af; border-style: solid; border-color: #6366f1; }
+  .blank.correct { background: #10b981; color: white; border-style: solid; border-color: #047857; }
+  .blank.incorrect { background: #ef4444; color: white; border-style: solid; border-color: #b91c1c; }
+
+  /* Right Panel - Options */
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .options-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    flex: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 310px);
+  }
+  .options-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2563eb;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e7ff;
+  }
+  .option {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #334155;
+    display: flex;
+    align-items: flex-start;
+  }
+  .option:hover:not(.used) { background: #eff6ff; border-color: #3b82f6; transform: translateX(3px); }
+  .option.selected { background: #3b82f6; color: white; border-color: #1d4ed8; }
+  .option.used { opacity: 0.45; background: #f1f5f9; text-decoration: line-through; }
+  .option-letter {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: #2563eb;
+    color: white;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-weight: 700;
+    margin-right: 10px;
+    font-size: 13px;
+    margin-top: 1px;
+  }
+  .option.selected .option-letter { background: white; color: #2563eb; }
+
+  /* Controls */
+  .controls {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  }
+  .btn {
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+  }
+  .btn-primary { background: #2563eb; color: white; }
+  .btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); }
+  .btn-secondary { background: #f1f5f9; color: #475569; }
+  .btn-secondary:hover { background: #e2e8f0; }
+  .btn-success { background: #10b981; color: white; margin-bottom: 0; }
+  .btn-success:hover { background: #059669; transform: translateY(-2px); }
+
+  /* Feedback & Explanations */
+  .feedback {
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; animation: slideIn 0.3s ease; }
+  .feedback.correct { background: #d1fae5; border-left: 4px solid #10b981; color: #065f46; }
+  .feedback.incorrect { background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+  .feedback-title { font-weight: 700; margin-bottom: 6px; font-size: 14px; }
+
+  .explanations-box {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    display: none;
+  }
+  .explanations-box.show { display: block; animation: slideIn 0.3s ease; }
+  .explanations-box h4 { color: #1e40af; margin-bottom: 12px; font-size: 16px; }
+  .exp-item { margin-bottom: 10px; font-size: 14px; line-height: 1.6; color: #334155; }
+  .exp-item strong { color: #2563eb; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Strategy pages special styling */
+  .strategy-content { font-size: 15.5px; line-height: 1.8; color: #334155; }
+  .strategy-content h3 { color: #2563eb; margin: 22px 0 12px; font-size: 20px; }
+  .strategy-content h4 { color: #1e40af; margin: 16px 0 10px; font-size: 17px; }
+  .strategy-content ul, .strategy-content ol { margin: 10px 0 15px 25px; }
+  .strategy-content li { margin-bottom: 8px; }
+  .example-box {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    padding: 15px 18px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-size: 14.5px;
+  }
+  .example-box strong { color: #1e40af; }
+  .tip-box {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 15px 18px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-size: 14.5px;
+  }
+  .tip-box::before { content: "💡 "; font-size: 18px; }
+
+  /* Completion Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal.show { display: flex; animation: fadeIn 0.3s; }
+  .modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    animation: popIn 0.4s;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-icon { font-size: 60px; margin-bottom: 15px; }
+  .modal-title { font-size: 28px; font-weight: 700; color: #2563eb; margin-bottom: 10px; }
+  .modal-text { color: #64748b; margin-bottom: 20px; line-height: 1.5; }
+
+  @media (max-width: 1024px) {
+    .container { grid-template-columns: 1fr; }
+    .left-panel, .right-panel, .options-panel { max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+  <div class="nav-left">
+    <select id="pageSelect" class="page-select" onchange="switchPage(parseInt(this.value))"></select>
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()" title="Toggle Sound">🔊</button>
+  </div>
+
+  <div class="nav-center">
+    <div class="header-score-display">
+      <div class="score-item">
+        <span class="score-label">Correct</span>
+        <span class="score-value" id="correctCount">-</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Answered</span>
+        <span class="score-value" id="answeredCount">Guide</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Page</span>
+        <span class="score-value" id="pageNum">1/25</span>
+      </div>
+    </div>
+    <button class="header-next-btn" onclick="nextPage()">Mark Read & Next Page ➔</button>
+  </div>
+
+  <div class="nav-right">
+    <div class="timer-badge">Rec. Timer<br><span id="recTimeLabel">8:00</span></div>
+    <div class="digital-clock" id="digitalClock">08:00</div>
+    <button class="timer-btn" id="timerStartStopBtn" onclick="toggleTimer()">Start</button>
+    <button class="timer-btn" onclick="resetTimer()">↺</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="left-panel" id="leftPanel"></div>
+  <div class="right-panel">
+    <div class="options-panel" id="optionsPanel">
+      <div class="options-title" id="optionsTitle">📝 Answer Options (A–G)</div>
+      <div id="optionsList"></div>
+    </div>
+    <div class="controls" id="controlsCard">
+      <div id="practiceControls">
+        <button class="btn btn-primary" onclick="checkAllAnswers()">✓ Check All Answers</button>
+        <button class="btn btn-secondary" onclick="resetPage()">🔄 Reset Page</button>
+        <button class="btn btn-success" onclick="showAnswers()">👁 Show Answers & Logic</button>
+      </div>
+      <div id="strategyControls" style="display:none;">
+        <button class="btn btn-primary" style="margin-bottom:0;" onclick="nextPage()">Mark Read & Next Page ➔</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="completionModal">
+  <div class="modal-content">
+    <div class="modal-icon">🎉</div>
+    <div class="modal-title">Page Complete!</div>
+    <div class="modal-text" id="modalText">Great work mastering this passage!</div>
+    <button class="btn btn-primary" onclick="closeModal()">Review Explanations</button>
+    <button class="btn btn-secondary" onclick="closeModalAndNext()">Next Page ➔</button>
+  </div>
+</div>
+
+<script>
+// ============ AUDIO SYSTEM ============
+let soundEnabled = true;
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function playTone(freq, duration, type = 'sine', volume = 0.3) {
+  if (!soundEnabled) return;
+  try {
+    initAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = freq;
+    osc.type = type;
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) {}
+}
+
+function playCorrectSound() {
+  playTone(523.25, 0.15); // C5
+  setTimeout(() => playTone(659.25, 0.15), 100); // E5
+  setTimeout(() => playTone(783.99, 0.3), 200); // G5
+}
+
+function playIncorrectSound() {
+  playTone(220, 0.2, 'sawtooth', 0.2);
+  setTimeout(() => playTone(180, 0.3, 'sawtooth', 0.2), 150);
+}
+
+function playCompleteSound() {
+  const notes = [523.25, 659.25, 783.99, 1046.50];
+  notes.forEach((n, i) => setTimeout(() => playTone(n, 0.2), i * 100));
+}
+
+function playClickSound() {
+  playTone(800, 0.05, 'square', 0.1);
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+}
+
+// ============ PAGE DATA (5 STRATEGY + 15 PRACTICE) ============
+const pages = [
+  // ============ STRATEGY PAGES 1-5 ============
+  {
+    type: 'strategy',
+    title: 'Introduction to 7-Choose-5',
+    category: 'Strategy 1',
+    subtitle: 'Understanding the Gaokao Question Type',
+    content: `
+      <h3>🎯 What is 7-Choose-5?</h3>
+      <p>The "7-Choose-5" (七选五) is a signature reading comprehension section in the Gaokao English exam. You will read a passage of approximately <strong>300 words</strong> with <strong>5 blanks (36–40)</strong>, and choose the best sentence from <strong>7 options (A–G)</strong> to fill each blank. Two options are extra distractors.</p>
+      
+      <h3>📊 What Does It Test?</h3>
+      <ul>
+        <li><strong>Overall comprehension</strong> of the passage structure and macro-organization</li>
+        <li><strong>Logical reasoning</strong> between adjacent sentences</li>
+        <li><strong>Cohesion awareness</strong> (pronouns, transitional words, lexical repetition)</li>
+        <li><strong>Information matching</strong> in context</li>
+      </ul>
+      
+      <h3>⏱ Time Management</h3>
+      <div class="tip-box">Spend <strong>8–10 minutes</strong> on this section. Read the title and first paragraph to grasp the theme, then tackle blanks one by one using contextual clues.</div>
+      
+      <h3>🔑 The Golden Rule</h3>
+      <p>Every correct answer has <strong>textual evidence</strong> — either right before the blank, right after the blank, or both. Never guess based on a vague "feeling". Always locate the exact logical or lexical link.</p>
+      
+      <div class="example-box">
+        <strong>Example Pattern:</strong><br>
+        "Many people enjoy coffee. <u>___36___</u> However, tea is becoming more popular."<br>
+        → The blank needs a positive statement about coffee (matching before) that contrasts with tea's rising popularity (after). A sentence like "It is the most consumed morning beverage worldwide" fits seamlessly.
+      </div>
+      
+      <h3>📚 The 5 Core Skills You'll Master</h3>
+      <ol>
+        <li><strong>Cohesion & Coherence</strong> — how sentences link together</li>
+        <li><strong>Pronoun Reference</strong> — tracking <em>it, they, this, such</em></li>
+        <li><strong>Logical Connectors</strong> — <em>however, therefore, instead, or</em></li>
+        <li><strong>Topic Sentences</strong> — identifying paragraph main ideas</li>
+        <li><strong>Parallel Structure</strong> — recognizing rhetorical patterns</li>
+      </ol>
+      <p>Click through the next 4 strategy pages to master each skill, then tackle 15 authentic Gaokao practice passages!</p>
+    `
+  },
+  {
+    type: 'strategy',
+    title: 'Cohesion & Coherence',
+    category: 'Strategy 2',
+    subtitle: 'How Sentences Connect',
+    content: `
+      <h3>🔗 What is Cohesion?</h3>
+      <p>Cohesion refers to the grammatical and lexical links that hold a text together. In 7-Choose-5, the correct answer almost always has <strong>clear cohesive ties</strong> to the surrounding text.</p>
+      
+      <h3>🎯 Four Types of Cohesion</h3>
+      
+      <h4>1. Lexical Repetition (词汇复现)</h4>
+      <p>The exact same word, a synonym, or a hyponym appears in both the blank option and the surrounding text.</p>
+      <div class="example-box">
+        "Regular <strong>exercise</strong> improves health. <u>___</u> This <strong>physical activity</strong> reduces stress."
+        <br>→ "physical activity" repeats the concept of "exercise"
+      </div>
+      
+      <h4>2. Pronoun Reference (代词指代)</h4>
+      <p>Pronouns like <em>it, they, this, that, these, such</em> refer back to something mentioned earlier.</p>
+      <div class="example-box">
+        "Her notice included training type, days, hours, and phone number. <u>___</u>"
+        <br>→ "Any notice for a training partner should include <strong>such information</strong>."
+      </div>
+      
+      <h4>3. Connector Words (逻辑连接词)</h4>
+      <p>Words like <em>however, therefore, moreover, for example, instead</em> signal logical relationships.</p>
+      <div class="example-box">
+        "The plan seemed perfect. <u>___</u> <strong>However</strong>, unexpected problems arose."
+        <br>→ "However" signals a sharp contrast.
+      </div>
+      
+      <h4>4. Structural Parallelism (结构平行)</h4>
+      <p>Questions, imperatives, and numbered sequences create predictable patterns.</p>
+      <div class="example-box">
+        "First, decide what you want. <u>___</u> <strong>Or do you just want</strong> to be physically fit?"
+        <br>→ The blank needs a parallel question: "<strong>Do you want</strong> to be a better athlete?"
+      </div>
+      
+      <div class="tip-box">When analyzing a blank, ask: "What specific word or structure in the option hooks onto the surrounding sentences?"</div>
+    `
+  },
+  {
+    type: 'strategy',
+    title: 'Pronoun Reference',
+    category: 'Strategy 3',
+    subtitle: 'Tracking It, They, This, Such',
+    content: `
+      <h3>👆 Why Pronouns Matter</h3>
+      <p>Pronouns are the <strong>#1 clue</strong> in 7-Choose-5. If an option contains a pronoun or determiner, you MUST verify what it refers to in the preceding sentence.</p>
+      
+      <h3>📋 Common Pronoun Clues</h3>
+      <ul>
+        <li><strong>it / its</strong> → refers to a singular noun or action mentioned before</li>
+        <li><strong>they / them / their</strong> → refers to a plural noun mentioned before</li>
+        <li><strong>this / that + noun</strong> → encapsulates an idea, problem, or method just described</li>
+        <li><strong>these / such + noun</strong> → refers back to a specific list or category</li>
+        <li><strong>one / another / the other</strong> → signals a multi-part list</li>
+      </ul>
+      
+      <h3>🔍 Worked Example (2022 New Gaokao Vol. I)</h3>
+      <div class="example-box">
+        "My partner posted her request on the notice board of a local park. Her notice included what kind of training she wanted to do, how many days a week and how many hours she wanted to spend on each session, and her age. It also listed her favorite sports and activities, and provided her phone number. <u>___39___</u>"<br><br>
+        <strong>Correct Option G:</strong> "Any notice for a training partner should include <strong>such information</strong>."<br>
+        <strong>Analysis:</strong> The phrase "such information" directly summarizes the long list of details (training type, days, hours, age, sports, phone number) in the preceding two sentences!
+      </div>
+      
+      <h3>⚠️ Watch Out for Traps</h3>
+      <p>Distractors often contain pronouns that <strong>don't match</strong> the number or gender of nouns in the text:</p>
+      <ul>
+        <li>Option says "they" when the preceding sentence only has a singular subject</li>
+        <li>Option says "this method" when no method was introduced yet</li>
+      </ul>
+      
+      <div class="tip-box">Highlight pronouns in options A–G before you even read the passage!</div>
+    `
+  },
+  {
+    type: 'strategy',
+    title: 'Logical Connectors',
+    category: 'Strategy 4',
+    subtitle: 'But, So, However, Therefore',
+    content: `
+      <h3>🔀 Connectors Signal Relationships</h3>
+      <p>Logical connectors tell you <strong>how ideas relate</strong>. Recognizing them is essential for choosing the right transition sentence.</p>
+      
+      <h3>📊 The 5 Key Relationships</h3>
+      
+      <h4>1. Contrast (转折与对比)</h4>
+      <p><em>but, however, yet, instead, on the other hand, while, whereas</em></p>
+      <div class="example-box">
+        "One reason was: 'You’ll actually show up...', <strong>while another read</strong>: '<u>___36___</u>'"
+        <br>→ Needs a second distinct benefit of having a workout partner.
+      </div>
+      
+      <h4>2. Cause & Effect (因果)</h4>
+      <p><em>so, therefore, thus, as a result, consequently, because, since</em></p>
+      <div class="example-box">
+        "She studied every night. <u>___</u> Therefore, she passed the exam with flying colors."
+      </div>
+      
+      <h4>3. Addition (递进与并列)</h4>
+      <p><em>also, moreover, furthermore, in addition, besides, what's more</em></p>
+      <div class="example-box">
+        "Exercise improves mood. <u>___</u> It also boosts energy levels."
+      </div>
+      
+      <h4>4. Example & Explanation (例证与解释)</h4>
+      <p><em>for example, for instance, in fact, that is to say</em></p>
+      <div class="example-box">
+        "A workout partner usually needs to live close by. <u>___</u> If you plan on working out in a gym, that person must belong to the same gym."
+      </div>
+      
+      <h4>5. Sequence (顺序)</h4>
+      <p><em>first of all, first, second, then, finally, over time</em></p>
+      
+      <div class="tip-box">Always read the sentence <strong>before</strong> AND the sentence <strong>after</strong> the blank to bridge the logical gap.</div>
+    `
+  },
+  {
+    type: 'strategy',
+    title: 'Topic Sentences & Structure',
+    category: 'Strategy 5',
+    subtitle: 'Seeing the Big Picture',
+    content: `
+      <h3>🏗️ Blank Position Strategy</h3>
+      <p>Where the blank is located inside the paragraph gives you a huge clue about its function:</p>
+      
+      <h4>1. Blank at the START of a Paragraph (段首题)</h4>
+      <ul>
+        <li>Usually functions as the <strong>Topic Sentence (主旨句)</strong> summarizing the whole paragraph.</li>
+        <li>Or functions as a <strong>Transition Sentence (过渡句)</strong> linking the previous paragraph to the new one.</li>
+        <li>Look for concise imperatives or broad statements that match the paragraph's details.</li>
+      </ul>
+      
+      <h4>2. Blank in the MIDDLE of a Paragraph (段中题)</h4>
+      <ul>
+        <li>Provides supporting details, examples, or logical transitions.</li>
+        <li>Pay close attention to pronouns (<em>it, they, this</em>) and connectors (<em>however, or, also</em>).</li>
+      </ul>
+      
+      <h4>3. Blank at the END of a Paragraph (段尾题)</h4>
+      <ul>
+        <li>Often serves as a <strong>Summary/Conclusion Sentence (总结句)</strong> wrapping up the paragraph's point.</li>
+        <li>Look for phrases like <em>such information, in short, therefore, as a result</em>.</li>
+      </ul>
+      
+      <h3>📝 The 4-Step Full-Score Method</h3>
+      <ol>
+        <li><strong>Skim the passage</strong> for the main topic and structure.</li>
+        <li><strong>Analyze Options A–G</strong> and circle key pronouns, connectors, and topic words.</li>
+        <li><strong>Fill the easiest blanks first</strong> (especially topic sentences and clear pronoun matches).</li>
+        <li><strong>Re-read the completed passage</strong> to verify smooth logical flow and eliminate the 2 distractors.</li>
+      </ol>
+      
+      <div class="tip-box">You're ready! Click "Practice 1" in the top bar or the button on the right to start practicing!</div>
+    `
+  },
+
+  // ============ PRACTICE PAGES 6-20 (15 PASSAGES) ============
+  {
+    type: 'practice',
+    title: 'Finding a Workout Partner',
+    category: '2022 New Gaokao Vol. I',
+    subtitle: 'How to Find and Work with a Gym Partner',
+    passage: `<em>Fitness Magazine</em> recently ran an article titled “Five Reasons to Thank Your Workout Partner.” One reason was: “You’ll actually show up if you know someone is waiting for you at the gym,” while another read: “ ___36___ ” With a workout partner, you will increase your training effort as there is a subtle (微妙) competition.
+
+So, how do you find a workout partner?
+
+First of all, decide what you want from that person. ___37___ Or do you just want to be physically fit, able to move with strength and flexibility? Think about the exercises you would like to do with your workout partner.
+
+You might think about posting what you are looking for on social media, but it probably won’t result in a useful response. ___38___ If you plan on working out in a gym, that person must belong to the same gym.
+
+My partner posted her request on the notice board of a local park. Her notice included what kind of training she wanted to do, how many days a week and how many hours she wanted to spend on each session, and her age. It also listed her favorite sports and activities, and provided her phone number. ___39___
+
+You and your partner will probably have different skills. ___40___ Over time, both of you will benefit — your partner will be able to lift more weights and you will become more physically fit. The core (核心) of your relationship is that you will always be there to help each other.`,
+    options: [
+      { letter: 'A', text: 'Your first meeting may be a little awkward.' },
+      { letter: 'B', text: 'A workout partner usually needs to live close by.' },
+      { letter: 'C', text: 'You’ll work harder if you train with someone else.' },
+      { letter: 'D', text: 'Do you want to be a better athlete in your favorite sport?' },
+      { letter: 'E', text: 'How can you write a good "seeking training partner" notice?' },
+      { letter: 'F', text: 'Just accept your differences and learn to work with each other.' },
+      { letter: 'G', text: 'Any notice for a training partner should include such information.' }
+    ],
+    answers: { 36: 'C', 37: 'D', 38: 'B', 39: 'G', 40: 'F' },
+    explanations: {
+      36: 'The preceding sentence quotes one reason from the magazine article. Option C provides another reason ("You’ll work harder..."), which directly connects to the following sentence: "you will increase your training effort."',
+      37: 'The paragraph tells you to "decide what you want from that person." Option D poses a specific question ("Do you want to be a better athlete...?"), forming a parallel structure with the next sentence ("Or do you just want to be physically fit...?").',
+      38: 'The previous sentence warns that social media may not yield useful responses. Option B introduces a geographical constraint ("needs to live close by"), which sets up the concrete example after the blank ("must belong to the same gym").',
+      39: 'The sentences before this blank list specific details included in the partner\'s notice (training type, days, hours, age, sports, phone number). Option G summarizes that list using the phrase "such information."',
+      40: 'The preceding sentence states, "You and your partner will probably have different skills." Option F directly addresses this by advising you to "accept your differences and learn to work with each other."'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'The Power of Daily Reading',
+    category: 'Education',
+    subtitle: 'How Reading Transforms Your Brain',
+    passage: `Reading is one of the most valuable habits a person can develop. Unlike passive activities like watching television, reading requires active engagement from the brain. ___36___ Research shows that regular readers have stronger neural connections and better memory retention.
+
+The benefits extend beyond academic performance. ___37___ People who read regularly report lower stress levels and improved sleep quality. A study from the University of Sussex found that just six minutes of reading can reduce stress by 68 percent.
+
+___38___ Fiction, for example, develops empathy by allowing readers to experience different perspectives. Non-fiction builds knowledge and critical thinking skills. Poetry enhances language sensitivity and creativity.
+
+Many people claim they do not have time to read. ___39___ Even fifteen minutes before bed or during a commute can make a significant difference over time. The key is consistency rather than duration.
+
+Starting a reading habit is easier than most people think. ___40___ Choose books that match your interests, set a realistic daily goal, and track your progress. Within a month, you will notice the positive changes in your thinking and well-being.`,
+    options: [
+      { letter: 'A', text: 'Different types of reading material offer unique advantages.' },
+      { letter: 'B', text: 'However, this excuse disappears when you make reading a priority.' },
+      { letter: 'C', text: 'This mental workout strengthens various cognitive functions.' },
+      { letter: 'D', text: 'Joining a book club can also motivate you to read more.' },
+      { letter: 'E', text: 'Reading also has remarkable effects on mental health.' },
+      { letter: 'F', text: 'Begin with small steps and gradually increase your reading time.' },
+      { letter: 'G', text: 'Libraries often offer free access to thousands of books.' }
+    ],
+    answers: { 36: 'C', 37: 'E', 38: 'A', 39: 'B', 40: 'F' },
+    explanations: {
+      36: 'The sentence before mentions "active engagement from the brain." Option C uses "This mental workout" to refer back to that engagement, and "cognitive functions" connects to "neural connections and memory."',
+      37: 'The paragraph starts with "benefits extend beyond academic performance." Option E introduces "mental health," which is supported by the examples of "lower stress levels" and "improved sleep quality."',
+      38: 'This blank starts a paragraph listing different genres (fiction, non-fiction, poetry) and their unique benefits. Option A is the topic sentence introducing this idea.',
+      39: 'The sentence before says people claim they "do not have time." Option B directly counters this with "However, this excuse disappears..."',
+      40: 'The paragraph is about starting a reading habit easily. Option F gives practical advice: "Begin with small steps..."'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Sleep and Academic Success',
+    category: 'Health',
+    subtitle: 'Why Students Need Better Sleep Habits',
+    passage: `Most students know that studying hard leads to better grades. However, they often overlook another critical factor: sleep. ___36___ During sleep, the brain consolidates memories and processes information learned during the day.
+
+Unfortunately, many students sacrifice sleep to study longer. ___37___ Research from MIT shows that students who sleep six hours or less perform 30 percent worse on exams than those who get eight hours.
+
+___38___ First, maintain a consistent sleep schedule, even on weekends. Second, avoid screens for at least one hour before bed. Third, create a dark, quiet sleeping environment.
+
+Some students worry that sleeping more means less study time. ___39___ Well-rested students learn faster and retain information longer. In fact, a 30-minute nap after lunch can boost afternoon productivity by 40 percent.
+
+___40___ Schools should start later, parents should monitor sleep habits, and students should prioritize rest. When we value sleep as much as study, everyone benefits.`,
+    options: [
+      { letter: 'A', text: 'This belief is completely mistaken.' },
+      { letter: 'B', text: 'Several strategies can help improve sleep quality.' },
+      { letter: 'C', text: 'Sleep plays a vital role in learning and memory.' },
+      { letter: 'D', text: 'They believe extra hours will improve their performance.' },
+      { letter: 'E', text: 'Creating a better sleep culture requires collective effort.' },
+      { letter: 'F', text: 'Caffeine should be avoided after 2 PM.' },
+      { letter: 'G', text: 'The result is often the opposite of what they expect.' }
+    ],
+    answers: { 36: 'C', 37: 'G', 38: 'B', 39: 'A', 40: 'E' },
+    explanations: {
+      36: 'The paragraph introduces sleep as a critical factor. Option C states "Sleep plays a vital role in learning and memory," which connects directly to the next sentence about memory consolidation.',
+      37: 'Students "sacrifice sleep to study longer." Option G ("The result is often the opposite of what they expect") bridges the gap to the MIT study showing 30% worse exam performance.',
+      38: 'This blank starts a paragraph listing three numbered tips (First, Second, Third). Option B is the topic sentence introducing these strategies.',
+      39: 'The sentence before states a common worry ("sleeping more means less study time"). Option A refutes it ("This belief is completely mistaken"), and the next sentence explains why.',
+      40: 'The final paragraph lists actions for schools, parents, and students. Option E introduces this shared responsibility ("requires collective effort").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'The Rise of Urban Gardening',
+    category: 'Environment',
+    subtitle: 'Growing Food in City Spaces',
+    passage: `Cities are often seen as concrete jungles with little connection to nature. ___36___ From rooftop farms to community gardens, urban residents are discovering the joy and benefits of growing their own food.
+
+Urban gardening offers multiple advantages. ___37___ It reduces the carbon footprint associated with transporting food from rural areas. It also helps manage stormwater and reduces the urban heat island effect.
+
+___38___ Studies show that people who garden regularly experience lower anxiety and depression levels. The physical activity involved provides moderate exercise, while the connection with nature offers mental restoration.
+
+Getting started does not require a large space. ___39___ Balconies can hold container gardens, windowsills can support herbs, and community plots are available in many neighborhoods. Even a single pot of tomatoes can provide fresh produce and satisfaction.
+
+___40___ They build stronger neighborhoods, provide educational opportunities for children, and create green spaces that benefit everyone. As cities continue to grow, urban gardening will become increasingly important.`,
+    options: [
+      { letter: 'A', text: 'However, a green revolution is taking root in urban areas.' },
+      { letter: 'B', text: 'The environmental benefits are particularly significant.' },
+      { letter: 'C', text: 'Beyond the environment, gardening improves mental health.' },
+      { letter: 'D', text: 'You do not need a backyard to start gardening.' },
+      { letter: 'E', text: 'Modern technology makes gardening easier than ever.' },
+      { letter: 'F', text: 'Urban gardens also strengthen communities.' },
+      { letter: 'G', text: 'Many cities now offer free gardening workshops.' }
+    ],
+    answers: { 36: 'A', 37: 'B', 38: 'C', 39: 'D', 40: 'F' },
+    explanations: {
+      36: 'The first sentence says cities are "concrete jungles." Option A contrasts this with "However, a green revolution is taking root in urban areas."',
+      37: 'Option B introduces "environmental benefits," which the following sentences illustrate (carbon footprint, stormwater, heat island effect).',
+      38: 'Option C transitions from the previous paragraph ("Beyond the environment...") to the new topic ("improves mental health"), matching "lower anxiety and depression levels."',
+      39: 'The sentence before says it "does not require a large space." Option D restates this ("You do not need a backyard"), leading into examples like balconies and windowsills.',
+      40: 'Option F introduces "Urban gardens" (plural), which provides the antecedent for "They" in the next sentence ("They build stronger neighborhoods...").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Artificial Intelligence in Education',
+    category: 'Technology',
+    subtitle: 'How AI is Transforming Learning',
+    passage: `Artificial intelligence is no longer science fiction. ___36___ In education, AI-powered tools are personalizing learning experiences in ways previously impossible.
+
+Traditional classrooms often follow a one-size-fits-all approach. ___37___ AI systems can analyze each student's strengths and weaknesses, then adjust the difficulty and pace of lessons accordingly. A student struggling with algebra might receive extra practice problems, while one excelling gets advanced challenges.
+
+___38___ Intelligent tutoring systems provide immediate feedback, helping students correct mistakes before they become habits. Language learning apps use speech recognition to improve pronunciation. Writing tools check grammar and suggest improvements in real time.
+
+However, concerns remain. ___39___ Critics worry about data privacy, the digital divide, and the potential loss of human connection in education. These are valid concerns that require careful consideration.
+
+___40___ When used thoughtfully, AI can free teachers from routine tasks, allowing them to focus on mentoring and inspiring students. The future of education is not AI replacing teachers, but AI empowering them.`,
+    options: [
+      { letter: 'A', text: 'It has become part of our daily lives.' },
+      { letter: 'B', text: 'AI addresses this limitation effectively.' },
+      { letter: 'C', text: 'The applications of AI in education are diverse.' },
+      { letter: 'D', text: 'Teachers may eventually lose their jobs.' },
+      { letter: 'E', text: 'The best approach combines technology with human guidance.' },
+      { letter: 'F', text: 'Every student learns at the same pace.' },
+      { letter: 'G', text: 'AI systems require large amounts of student data to function.' }
+    ],
+    answers: { 36: 'A', 37: 'B', 38: 'C', 39: 'G', 40: 'E' },
+    explanations: {
+      36: 'The sentence before says AI is "no longer science fiction." Option A continues: "It has become part of our daily lives."',
+      37: 'The previous sentence mentions the "one-size-fits-all approach." Option B refers back to it with "this limitation" and introduces how AI solves it.',
+      38: 'This paragraph lists different tools (tutoring systems, language apps, writing tools). Option C serves as the topic sentence ("applications... are diverse").',
+      39: 'Option G mentions that AI requires "large amounts of student data," which directly explains why critics in the next sentence "worry about data privacy."',
+      40: 'The final paragraph advocates combining AI with teachers. Option E states this main idea ("combines technology with human guidance").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'The Ancient Art of Tea',
+    category: 'Culture',
+    subtitle: 'A Journey Through Tea History',
+    passage: `Tea is the second most consumed beverage in the world, after water. ___36___ According to legend, Chinese Emperor Shen Nong discovered tea around 2737 BCE when tea leaves accidentally blew into his pot of boiling water.
+
+From China, tea culture spread throughout Asia. ___37___ Japanese tea ceremonies emphasize harmony, respect, and tranquility. In India, chai became a daily ritual with spices and milk. Each culture developed its own unique tea traditions.
+
+___38___ Green tea is unoxidized and retains a fresh, grassy flavor. Black tea is fully oxidized, producing a strong, dark beverage. Oolong tea falls between these two, offering complex flavors. White tea, the least processed, has a delicate, subtle taste.
+
+Beyond taste, tea offers numerous health benefits. ___39___ It contains antioxidants that fight cell damage, compounds that may reduce heart disease risk, and caffeine that improves mental alertness. However, excessive consumption can cause insomnia and anxiety.
+
+___40___ In an age of fast food and instant drinks, taking time to brew and savor tea offers a moment of peace. Whether alone or with friends, a cup of tea connects us to thousands of years of human tradition.`,
+    options: [
+      { letter: 'A', text: 'Its history dates back thousands of years.' },
+      { letter: 'B', text: 'Each region adapted tea to local tastes and customs.' },
+      { letter: 'C', text: 'Tea comes in several main categories.' },
+      { letter: 'D', text: 'Modern research has confirmed many traditional health claims.' },
+      { letter: 'E', text: 'Tea plants grow best in tropical climates.' },
+      { letter: 'F', text: 'The ritual of tea drinking remains valuable today.' },
+      { letter: 'G', text: 'Sugar and milk are common additions in Western countries.' }
+    ],
+    answers: { 36: 'A', 37: 'B', 38: 'C', 39: 'D', 40: 'F' },
+    explanations: {
+      36: 'The next sentence dates tea back to 2737 BCE. Option A introduces this: "Its history dates back thousands of years."',
+      37: 'The paragraph gives examples of Japan and India. Option B introduces how "Each region adapted tea to local tastes and customs."',
+      38: 'The paragraph describes green, black, oolong, and white tea. Option C is the topic sentence ("Tea comes in several main categories").',
+      39: 'The preceding sentence introduces "health benefits," and the following sentence lists scientific compounds (antioxidants, caffeine). Option D bridges them.',
+      40: 'The final paragraph reflects on brewing tea in our modern era ("In an age of fast food..."). Option F introduces the enduring value of the tea ritual today.'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Learning a Musical Instrument',
+    category: 'Skills',
+    subtitle: 'Benefits Beyond Music',
+    passage: `Many parents encourage their children to learn a musical instrument. ___36___ Beyond the obvious goal of making music, learning an instrument develops skills that benefit every area of life.
+
+First, playing an instrument improves cognitive abilities. ___37___ Reading music, coordinating hands, and keeping rhythm engage multiple brain regions simultaneously. Studies show that musicians have better memory, attention, and problem-solving skills than non-musicians.
+
+___38___ Mastering a difficult piece requires patience and persistence. Students learn that progress comes through regular practice, not instant success. This mindset transfers to academic work and future careers.
+
+Music also builds social connections. ___39___ Playing in a band or orchestra teaches teamwork, listening, and cooperation. Even casual jam sessions with friends create bonds and shared joy.
+
+___40___ It is never too late to start. While children may learn faster, adults bring focus and motivation. The important thing is to begin and commit to regular practice. The rewards will follow.`,
+    options: [
+      { letter: 'A', text: 'However, the benefits extend far beyond entertainment.' },
+      { letter: 'B', text: 'This complex activity gives the brain a full workout.' },
+      { letter: 'C', text: 'Second, it teaches valuable character traits.' },
+      { letter: 'D', text: 'Many famous musicians started learning as adults.' },
+      { letter: 'E', text: 'Joining musical groups offers unique social opportunities.' },
+      { letter: 'F', text: 'Anyone can learn to play an instrument at any age.' },
+      { letter: 'G', text: 'Expensive instruments are not necessary to begin.' }
+    ],
+    answers: { 36: 'A', 37: 'B', 38: 'C', 39: 'E', 40: 'F' },
+    explanations: {
+      36: 'Option A introduces the central thesis ("benefits extend far beyond entertainment"), which is echoed by "Beyond the obvious goal of making music" in the next sentence.',
+      37: 'The paragraph is about cognitive abilities and brain regions. Option B connects "cognitive abilities" to "engage multiple brain regions."',
+      38: 'The previous paragraph began with "First...". Option C begins with "Second, it teaches valuable character traits," matching "patience and persistence."',
+      39: 'The paragraph is about social connections. Option E introduces "Joining musical groups," which matches "Playing in a band or orchestra."',
+      40: 'The paragraph discusses age ("never too late", "children", "adults"). Option F is the topic sentence: "Anyone can learn to play an instrument at any age."'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'The Psychology of Color',
+    category: 'Psychology',
+    subtitle: 'How Colors Influence Our Emotions',
+    passage: `Colors surround us every day, yet we rarely think about their psychological impact. ___36___ Research in color psychology shows that different colors can influence our mood, behavior, and even physiological responses.
+
+Red, for example, is associated with energy and excitement. ___37___ It can increase heart rate and create a sense of urgency. This is why red is often used in clearance sales and fast-food restaurants.
+
+Blue has the opposite effect. ___38___ It promotes calmness and trust, which is why many banks and technology companies use blue in their logos. However, too much blue can feel cold and impersonal.
+
+___39___ Green represents nature and growth, yellow conveys optimism, and black suggests sophistication. Understanding these associations helps in fields like marketing, interior design, and even personal fashion choices.
+
+___40___ Personal preferences, cultural background, and individual experiences all shape how we respond to colors. A color that relaxes one person might stress another. The key is awareness and thoughtful application.`,
+    options: [
+      { letter: 'A', text: 'However, their effects are more powerful than we realize.' },
+      { letter: 'B', text: 'This warm color stimulates physical activity and appetite.' },
+      { letter: 'C', text: 'It creates feelings of peace and relaxation.' },
+      { letter: 'D', text: 'Other colors have their own unique meanings.' },
+      { letter: 'E', text: 'Color preferences are completely universal.' },
+      { letter: 'F', text: 'Of course, the influence of color is not absolute or uniform.' },
+      { letter: 'G', text: 'Paint companies test colors extensively before release.' }
+    ],
+    answers: { 36: 'A', 37: 'B', 38: 'C', 39: 'D', 40: 'F' },
+    explanations: {
+      36: 'The first sentence says we "rarely think about" their impact. Option A contrasts this with "However, their effects are more powerful than we realize."',
+      37: 'The paragraph discusses red. Option B refers to red as "This warm color" and mentions "appetite," explaining why "fast-food restaurants" use it.',
+      38: 'Blue has the "opposite effect" of red. Option C explains this opposite effect ("feelings of peace and relaxation").',
+      39: 'After discussing red and blue, this paragraph lists green, yellow, and black. Option D transitions with "Other colors have their own unique meanings."',
+      40: 'The final paragraph explains how responses vary by person and culture. Option F introduces this nuance ("not absolute or uniform").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'The Benefits of Volunteering',
+    category: 'Social',
+    subtitle: 'Helping Others Helps Yourself',
+    passage: `Volunteering is often seen purely as a way to help others. ___36___ The truth is that volunteering provides significant benefits to the volunteers themselves, both personally and professionally.
+
+From a mental health perspective, volunteering reduces stress and combats loneliness. ___37___ Helping others triggers the release of endorphins, creating what psychologists call the "helper's high." Volunteers consistently report higher levels of life satisfaction.
+
+___38___ Working with diverse groups of people builds communication and teamwork skills. Students can explore career paths and gain practical experience that looks impressive on college and job applications.
+
+Finding the right opportunity is key to a rewarding experience. ___39___ If you love animals, consider an animal shelter. If you enjoy teaching, tutor younger students. Matching your volunteer work to your passions ensures long-term commitment.
+
+___40___ Even two hours a month can make a meaningful difference. Start by checking local community centers, schools, or charity websites. By giving your time, you will enrich both your community and your own life.`,
+    options: [
+      { letter: 'A', text: 'However, it is actually a two-way street.' },
+      { letter: 'B', text: 'Volunteering also offers valuable career advantages.' },
+      { letter: 'C', text: 'You do not need a huge amount of free time to begin.' },
+      { letter: 'D', text: 'Start by thinking about what causes you care about most.' },
+      { letter: 'E', text: 'There is a biological reason for this positive feeling.' },
+      { letter: 'F', text: 'Many charities struggle to find enough funding.' },
+      { letter: 'G', text: 'Volunteering is mandatory in some high schools.' }
+    ],
+    answers: { 36: 'A', 37: 'E', 38: 'B', 39: 'D', 40: 'C' },
+    explanations: {
+      36: 'The first sentence says volunteering is seen as helping others, while the third sentence says it benefits volunteers too. Option A bridges them ("a two-way street").',
+      37: 'The sentence before mentions reducing stress, and the sentence after explains "the release of endorphins." Option E connects them ("biological reason for this positive feeling").',
+      38: 'This paragraph discusses skills, career paths, and job applications. Option B is the topic sentence ("valuable career advantages").',
+      39: 'The following sentences give examples of matching interests (animals, teaching). Option D introduces this ("thinking about what causes you care about most").',
+      40: 'The next sentence says "Even two hours a month..." Option C introduces this ("do not need a huge amount of free time").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Overcoming Procrastination',
+    category: 'Self-Improvement',
+    subtitle: 'How to Stop Putting Things Off',
+    passage: `Almost everyone procrastinates from time to time. Whether it is delaying a school essay or putting off chores, we often choose short-term pleasure over long-term goals. ___36___ Psychologists have found that procrastination is not about laziness, but about managing negative emotions like anxiety and self-doubt.
+
+When a task feels overwhelming, our brain looks for an escape. ___37___ Checking social media or cleaning your desk provides temporary relief, but the unfinished task soon creates even more guilt and stress.
+
+Fortunately, you can break this cycle with simple strategies. ___38___ Instead of writing "finish research paper" on your to-do list, break it into tiny steps like "read one article" or "write three sentences." Small wins build momentum.
+
+Another effective method is the "Five-Minute Rule." ___39___ Tell yourself you only have to work on the task for five minutes. If you want to stop after five minutes, you can. In most cases, overcoming the initial friction is enough to keep you going.
+
+___40___ Forgive yourself for past delays rather than beating yourself up. Studies show that self-compassion reduces guilt and makes it much easier to get back on track tomorrow.`,
+    options: [
+      { letter: 'A', text: 'First, make your tasks smaller and more specific.' },
+      { letter: 'B', text: 'Why do we act against our own best interests?' },
+      { letter: 'C', text: 'Finally, practice kindness toward yourself.' },
+      { letter: 'D', text: 'This trick lowers the mental barrier to getting started.' },
+      { letter: 'E', text: 'We turn to distractions to make ourselves feel better in the moment.' },
+      { letter: 'F', text: 'Some people work better under extreme time pressure.' },
+      { letter: 'G', text: 'Time management apps can solve all your problems.' }
+    ],
+    answers: { 36: 'B', 37: 'E', 38: 'A', 39: 'D', 40: 'C' },
+    explanations: {
+      36: 'The sentence before notes we put off goals, and the sentence after gives psychologists\' explanation. Option B poses the transitional question ("Why do we act against our own best interests?").',
+      37: 'The brain "looks for an escape." Option E explains how ("We turn to distractions..."), which matches "Checking social media" in the next sentence.',
+      38: 'The paragraph gives examples of breaking a paper into "tiny steps." Option A introduces this first strategy ("make your tasks smaller and more specific").',
+      39: 'The paragraph introduces the "Five-Minute Rule." Option D refers to it as "This trick" and explains how it helps you start.',
+      40: 'The final paragraph advises forgiving yourself and practicing "self-compassion." Option C introduces this ("Finally, practice kindness toward yourself").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'The Art of Active Listening',
+    category: 'Communication',
+    subtitle: 'Becoming a Better Communicator',
+    passage: `We spend a large part of our day communicating, yet most of us are poor listeners. Often, while someone else is speaking, we are busy rehearsing what we will say next. ___36___ It means fully concentrating on the speaker, understanding their message, and responding thoughtfully.
+
+___37___ Put away your phone, look at the speaker, and avoid interrupting. Non-verbal cues like nodding and maintaining an open posture show that you value what the other person is saying.
+
+Active listening also involves asking the right questions. ___38___ Instead of asking simple yes-or-no questions, try prompts like "How did you feel about that?" or "What happened next?" This encourages the speaker to share deeper thoughts.
+
+Another helpful technique is paraphrasing. ___39___ For example, you might say, "It sounds like you felt frustrated when the schedule changed." This confirms your understanding and makes the speaker feel truly heard.
+
+___40___ Like any skill, active listening takes practice. However, the effort is well worth it. When you become a better listener, you build deeper trust and stronger relationships in every part of your life.`,
+    options: [
+      { letter: 'A', text: 'Open-ended questions invite more meaningful conversation.' },
+      { letter: 'B', text: 'Active listening requires a completely different approach.' },
+      { letter: 'C', text: 'This means repeating the speaker’s main point in your own words.' },
+      { letter: 'D', text: 'First, give the speaker your undivided attention.' },
+      { letter: 'E', text: 'Changing lifelong communication habits is not easy.' },
+      { letter: 'F', text: 'Speaking loudly helps people understand you better.' },
+      { letter: 'G', text: 'Most conversations last less than ten minutes.' }
+    ],
+    answers: { 36: 'B', 37: 'D', 38: 'A', 39: 'C', 40: 'E' },
+    explanations: {
+      36: 'The sentence before describes poor listening, and the sentence after defines "It" ("It means fully concentrating..."). Option B provides the noun phrase "Active listening" for "It" to refer to.',
+      37: 'The paragraph advises putting away your phone and looking at the speaker. Option D is the topic sentence ("give the speaker your undivided attention").',
+      38: 'The next sentence contrasts "yes-or-no questions" with "How/What" prompts. Option A introduces "Open-ended questions."',
+      39: 'The preceding sentence mentions "paraphrasing." Option C defines it ("This means repeating the speaker’s main point in your own words").',
+      40: 'The next sentence says "Like any skill, active listening takes practice." Option E sets this up ("Changing lifelong communication habits is not easy").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Mindful Eating in a Fast-Paced World',
+    category: 'Lifestyle',
+    subtitle: 'Rediscovering Healthy Food Habits',
+    passage: `In our busy modern lives, eating has become a rushed, mindless activity. We often eat lunch at our desks while answering emails, or snack in front of the television without noticing what we consume. ___36___ Because the brain takes about 20 minutes to register fullness, eating too quickly often leads to overeating.
+
+Mindful eating offers a healthy alternative. ___37___ It is not a strict diet about what you can or cannot eat, but rather a way of paying full attention to the experience of eating.
+
+Practicing mindful eating is straightforward. ___38___ Turn off screens, sit at a table, and take a moment to appreciate the colors and aromas of your food. Chew slowly and notice the different textures and flavors in each bite.
+
+___39___ Are you eating because your stomach is actually hungry, or because you are bored, stressed, or tired? Recognizing emotional triggers helps you respond to your body's true needs rather than temporary cravings.
+
+You do not have to eat every single meal this way. ___40___ Even one mindful meal a day can improve digestion, prevent overeating, and turn a daily routine into a moment of calm enjoyment.`,
+    options: [
+      { letter: 'A', text: 'Start by eliminating distractions during meals.' },
+      { letter: 'B', text: 'This habit can harm both our digestion and our waistline.' },
+      { letter: 'C', text: 'It also helps you distinguish between physical and emotional hunger.' },
+      { letter: 'D', text: 'Try applying these principles to just a few meals each week.' },
+      { letter: 'E', text: 'This practice is rooted in ancient mindfulness traditions.' },
+      { letter: 'F', text: 'Fast food restaurants are becoming more expensive.' },
+      { letter: 'G', text: 'Cooking at home requires expensive kitchen equipment.' }
+    ],
+    answers: { 36: 'B', 37: 'E', 38: 'A', 39: 'C', 40: 'D' },
+    explanations: {
+      36: 'The previous sentence describes rushed eating, and the next sentence says it "leads to overeating." Option B links them ("This habit can harm both our digestion and our waistline").',
+      37: 'The previous sentence introduces "Mindful eating." Option E refers to it as "This practice," and the next sentence continues with "It is not a strict diet..."',
+      38: 'The following sentence says "Turn off screens, sit at a table..." Option A introduces this step ("Start by eliminating distractions during meals").',
+      39: 'The paragraph contrasts actual stomach hunger with eating because you are "bored, stressed, or tired." Option C introduces distinguishing "physical and emotional hunger."',
+      40: 'The previous sentence says you don\'t have to do it at every meal. Option D suggests starting with "just a few meals each week."'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'How to Pack Light for Travel',
+    category: 'Travel',
+    subtitle: 'Smart Strategies for Stress-Free Trips',
+    passage: `Nothing ruins the excitement of a trip faster than dragging a heavy suitcase through crowded train stations. Yet many travelers pack far more than they actually need, worried about every "what if" scenario. ___36___ With a single carry-on bag, you save money on baggage fees, breeze through airports, and never worry about lost luggage.
+
+The secret to packing light starts with choosing the right bag. ___37___ If you bring a massive suitcase, you will naturally feel tempted to fill all the empty space. A smaller backpack or carry-on forces you to be selective.
+
+Next, plan a versatile wardrobe. ___38___ Stick to neutral colors like black, navy, gray, and white so that every top matches every pair of pants. This allows you to create ten different outfits from just a few pieces of clothing.
+
+___39___ Shoes and heavy jackets take up the most room in a bag. Wear your bulkiest shoes and coat on the plane instead of packing them, and limit yourself to two pairs of shoes in total.
+
+Finally, remember that you are traveling to places where people live too. ___40___ Unless you are trekking into a remote wilderness, you can easily buy toothpaste, soap, or an extra shirt at your destination.`,
+    options: [
+      { letter: 'A', text: 'Choose clothes that can be easily mixed and matched.' },
+      { letter: 'B', text: 'Traveling light offers tremendous freedom and convenience.' },
+      { letter: 'C', text: 'Be ruthless about heavy and bulky items.' },
+      { letter: 'D', text: 'Pick a bag that is slightly smaller than you think you need.' },
+      { letter: 'E', text: 'If you forget something minor, it is not an emergency.' },
+      { letter: 'F', text: 'Luxury hotels always provide free laundry service.' },
+      { letter: 'G', text: 'Souvenirs should always be shipped home by mail.' }
+    ],
+    answers: { 36: 'B', 37: 'D', 38: 'A', 39: 'C', 40: 'E' },
+    explanations: {
+      36: 'The next sentence lists benefits of a single carry-on (saving money, breezing through airports). Option B introduces the advantages of "Traveling light."',
+      37: 'The paragraph is about bag size ("massive suitcase" vs. "smaller backpack"). Option D advises picking "a bag that is slightly smaller than you think you need."',
+      38: 'The next sentence advises neutral colors so "every top matches every pair of pants." Option A introduces mixing and matching clothes.',
+      39: 'The paragraph discusses "Shoes and heavy jackets" and "bulkiest shoes." Option C is the topic sentence ("Be ruthless about heavy and bulky items").',
+      40: 'The next sentence notes you can easily buy toothpaste or soap at your destination. Option E sets this up ("If you forget something minor, it is not an emergency").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Protecting Wildlife Corridors',
+    category: 'Ecology',
+    subtitle: 'Connecting Fragmented Habitats',
+    passage: `As human cities, farms, and highways expand, natural habitats are increasingly chopped into isolated fragments. For many wild animals, a four-lane highway is as impossible to cross as an ocean. ___36___ Confined to small patches of land, animal populations struggle to find food, mates, and seasonal shelter.
+
+To solve this problem, conservationists are building wildlife corridors. ___37___ They can take the form of vegetated highway overpasses, underpasses beneath railways, or protected strips of forest connecting two national parks.
+
+These corridors have proven remarkably effective. In Canada's Banff National Park, a series of lushly planted bridges and tunnels over the Trans-Canada Highway has reduced wildlife-vehicle collisions by over 80 percent. ___38___ Bears, wolves, and elk now cross the busy road safely every day.
+
+___39___ As global temperatures rise, many plant and animal species must gradually move toward cooler regions or higher elevations to survive. Connected landscapes give them a pathway to adapt to a changing climate.
+
+Even small local efforts can contribute to this network. ___40___ By planting native trees in backyards and city parks, urban residents can create "stepping stones" for birds and pollinators. Protecting nature is not just about saving distant wilderness, but about reconnecting the world we share.`,
+    options: [
+      { letter: 'A', text: 'More importantly, it has reconnected isolated animal populations.' },
+      { letter: 'B', text: 'This habitat fragmentation poses a severe threat to biodiversity.' },
+      { letter: 'C', text: 'Wildlife corridors are also vital in the face of climate change.' },
+      { letter: 'D', text: 'These are safe pathways that link separated natural areas.' },
+      { letter: 'E', text: 'You do not need to be a scientist to help connect habitats.' },
+      { letter: 'F', text: 'Zoos play a controversial role in modern conservation.' },
+      { letter: 'G', text: 'Electric cars produce far less noise on highways.' }
+    ],
+    answers: { 36: 'B', 37: 'D', 38: 'A', 39: 'C', 40: 'E' },
+    explanations: {
+      36: 'The first sentence describes habitats being "chopped into isolated fragments." Option B refers to this as "This habitat fragmentation" and explains its threat.',
+      37: 'The previous sentence introduces "wildlife corridors." Option D defines them ("These are safe pathways..."), and the next sentence gives examples ("They can take the form of...").',
+      38: 'The previous sentence notes Banff\'s bridges reduced collisions. Option A adds another benefit ("reconnected isolated animal populations"), illustrated by bears and wolves crossing safely.',
+      39: 'The paragraph discusses rising global temperatures and adapting to a changing climate. Option C is the topic sentence linking corridors to "climate change."',
+      40: 'The final paragraph focuses on what "urban residents" can do in "backyards and city parks." Option E introduces how everyday people can help.'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Building Financial Literacy for Teens',
+    category: 'Life Skills',
+    subtitle: 'Smart Money Habits for the Future',
+    passage: `Many young people graduate from high school knowing how to solve complex equations, yet have no idea how to manage a bank account or create a budget. ___36___ Developing financial literacy early in life lays the foundation for independence and long-term security.
+
+The first pillar of financial health is budgeting. ___37___ Whether your income comes from an allowance, holiday gifts, or a part-time job, tracking where your money goes is essential. Many experts recommend the 50/30/20 rule: 50 percent for needs, 30 percent for wants, and 20 percent for savings.
+
+___38___ In an age of mobile payments and one-click online shopping, spending money feels effortless and almost invisible. Waiting 24 hours before buying a non-essential item is a great way to avoid impulse purchases you might regret later.
+
+Saving money is not just about preparing for emergencies. ___39___ Because of compound interest, money saved in your teens or twenties has decades to grow. Even small, regular contributions can turn into a substantial sum over time.
+
+___40___ Read beginner-friendly books on personal finance, talk openly with your parents about household budgets, and practice managing a small monthly allowance. The habits you build today with ten dollars will guide how you handle ten thousand dollars in the future.`,
+    options: [
+      { letter: 'A', text: 'Learning to control impulse spending is equally important.' },
+      { letter: 'B', text: 'A budget is simply a plan for how you will use your money.' },
+      { letter: 'C', text: 'It is also the key to building future wealth.' },
+      { letter: 'D', text: 'However, understanding how money works is an essential life skill.' },
+      { letter: 'E', text: 'You can start building your financial knowledge right now.' },
+      { letter: 'F', text: 'Credit cards should be banned for everyone under thirty.' },
+      { letter: 'G', text: 'High school math classes are no longer necessary.' }
+    ],
+    answers: { 36: 'D', 37: 'B', 38: 'A', 39: 'C', 40: 'E' },
+    explanations: {
+      36: 'The first sentence points out students don\'t know how to manage money. Option D contrasts this gap with "However, understanding how money works is an essential life skill."',
+      37: 'The previous sentence introduces "budgeting." Option B defines what a budget is ("A budget is simply a plan...").',
+      38: 'The paragraph discusses mobile payments and avoiding "impulse purchases." Option A is the topic sentence ("Learning to control impulse spending...").',
+      39: 'The preceding sentence says "Saving money is not just about..." Option C completes the "not just... also..." structure ("It is also the key to building future wealth").',
+      40: 'The final paragraph lists practical steps teens can take today (read books, talk with parents). Option E introduces this call to action.'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'The Science of Gratitude',
+    category: 'Well-Being',
+    subtitle: 'How Thankfulness Rewires Your Brain',
+    passage: `Gratitude is often treated as a polite social custom — saying "thank you" when someone holds a door open. ___36___ Over the past two decades, psychologists have discovered that practicing gratitude regularly can measurably improve both mental and physical health.
+
+When we intentionally focus on things we appreciate, our brain releases dopamine and serotonin. ___37___ By activating these neural pathways repeatedly, gratitude trains the brain to notice positive aspects of life rather than dwelling on complaints.
+
+___38___ In a famous experiment, participants who wrote down three things they were grateful for each week reported better sleep, fewer physical symptoms of illness, and greater optimism than those who recorded daily hassles.
+
+Expressing gratitude to others also strengthens relationships. ___39___ Writing a short thank-you note to a teacher, friend, or family member makes the recipient feel valued and deepens mutual trust.
+
+You can easily build gratitude into your daily routine. ___40___ Whether you keep a bedside journal or share one good thing at the dinner table, consistency will gradually transform your outlook on life.`,
+    options: [
+      { letter: 'A', text: 'Keeping a gratitude journal is one of the simplest methods.' },
+      { letter: 'B', text: 'However, modern science reveals it is much more than good manners.' },
+      { letter: 'C', text: 'These natural chemicals immediately boost our mood.' },
+      { letter: 'D', text: 'Start by pausing for just two minutes at the end of each day.' },
+      { letter: 'E', text: 'It acts as a powerful social glue between people.' },
+      { letter: 'F', text: 'Expensive gifts are the best way to show appreciation.' },
+      { letter: 'G', text: 'Negative emotions have no evolutionary purpose at all.' }
+    ],
+    answers: { 36: 'B', 37: 'C', 38: 'A', 39: 'E', 40: 'D' },
+    explanations: {
+      36: 'The first sentence calls gratitude a "polite social custom." Option B contrasts this with "However, modern science reveals it is much more than good manners," leading into psychologists\' findings.',
+      37: 'The previous sentence mentions "dopamine and serotonin." Option C refers to them as "These natural chemicals" and explains their effect.',
+      38: 'The paragraph describes an experiment where participants "wrote down three things they were grateful for." Option A introduces "Keeping a gratitude journal."',
+      39: 'The paragraph is about how expressing gratitude "strengthens relationships." Option E reinforces this ("acts as a powerful social glue").',
+      40: 'The final paragraph is about building a daily routine. Option D gives a concrete starting step ("pausing for just two minutes at the end of each day").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Mastering Public Speaking',
+    category: 'Communication',
+    subtitle: 'Turning Stage Fright into Confidence',
+    passage: `For many people, standing in front of an audience to give a speech is terrifying. Sweaty palms, a racing heart, and a shaky voice are common reactions. ___36___ Even professional actors and experienced leaders feel nervous before stepping onto a stage.
+
+The secret to great public speaking is not eliminating nerves, but channeling that energy into preparation. ___37___ Instead of memorizing every single word—which can sound robotic and make you panic if you forget a line—organize your talk around three or four key points.
+
+___38___ Practice speaking aloud in front of a mirror, record yourself on your phone, or deliver your talk to a supportive friend. Rehearsing out loud helps you smooth out awkward transitions and check your timing.
+
+When it is time to speak, focus on connecting with your audience rather than judging yourself. ___39___ Making eye contact with friendly faces in the room and pausing briefly between main ideas will make you appear calm and confident.
+
+___40___ Every speech you give—even an imperfect one—builds your confidence. By embracing opportunities to speak up in class or club meetings, you will gradually turn fear into a powerful lifelong skill.`,
+    options: [
+      { letter: 'A', text: 'Rehearsal is where true confidence is built.' },
+      { letter: 'B', text: 'If you experience this anxiety, you are certainly not alone.' },
+      { letter: 'C', text: 'Start by structuring your message clearly.' },
+      { letter: 'D', text: 'Body language and pacing matter just as much as your words.' },
+      { letter: 'E', text: 'Finally, remember that public speaking is a learnable skill.' },
+      { letter: 'F', text: 'Reading directly from slides is the best way to engage listeners.' },
+      { letter: 'G', text: 'Speaking as fast as possible helps you finish sooner.' }
+    ],
+    answers: { 36: 'B', 37: 'C', 38: 'A', 39: 'D', 40: 'E' },
+    explanations: {
+      36: 'The preceding sentences describe fear and physical symptoms. Option B reassures the reader ("If you experience this anxiety, you are certainly not alone"), matching the next sentence about professionals feeling nervous too.',
+      37: 'The next sentence advises organizing your talk around "three or four key points" instead of memorizing word-for-word. Option C introduces "structuring your message clearly."',
+      38: 'The paragraph lists ways to practice ("Practice speaking aloud...", "Rehearsing out loud..."). Option A is the topic sentence ("Rehearsal is where true confidence is built").',
+      39: 'The next sentence mentions "Making eye contact" and "pausing briefly." Option D introduces "Body language and pacing."',
+      40: 'The final paragraph encourages practicing over time. Option E introduces this conclusion ("remember that public speaking is a learnable skill").'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Preserving Endangered Languages',
+    category: 'Culture',
+    subtitle: 'Why Every Human Tongue Matters',
+    passage: `Today, roughly 7,000 languages are spoken around the world. However, linguists estimate that nearly half of them could disappear by the end of this century. ___36___ When a language dies without being documented, humanity loses a unique window into history, culture, and the human mind.
+
+Languages are far more than interchangeable codes for the same objects. ___37___ Indigenous languages, for example, often contain centuries of detailed ecological knowledge about local medicinal plants, animal behavior, and weather patterns that scientists are only beginning to understand.
+
+___38___ As young people move to big cities and adopt dominant global languages for school and work, fewer children learn their ancestral tongues at home. Within just two or three generations, a vibrant language can fall silent.
+
+Fortunately, communities and linguists are fighting back—often with the help of modern technology. ___39___ Smartphone apps, online talking dictionaries, and social media videos are making it fun and accessible for young people to learn endangered languages from their elders.
+
+___40___ By supporting bilingual education and celebrating linguistic diversity, we can ensure that the rich tapestry of human expression continues to thrive for generations to come.`,
+    options: [
+      { letter: 'A', text: 'Why are so many languages vanishing so rapidly?' },
+      { letter: 'B', text: 'This loss is far more serious than it might first appear.' },
+      { letter: 'C', text: 'Digital tools have become powerful allies in language revival.' },
+      { letter: 'D', text: 'Each language carries a distinct way of seeing and categorizing the world.' },
+      { letter: 'E', text: 'Saving these voices requires support from society as a whole.' },
+      { letter: 'F', text: 'Learning a second language is too difficult for young children.' },
+      { letter: 'G', text: 'Translation software has made human interpreters completely unnecessary.' }
+    ],
+    answers: { 36: 'B', 37: 'D', 38: 'A', 39: 'C', 40: 'E' },
+    explanations: {
+      36: 'The previous sentence states half of languages could disappear. Option B refers to this as "This loss" and leads into the explanation of what humanity loses.',
+      37: 'The previous sentence says languages are more than interchangeable codes. Option D explains that "Each language carries a distinct way of seeing... the world," illustrated by indigenous ecological knowledge.',
+      38: 'The paragraph explains the causes of language decline (urbanization, adopting dominant languages). Option A asks the topic question ("Why are so many languages vanishing so rapidly?").',
+      39: 'The previous sentence mentions "modern technology," and the next lists "Smartphone apps, online talking dictionaries..." Option C bridges them ("Digital tools...").',
+      40: 'The final sentence calls for "supporting bilingual education and celebrating linguistic diversity." Option E introduces this societal effort.'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'The Benefits of Spending Time in Nature',
+    category: 'Health',
+    subtitle: 'How the Outdoors Restores Our Minds',
+    passage: `For most of human history, people lived in close contact with the natural world. Today, however, the average person spends over 90 percent of their life indoors, staring at glowing screens. ___36___ Scientists call this growing disconnection "nature deficit disorder," linking it to rising rates of mental fatigue and stress.
+
+Stepping outside into green spaces offers an immediate antidote. ___37___ In Japan, the practice of <em>shinrin-yoku</em>, or "forest bathing," has been studied extensively. Researchers found that walking slowly through a forest lowers blood pressure, reduces stress hormones, and strengthens the immune system.
+
+Nature also restores our ability to concentrate. ___38___ Urban environments bombard us with traffic noise, notifications, and crowded streets that drain our directed attention. Natural settings, by contrast, gently engage our senses with rustling leaves and flowing water, allowing our overstimulated brains to rest and recharge.
+
+___39___ You do not need to travel to a remote mountain range to experience these benefits. Research shows that spending just two hours a week in a local city park, tree-lined street, or botanical garden is enough to significantly boost well-being.
+
+___40___ Take a short walk during your lunch break, study under a tree, or leave your phone in your pocket while strolling through a park. Nature is waiting just outside your door.`,
+    options: [
+      { letter: 'A', text: 'Even brief, everyday contact with local greenery makes a difference.' },
+      { letter: 'B', text: 'Our brains were simply not designed for constant digital stimulation.' },
+      { letter: 'C', text: 'This shift toward indoor living has come at a hidden cost to our health.' },
+      { letter: 'D', text: 'Make a conscious effort to weave outdoor time into your weekly routine.' },
+      { letter: 'E', text: 'Both body and mind respond quickly to natural surroundings.' },
+      { letter: 'F', text: 'Extreme outdoor sports require expensive safety gear.' },
+      { letter: 'G', text: 'Indoor gyms are always healthier than outdoor parks.' }
+    ],
+    answers: { 36: 'C', 37: 'E', 38: 'B', 39: 'A', 40: 'D' },
+    explanations: {
+      36: 'The previous sentence states people spend 90% of their lives indoors. Option C refers to this as "This shift toward indoor living" and links it to the health costs in the next sentence.',
+      37: 'The paragraph discusses how forest bathing lowers blood pressure and stress hormones. Option E introduces how "Both body and mind respond quickly to natural surroundings."',
+      38: 'The paragraph contrasts urban overstimulation with natural rest for our brains. Option B explains why ("Our brains were simply not designed for constant digital stimulation").',
+      39: 'The next sentence says "You do not need to travel to a remote mountain range... a local city park... is enough." Option A introduces the value of "brief, everyday contact with local greenery."',
+      40: 'The final sentence lists simple ways to go outside (lunch walk, study under a tree). Option D is the concluding call to action.'
+    }
+  },
+  {
+    type: 'practice',
+    title: 'Developing Critical Thinking in the Digital Age',
+    category: 'Information Literacy',
+    subtitle: 'Navigating Online Information Wisely',
+    passage: `Never in human history have we had instant access to so much information. With a few taps on a smartphone, we can read news, scientific studies, and opinions from around the globe. ___36___ False rumors, exaggerated headlines, and biased claims spread just as quickly as verified facts.
+
+To navigate this flood of information, critical thinking is more important than ever. ___37___ Instead of passively accepting whatever appears in your social media feed, pause and ask questions about where the claim came from and what evidence supports it.
+
+First, always check the source before sharing a story. ___38___ Look at whether the website is a respected news organization, a university, or an anonymous blog trying to sell a product or provoke anger.
+
+___39___ Social media algorithms are designed to show us content that matches our existing beliefs, creating "echo chambers." Actively reading articles from different viewpoints helps you see the full picture and avoid blind spots.
+
+___40___ By slowing down, verifying facts, and keeping an open yet questioning mind, you protect yourself from manipulation and become a more responsible digital citizen.`,
+    options: [
+      { letter: 'A', text: 'Second, make a habit of seeking out multiple perspectives.' },
+      { letter: 'B', text: 'However, quantity of information does not guarantee quality.' },
+      { letter: 'C', text: 'Who wrote the article, and what is their purpose?' },
+      { letter: 'D', text: 'It is the ability to evaluate information objectively and logically.' },
+      { letter: 'E', text: 'Critical thinking is not about being cynical, but about being careful.' },
+      { letter: 'F', text: 'Printed encyclopedias are the only reliable source of truth.' },
+      { letter: 'G', text: 'Deleting all your internet accounts is the only solution.' }
+    ],
+    answers: { 36: 'B', 37: 'D', 38: 'C', 39: 'A', 40: 'E' },
+    explanations: {
+      36: 'The previous sentence praises instant access to vast information, while the next warns about false rumors. Option B provides the contrast ("However, quantity of information does not guarantee quality").',
+      37: 'The previous sentence introduces "critical thinking." Option D defines it ("It is the ability to evaluate information objectively and logically").',
+      38: 'The previous sentence says "check the source." Option C asks specific source questions ("Who wrote the article, and what is their purpose?"), which the next sentence answers.',
+      39: 'The previous paragraph started with "First, always check the source..." Option A starts with "Second, make a habit of seeking out multiple perspectives," matching "different viewpoints."',
+      40: 'The final paragraph summarizes how to be a responsible digital citizen. Option E provides a balanced concluding thought on critical thinking.'
+    }
+  }
+];
+
+// ============ STATE & TIMER MANAGEMENT ============
+let currentPageIndex = 0;
+let selectedBlankNum = null;
+
+// Timer state (8 minutes = 480 seconds recommended for practice, 3 minutes = 180 seconds for strategy)
+let timerSeconds = 480;
+let timerInterval = null;
+let timerRunning = false;
+
+// Track state for all 25 pages
+const pageStates = pages.map(p => ({
+  completed: false,
+  userAnswers: p.type === 'practice' ? { 36: null, 37: null, 38: null, 39: null, 40: null } : {},
+  graded: false
+}));
+
+// ============ TIMER FUNCTIONS ============
+function getRecommendedSeconds(page) {
+  return page.type === 'strategy' ? 180 : 480; // 3 mins for Strategy, 8 mins for Practice
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+}
+
+function updateClockDisplay() {
+  const clockEl = document.getElementById('digitalClock');
+  if (!clockEl) return;
+  clockEl.textContent = formatTime(timerSeconds);
+  clockEl.classList.remove('warning', 'danger');
+  if (timerSeconds <= 30) {
+    clockEl.classList.add('danger');
+  } else if (timerSeconds <= 90) {
+    clockEl.classList.add('warning');
+  }
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  timerRunning = false;
+  const btn = document.getElementById('timerStartStopBtn');
+  if (btn) {
+    btn.textContent = 'Start';
+    btn.classList.remove('running');
+  }
+}
+
+function startTimer() {
+  if (timerRunning) return;
+  if (timerSeconds <= 0) {
+    timerSeconds = getRecommendedSeconds(pages[currentPageIndex]);
+  }
+  timerRunning = true;
+  const btn = document.getElementById('timerStartStopBtn');
+  if (btn) {
+    btn.textContent = 'Stop';
+    btn.classList.add('running');
+  }
+  timerInterval = setInterval(() => {
+    if (timerSeconds > 0) {
+      timerSeconds--;
+      updateClockDisplay();
+      if (timerSeconds === 0) {
+        stopTimer();
+        playIncorrectSound();
+      }
+    }
+  }, 1000);
+}
+
+function toggleTimer() {
+  playClickSound();
+  if (timerRunning) {
+    stopTimer();
+  } else {
+    startTimer();
+  }
+}
+
+function resetTimer() {
+  playClickSound();
+  stopTimer();
+  const page = pages[currentPageIndex];
+  timerSeconds = getRecommendedSeconds(page);
+  const recLabel = document.getElementById('recTimeLabel');
+  if (recLabel) recLabel.textContent = page.type === 'strategy' ? '3:00' : '8:00';
+  updateClockDisplay();
+}
+
+// ============ INITIALIZATION ============
+function init() {
+  renderNavButtons();
+  loadPage(0);
+}
+
+function renderNavButtons() {
+  const select = document.getElementById('pageSelect');
+  if (!select) return;
+  select.innerHTML = pages.map((page, idx) => {
+    const selectedAttr = idx === currentPageIndex ? 'selected' : '';
+    const checkMark = pageStates[idx].completed ? ' ✓' : '';
+    const label = page.type === 'strategy'
+      ? `S${idx + 1}: ${page.title}${checkMark}`
+      : `P${idx - 4}: ${page.title}${checkMark}`;
+    return `<option value="${idx}" ${selectedAttr}>${label}</option>`;
+  }).join('');
+}
+
+function switchPage(idx) {
+  playClickSound();
+  selectedBlankNum = null;
+  loadPage(idx);
+}
+
+function loadPage(idx) {
+  const pageChanged = currentPageIndex !== idx;
+  currentPageIndex = idx;
+  const page = pages[idx];
+  const state = pageStates[idx];
+  const leftPanel = document.getElementById('leftPanel');
+  const optionsList = document.getElementById('optionsList');
+  const optionsTitle = document.getElementById('optionsTitle');
+  const practiceControls = document.getElementById('practiceControls');
+  const strategyControls = document.getElementById('strategyControls');
+  const feedback = document.getElementById('feedback');
+
+  if (pageChanged || (!timerRunning && timerSeconds === 480)) {
+    stopTimer();
+    timerSeconds = getRecommendedSeconds(page);
+    const recLabel = document.getElementById('recTimeLabel');
+    if (recLabel) recLabel.textContent = page.type === 'strategy' ? '3:00' : '8:00';
+    updateClockDisplay();
+  }
+
+  feedback.className = 'feedback';
+  feedback.innerHTML = '';
+
+  if (page.type === 'strategy') {
+    practiceControls.style.display = 'none';
+    strategyControls.style.display = 'block';
+    optionsTitle.textContent = '🧭 Strategy Quick Summary';
+
+    leftPanel.innerHTML = `
+      <div class="page-header">
+        <div class="page-category">${page.category}</div>
+        <div class="page-title">${page.title}</div>
+        <div class="page-subtitle">${page.subtitle}</div>
+      </div>
+      <div class="strategy-content">${page.content}</div>
+    `;
+
+    optionsList.innerHTML = `
+      <div class="tip-box" style="margin-top:0;">
+        <strong>Key Takeaway:</strong><br>
+        Read through this strategy guide carefully. Once you understand the patterns, click <strong>"Mark Read & Next Page"</strong> below or jump directly to any of the 15 Practice Passages (P1–P15) in the top navigation bar!
+      </div>
+      <div class="example-box">
+        <strong>7-Choose-5 Checklist:</strong><br>
+        1. Check pronouns (<em>it, they, this, such</em>)<br>
+        2. Check logical connectors (<em>however, or, also</em>)<br>
+        3. Check blank position (Start, Middle, End)<br>
+        4. Eliminate the 2 distractors
+      </div>
+    `;
+  } else {
+    practiceControls.style.display = 'block';
+    strategyControls.style.display = 'none';
+    optionsTitle.textContent = '📝 Answer Options (Click Blank, Then Option)';
+
+    // Format passage paragraphs and replace ___36___ etc. with interactive blanks
+    const paragraphs = page.passage.split(/\n\s*\n/).map(para => {
+      const formatted = para.trim().replace(/___(\d+)___/g, (match, num) => {
+        const blankNum = parseInt(num);
+        const chosenLetter = state.userAnswers[blankNum];
+        const chosenOpt = chosenLetter ? page.options.find(o => o.letter === chosenLetter) : null;
+
+        let classes = 'blank';
+        if (selectedBlankNum === blankNum) classes += ' selected';
+        else if (state.graded) {
+          classes += (chosenLetter === page.answers[blankNum]) ? ' correct' : ' incorrect';
+        } else if (chosenLetter) {
+          classes += ' filled';
+        }
+
+        const displayText = chosenOpt
+          ? `${blankNum}. [${chosenLetter}] ${chosenOpt.text}`
+          : `___${blankNum}___`;
+
+        return `<span class="${classes}" onclick="selectBlank(${blankNum})">${displayText}</span>`;
+      });
+      return `<p>${formatted}</p>`;
+    }).join('');
+
+    // Build explanations section if graded
+    let expHtml = '';
+    if (state.graded) {
+      const items = [36, 37, 38, 39, 40].map(num => {
+        const ans = page.answers[num];
+        const userAns = state.userAnswers[num] || 'None';
+        const isRight = userAns === ans;
+        const badge = isRight ? '✅' : `❌ (Your answer: ${userAns})`;
+        return `<div class="exp-item">${badge} <strong>Blank ${num} — Correct Answer: ${ans}</strong><br>${page.explanations[num]}</div>`;
+      }).join('');
+      expHtml = `<div class="explanations-box show"><h4>🔍 Detailed Logical Analysis (答案解析)</h4>${items}</div>`;
+    }
+
+    leftPanel.innerHTML = `
+      <div class="page-header">
+        <div class="page-category">${page.category}</div>
+        <div class="page-title">${page.title}</div>
+        <div class="page-subtitle">${page.subtitle} — Click a blank (36–40) in the passage, then click an option (A–G) on the right.</div>
+      </div>
+      <div class="passage">${paragraphs}</div>
+      ${expHtml}
+    `;
+
+    renderOptions();
+  }
+
+  leftPanel.scrollTop = 0;
+  renderNavButtons();
+  updateStats();
+}
+
+function renderOptions() {
+  const page = pages[currentPageIndex];
+  if (page.type !== 'practice') return;
+
+  const state = pageStates[currentPageIndex];
+  const usedLetters = Object.values(state.userAnswers).filter(Boolean);
+  const currentBlankChoice = selectedBlankNum ? state.userAnswers[selectedBlankNum] : null;
+
+  const optionsList = document.getElementById('optionsList');
+  optionsList.innerHTML = page.options.map(opt => {
+    const isSelectedForActiveBlank = currentBlankChoice === opt.letter;
+    const isUsedElsewhere = usedLetters.includes(opt.letter) && !isSelectedForActiveBlank;
+
+    let cls = 'option';
+    if (isSelectedForActiveBlank) cls += ' selected';
+    else if (isUsedElsewhere) cls += ' used';
+
+    return `
+      <div class="${cls}" onclick="selectOption('${opt.letter}')">
+        <span class="option-letter">${opt.letter}</span>
+        <span>${opt.text}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============ INTERACTION HANDLERS ============
+function selectBlank(blankNum) {
+  playClickSound();
+  const state = pageStates[currentPageIndex];
+  if (state.graded) {
+    state.graded = false; // Allow editing if user clicks a blank after grading
+  }
+  selectedBlankNum = blankNum;
+  loadPage(currentPageIndex);
+}
+
+function selectOption(letter) {
+  const page = pages[currentPageIndex];
+  const state = pageStates[currentPageIndex];
+  if (page.type !== 'practice') return;
+
+  // If no blank is currently selected, automatically pick the first empty blank (or 36)
+  if (!selectedBlankNum) {
+    const emptyBlank = [36, 37, 38, 39, 40].find(n => !state.userAnswers[n]);
+    selectedBlankNum = emptyBlank || 36;
+  }
+
+  playClickSound();
+  state.graded = false;
+
+  // Remove this letter if it was already used in another blank
+  [36, 37, 38, 39, 40].forEach(num => {
+    if (state.userAnswers[num] === letter) {
+      state.userAnswers[num] = null;
+    }
+  });
+
+  state.userAnswers[selectedBlankNum] = letter;
+
+  // Auto-advance to the next empty blank
+  const nextEmpty = [36, 37, 38, 39, 40].find(n => !state.userAnswers[n]);
+  selectedBlankNum = nextEmpty || null;
+
+  loadPage(currentPageIndex);
+}
+
+function checkAllAnswers() {
+  const page = pages[currentPageIndex];
+  const state = pageStates[currentPageIndex];
+  if (page.type !== 'practice') return;
+
+  const answered = Object.values(state.userAnswers).filter(Boolean).length;
+  const feedback = document.getElementById('feedback');
+
+  if (answered < 5) {
+    playIncorrectSound();
+    feedback.className = 'feedback show incorrect';
+    feedback.innerHTML = `<div class="feedback-title">Incomplete (${answered}/5 Answered)</div>Please fill in all 5 blanks (36–40) before checking your answers, or click "Show Answers & Logic".`;
+    return;
+  }
+
+  state.graded = true;
+  selectedBlankNum = null;
+
+  let correct = 0;
+  [36, 37, 38, 39, 40].forEach(num => {
+    if (state.userAnswers[num] === page.answers[num]) correct++;
+  });
+
+  state.completed = true;
+  loadPage(currentPageIndex);
+
+  const fb = document.getElementById('feedback');
+  if (correct === 5) {
+    playCompleteSound();
+    fb.className = 'feedback show correct';
+    fb.innerHTML = `<div class="feedback-title">🏆 Perfect Score! (5/5)</div>Outstanding! Scroll down the passage panel to review the detailed logical analysis for each blank.`;
+  } else if (correct >= 3) {
+    playCorrectSound();
+    fb.className = 'feedback show correct';
+    fb.innerHTML = `<div class="feedback-title">👍 Good Job! (${correct}/5 Correct)</div>Scroll down the passage on the left to read the explanations for any missed blanks.`;
+  } else {
+    playIncorrectSound();
+    fb.className = 'feedback show incorrect';
+    fb.innerHTML = `<div class="feedback-title">📚 Keep Practicing (${correct}/5 Correct)</div>Review the detailed logical explanations at the bottom of the passage panel.`;
+  }
+
+  document.getElementById('modalText').textContent = `You scored ${correct} out of 5 on "${page.title}".`;
+  document.getElementById('completionModal').classList.add('show');
+}
+
+function resetPage() {
+  playClickSound();
+  const page = pages[currentPageIndex];
+  if (page.type !== 'practice') return;
+
+  pageStates[currentPageIndex] = {
+    completed: false,
+    userAnswers: { 36: null, 37: null, 38: null, 39: null, 40: null },
+    graded: false
+  };
+  selectedBlankNum = 36;
+  loadPage(currentPageIndex);
+}
+
+function showAnswers() {
+  playClickSound();
+  const page = pages[currentPageIndex];
+  const state = pageStates[currentPageIndex];
+  if (page.type !== 'practice') return;
+
+  [36, 37, 38, 39, 40].forEach(num => {
+    state.userAnswers[num] = page.answers[num];
+  });
+  state.graded = true;
+  state.completed = true;
+  selectedBlankNum = null;
+
+  loadPage(currentPageIndex);
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show correct';
+  fb.innerHTML = `<div class="feedback-title">👁 Answers Revealed</div>All correct sentences are now placed in the blanks, and full logical explanations are shown below the passage.`;
+}
+
+function nextPage() {
+  playCorrectSound();
+  pageStates[currentPageIndex].completed = true;
+  const nextIdx = (currentPageIndex + 1) % pages.length;
+  loadPage(nextIdx);
+}
+
+function updateStats() {
+  const page = pages[currentPageIndex];
+  const state = pageStates[currentPageIndex];
+
+  document.getElementById('pageNum').textContent = `${currentPageIndex + 1}/${pages.length}`;
+
+  if (page.type === 'strategy') {
+    document.getElementById('correctCount').textContent = '-';
+    document.getElementById('answeredCount').textContent = 'Guide';
+    return;
+  }
+
+  const answered = Object.values(state.userAnswers).filter(Boolean).length;
+  let correct = 0;
+  if (state.graded) {
+    [36, 37, 38, 39, 40].forEach(num => {
+      if (state.userAnswers[num] === page.answers[num]) correct++;
+    });
+  }
+
+  document.getElementById('correctCount').textContent = state.graded ? correct : '-';
+  document.getElementById('answeredCount').textContent = `${answered}/5`;
+}
+
+function closeModal() {
+  playClickSound();
+  document.getElementById('completionModal').classList.remove('show');
+}
+
+function closeModalAndNext() {
+  closeModal();
+  const nextIdx = (currentPageIndex + 1) % pages.length;
+  loadPage(nextIdx);
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
