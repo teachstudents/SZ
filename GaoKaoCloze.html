@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaokao Master: Grammar & Reading Platform</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            color: #1e293b;
+        }
+
+        .passage-text {
+            font-family: 'Inter', sans-serif;
+            line-height: 2.2;
+            font-size: 1.62rem; /* 20% larger */
+            text-align: justify;
+        }
+
+        .gap-container {
+            display: inline-block;
+            position: relative;
+            margin: 0 4px;
+            vertical-align: middle;
+        }
+
+        .gap-input {
+            font-family: 'Inter', sans-serif;
+            width: 150px; /* Fixed width to prevent text from shifting */
+            border: none;
+            border-bottom: 2px solid #94a3b8;
+            background: #f8fafc;
+            text-align: center;
+            font-weight: 700;
+            color: #0f172a;
+            padding: 4px 8px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.2s ease;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 1.62rem;
+        }
+
+        .gap-input:focus, .gap-input.drag-over {
+            border-bottom-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .gap-input.correct {
+            border-bottom-color: #10b981;
+            color: #059669;
+            background-color: #ecfdf5;
+            text-decoration: none;
+        }
+
+        .gap-input.incorrect {
+            border-bottom-color: #ef4444;
+            color: #dc2626;
+            background-color: #fef2f2;
+            text-decoration: line-through;
+        }
+
+        .clue-highlight {
+            background-color: #fef08a; /* yellow-200 */
+            color: #854d0e; /* yellow-800 */
+            border-radius: 6px;
+            padding: 2px 4px;
+            font-weight: 600;
+            transition: all 0.4s ease;
+        }
+
+        .mcq-option {
+            padding: 10px 20px;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s;
+            font-size: 1.3rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .mcq-option:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background: #eff6ff;
+        }
+        .mcq-option:active {
+            cursor: grabbing;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- ICONS ---
+        const BookOpen = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        );
+        const ArrowLeft = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        );
+        const CheckCircle = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        );
+        const Award = ({ size = 24, className = "" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+        );
+
+        // --- GAOKAO DATASET (10 Passages, 100 Questions) ---
+        const passagesData = [
+            {
+                id: 1,
+                title: "The Heritage of Chinese Tea",
+                category: "Culture",
+                content: "[#1#] (date) back thousands of years, Chinese tea culture is deeply rooted in history. It was <clue>originally used as a form of medicine</clue> before [#2#] (become) a popular daily beverage. Today, people drink tea not only to quench their thirst [#3#] for its numerous health benefits. It is scientifically proven that drinking tea [#4#] (regular) can reduce the risk of cardiovascular diseases. Furthermore, the traditional tea ceremony, [#5#] emphasizes harmony, respect, and peace, plays an important role in Chinese society. When [#6#] (visit) China, foreigners are often amazed by the vast variety of tea available. To make good tea, one must pay close attention to the water temperature, [#7#] is considered a crucial step. The purer the water is, the [#8#] (tasty) the tea will be. It is widely acknowledged that tea has served as a bridge connecting China with the rest of the world. In a word, tea remains an essential part of life for [#9#] Chinese and continues to fascinate people globally. Over the past decades, Chinese tea [#10#] (gain) increasing popularity overseas.",
+                answers: {
+                    1: ["Dating"], 2: ["becoming"], 3: ["but"], 4: ["regularly"], 5: ["which"],
+                    6: ["visiting"], 7: ["which"], 8: ["tastier"], 9: ["the"], 10: ["has gained"]
+                }
+            },
+            {
+                id: 2,
+                title: "The Dawn of Artificial Intelligence",
+                category: "Technology",
+                content: "Artificial Intelligence (AI) is no longer a concept confined to science fiction. In recent years, it [#1#] (develop) at an unprecedented speed, changing the way we live and work. From self-driving cars to smart voice assistants, AI technologies are being [#2#] (wide) applied in various fields. Many experts believe that AI will free humans from repetitive tasks, allowing us to focus on more [#3#] (create) endeavors. However, this rapid advancement has also raised concerns among the public. Some fear that AI might lead to massive unemployment, while [#4#] worry about data privacy. Despite these challenges, governments and tech giants are investing heavily in AI research [#5#] (ensure) they stay ahead in the global race. Education systems are also adapting, with more schools introducing coding and robotics classes to students. It is crucial that we establish proper regulations to guide the development of AI, [#6#] (make) sure it benefits humanity as a whole. Only by facing these challenges head-on [#7#] we harness the true power of this technology. Looking ahead, a future [#8#] AI works hand in hand with humans is highly anticipated. Ultimately, the impact of AI depends on how we choose to use [#9#]. As long as we proceed with caution, the possibilities are entirely [#10#] (limit).",
+                answers: {
+                    1: ["has developed"], 2: ["widely"], 3: ["creative"], 4: ["others"], 5: ["to ensure"],
+                    6: ["making"], 7: ["can", "will"], 8: ["where"], 9: ["it"], 10: ["limitless", "unlimited"]
+                }
+            },
+            {
+                id: 3,
+                title: "Saving the Giant Panda",
+                category: "Nature",
+                content: "The giant panda, known as China’s national treasure, is loved by people around the world for its distinct black and white coat. For decades, it [#1#] (consider) an endangered species due to habitat loss and a low birth rate. However, thanks to the continuous efforts of the Chinese government and conservationists, the situation has significantly improved. Huge nature reserves [#2#] (establish) in Sichuan, Shaanxi, and Gansu provinces to provide safe homes for them. In these protected areas, pandas can roam freely and feed on bamboo, [#3#] makes up 99% of their diet. Researchers have also made breakthroughs in captive breeding programs, [#4#] (result) in a steady increase in the panda population. In 2021, Chinese officials announced that giant pandas were no longer classified as \"endangered\" [#5#] rather as \"vulnerable.\" This milestone is a remarkable achievement in global wildlife conservation. Despite this success, scientists warn that climate change poses a new threat to bamboo forests, meaning that the fight to protect pandas is far from over. Everyone is encouraged to participate in environmental protection, because saving the giant panda is closely tied to [#6#] (preserve) global biodiversity. It is widely accepted [#7#] a healthy planet requires the survival of all species. Therefore, it is our responsibility to ensure that future generations can still witness these beautiful creatures [#8#] (live) peacefully in the wild. If we act now, the earth will be a much [#9#] (good) place. Let's work together to create a brighter future for pandas and [#10#] (we).",
+                answers: {
+                    1: ["was considered", "had been considered"], 2: ["have been established"], 3: ["which"], 4: ["resulting"], 5: ["but"],
+                    6: ["preserving"], 7: ["that"], 8: ["living"], 9: ["better"], 10: ["ourselves"]
+                }
+            },
+            {
+                id: 4,
+                title: "The Ancient Silk Road",
+                category: "History",
+                content: "The Silk Road was an ancient network of trade routes [#1#] connected the East and the West. Originating during the Han Dynasty, it got its name from the highly lucrative trade in Chinese silk, [#2#] was a major reason for the connection of trade routes into an extensive trans-continental network. Merchants, pilgrims, and soldiers traveled along these tough paths, [#3#] (face) extreme weather and dangerous bandits. Through this route, not only goods but also ideas, religions, and technologies [#4#] (exchange) between different civilizations. For example, papermaking and gunpowder from China were introduced to Europe, significantly [#5#] (alter) the course of world history. Meanwhile, Buddhism made its way into China from India, leaving a profound impact on Chinese culture and art. The Silk Road was not a single path, but a complex web of land and sea routes. Today, the spirit of the ancient Silk Road is being revived through the Belt and Road Initiative, [#6#] (aim) at promoting global cooperation and shared prosperity. This modern initiative reminds us of a time when cultural exchange brought unprecedented wealth to the world. It serves as a reminder that open communication and mutual respect are essential for global peace. [#7#] (look) back, we can clearly see the historical significance of these ancient journeys. The legacy of the Silk Road proves that humanity thrives best when connected, rather than [#8#] (divide). In conclusion, it was undoubtedly one of the most important [#9#] (achieve) of human history. The stories of the brave travelers will always be remembered by people [#10#] generations to come.",
+                answers: {
+                    1: ["that", "which"], 2: ["which"], 3: ["facing"], 4: ["were exchanged"], 5: ["altering"],
+                    6: ["aimed"], 7: ["Looking"], 8: ["divided"], 9: ["achievements"], 10: ["for", "in"]
+                }
+            },
+            {
+                id: 5,
+                title: "The Importance of Quality Sleep",
+                category: "Health",
+                content: "In today's fast-paced society, many people suffer from a lack of sleep. It is estimated that nearly one-third of adults fail to get the recommended seven to eight hours of rest per night. This chronic sleep deprivation can have severe consequences on both physical and mental health. While we sleep, our bodies repair tissues, build bone and muscle, and strengthen the immune system. [#1#] (fail) to get enough sleep increases the risk of obesity, diabetes, and heart disease. Furthermore, sleep plays a critical role in brain function. It helps consolidate memories, allowing us to learn and process information more [#2#] (effective). Students who stay up late [#3#] (cram) for exams often find themselves unable to concentrate the next day. To improve sleep quality, experts suggest [#4#] (maintain) a consistent sleep schedule, even on weekends. Creating a relaxing bedtime routine, such as reading a book or taking a warm bath, can also signal to your body that it is time to wind down. Additionally, it is highly advised to avoid screens at least an hour before bed, as the blue light emitted by phones and computers interferes with the production of melatonin, a hormone that regulates sleep. [#5#] you want to perform at your best, you must prioritize rest. It is high time that we [#6#] (pay) more attention to our sleeping habits. Good sleep is not a luxury, [#7#] a biological necessity. By making small changes to our daily routines, we can significantly improve our overall well-being. Remember, a good night's sleep is the foundation of a [#8#] (health) and happier life. Never underestimate the power of resting properly; it is truly [#9#] (benefit) to your longevity. Start tonight, and wake up refreshed [#10#] ready to conquer the day.",
+                answers: {
+                    1: ["Failing"], 2: ["effectively"], 3: ["cramming"], 4: ["maintaining"], 5: ["If"],
+                    6: ["paid", "should pay"], 7: ["but"], 8: ["healthier"], 9: ["beneficial"], 10: ["and"]
+                }
+            },
+            {
+                id: 6,
+                title: "Exploring Mars",
+                category: "Space",
+                content: "For decades, humans have looked at Mars with a sense of wonder and curiosity. As the fourth planet from the sun, Mars is often referred to as the \"Red Planet\" because of the iron oxide prevalent on its surface, which gives it a reddish [#1#] (appear). Scientists believe that Mars is the most likely candidate for harboring extraterrestrial life in our solar system. In recent years, numerous space agencies [#2#] (launch) missions to explore its surface. Rovers like Curiosity and Perseverance have been wandering the Martian landscape, collecting rock and soil samples to search for signs of ancient microbial life. These robotic explorers have provided us with invaluable data, [#3#] (reveal) that Mars once had liquid water and a much thicker atmosphere. The ultimate goal, however, is to send humans to Mars. This ambitious endeavor presents enormous challenges, including long-duration space travel, radiation exposure, and life support systems. Engineers are working tirelessly to develop new technologies, such as advanced propulsion systems and 3D-printed habitats, to make this dream a reality. Some visionary entrepreneurs even propose colonizing Mars to ensure the long-term survival of humanity, a concept that sounds like it was taken straight out of a sci-fi movie. Despite the astronomical costs and technical hurdles, the desire to explore the unknown drives us forward. It is highly possible that within the next few decades, the first human footprint [#4#] (leave) on the Martian soil. Such an achievement will mark a giant leap for mankind, [#5#] (unite) people across the globe in a shared moment of triumph. Until then, our robotic emissaries will continue to pave the way, unlocking the secrets of our celestial neighbor. The exploration of Mars is not just about science; it is about [#6#] (push) the boundaries of what is possible. It represents human courage and our endless quest for [#7#] (know). The discoveries made on Mars will undoubtedly alter our understanding of the universe. In the future, Mars [#8#] (become) a second home for humanity. We must prepare ourselves for this incredible journey, for the stars are waiting to be [#9#] (explore). The universe is vast, and our adventure has only just [#10#] (begin).",
+                answers: {
+                    1: ["appearance"], 2: ["have launched"], 3: ["revealing"], 4: ["will be left"], 5: ["uniting"],
+                    6: ["pushing"], 7: ["knowledge"], 8: ["may become", "might become", "could become", "will become"], 9: ["explored"], 10: ["begun"]
+                }
+            },
+            {
+                id: 7,
+                title: "Mysteries of the Deep Sea",
+                category: "Environment",
+                content: "The deep sea, covering over 60% of the Earth's surface, remains one of the least explored frontiers on our planet. It is a world of extreme conditions: pitch-black darkness, freezing temperatures, and crushing pressure. Yet, surprisingly, this harsh environment is teeming with life. Advanced submersibles and remotely operated vehicles (ROVs) have allowed scientists to glimpse into the abyss, [#1#] (discover) bizarre and fascinating creatures. Many of these animals have developed unique adaptations to survive. For instance, some deep-sea fish possess bioluminescence, meaning they can produce their own light. This biological glow is used to attract prey, communicate with mates, or confuse predators. Another remarkable feature of the deep sea is the hydrothermal vents, [#2#] (locate) along mid-ocean ridges. These vents spew out mineral-rich, superheated water, creating unique ecosystems that rely on chemosynthesis rather than photosynthesis. Entire communities of giant tube worms, blind crabs, and specialized bacteria thrive in these chemical soups, completely cut off from sunlight. However, even this remote ecosystem is not safe from human impact. Deep-sea mining, plastic pollution, and climate change are increasingly threatening these fragile habitats. Conservationists are calling for stricter international regulations to protect the deep ocean before irreversible damage [#3#] (do). We still know so little about the deep sea, and countless species remain [#4#] (undiscover). Exploring the ocean depths is vital not only for satisfying human curiosity but also for understanding the fundamental processes that sustain life on Earth. As technology advances, we are bound to uncover more secrets hidden beneath the waves. It is our duty to ensure that our pursuit of knowledge does not result in the destruction of these pristine environments. The deep sea is a crucial part of our planet's life support system, and its health is directly linked to [#5#] (our). Therefore, international cooperation is essential to safeguard the ocean's future. By studying the deep, we can learn how life adapts to extremes, providing insights that might even aid in the search for extraterrestrial life. The mysteries of the deep sea remind us of how wonderfully complex nature truly [#6#] (be). We must approach this unknown world with respect and caution. Only by doing so can we preserve its wonders for future generations. The ocean is vast and full of secrets, waiting for us to uncover [#7#] (they) responsibly. Let us pledge to be careful stewards of the blue heart of our planet. Every effort made today will contribute to a [#8#] (health) ocean tomorrow. We have a moral obligation to protect what we do not fully understand. Ultimately, the survival of the deep sea is intertwined with the survival of humanity [#9#] (it). The time to act is now, before the darkness of the abyss is lost forever to our [#10#] (careless).",
+                answers: {
+                    1: ["discovering"], 2: ["located"], 3: ["is done"], 4: ["undiscovered"], 5: ["ours"],
+                    6: ["is"], 7: ["them"], 8: ["healthier"], 9: ["itself"], 10: ["carelessness"]
+                }
+            },
+            {
+                id: 8,
+                title: "The Art of Chinese Paper Cutting",
+                category: "Art",
+                content: "Chinese paper cutting, or Jianzhi, is a traditional folk art that has been practiced for over a thousand years. Originating in the Han Dynasty shortly after the invention of paper, it is one of the oldest and most popular folk arts in China. The art involves cutting intricate patterns and designs out of paper using scissors or knives. These beautiful cuttings are often used to decorate windows, doors, and walls, especially during festivals and weddings, as they symbolize luck and happiness. The most common color used in Chinese paper cutting is red, [#1#] represents good fortune and prosperity in Chinese culture. Themes vary widely, ranging from mythical creatures and zodiac animals to scenes of daily life and legendary historical figures. Each region in China has developed its own unique style of paper cutting. For example, northern styles tend to be bold and exaggerated, while southern styles are typically more delicate and [#2#] (detail). Making a high-quality paper cut requires immense patience, steady hands, and a vivid imagination. A master artist can transform a simple piece of paper into a stunning masterpiece in a matter of minutes, without drawing any outlines beforehand. In 2009, Chinese paper cutting [#3#] (add) to the UNESCO Intangible Cultural Heritage list, highlighting its global cultural significance. Today, this traditional art form is facing challenges in the modern era, as younger generations are often drawn to digital entertainment. However, efforts are being made to preserve and promote Jianzhi. Many schools now offer paper cutting classes, and artists are blending traditional techniques with modern designs to appeal to a broader audience. By keeping this art alive, we are not only preserving a beautiful craft but also passing down the rich cultural heritage of the Chinese people. It is a visual language that transcends time, connecting the past with the present. As long as there are people who appreciate its beauty, Chinese paper cutting will continue to thrive and [#4#] (inspire). It serves as a powerful reminder that true art lies in simplicity and creativity. We should all take pride in our cultural treasures and strive to share them with the world. The intricate lines of a paper cut tell a story, a story that deserves to be [#5#] (hear). It is fascinating to see how a pair of scissors can bring a flat piece of paper to life. This art form is a testament to human ingenuity and the desire to create beauty. When you look at a traditional paper cut, you are looking at centuries of history and tradition. The artists pour their hearts into every cut, making each piece unique and [#6#] (price). We must support these artisans to ensure that their skills are not lost to time. Through exhibitions and cultural exchanges, Chinese paper cutting is gaining recognition globally. It bridges cultures and fosters a deeper understanding of Chinese traditions. Let us cherish this delicate art form and celebrate the creativity it embodies. The future of Jianzhi is in our hands, and it is our responsibility to see it [#7#] (flourish). With continuous innovation, it will undoubtedly find its place in the modern world. The beauty of paper cutting lies not only in the final product but also in the meticulous process of its creation. It teaches us the value of patience and precision in a fast-paced society. By engaging in such traditional crafts, we can find a sense of inner peace and mindfulness. The simple act of cutting paper can be incredibly therapeutic and [#8#] (reward). It allows us to disconnect from our screens and reconnect with our creative instincts. Ultimately, Chinese paper cutting is more than just art; it is a celebration of life itself. It captures the hopes, dreams, and aspirations of the common people. May this timeless tradition continue to bring joy and color to our lives for many years to come. Let the red paper shine brightly, illuminating our homes and our [#9#] (heart). It is a legacy that we must proudly carry forward into the [#10#] (know) future.",
+                answers: {
+                    1: ["which"], 2: ["detailed"], 3: ["was added"], 4: ["inspire"], 5: ["heard"],
+                    6: ["priceless"], 7: ["flourish"], 8: ["rewarding"], 9: ["hearts"], 10: ["unknown"]
+                }
+            },
+            {
+                id: 9,
+                title: "The Olympic Spirit",
+                category: "Sports",
+                content: "The Olympic Games are widely considered the world's foremost sports competition. The modern Olympic movement was founded by Pierre de Coubertin in 1894, [#1#] (inspire) by the ancient Olympic Games. The core philosophy of the Olympics is Olympism, which seeks to create a way of life based on the joy of effort. Beyond the spectacular athletic performances, the Olympics serve as a powerful platform for [#2#] (foster) international peace. Every four years, athletes gather in the host city, setting aside political differences to compete fairly. The stories of dedication that emerge from the Games are incredibly [#3#] (inspire). We witness athletes overcoming seemingly insurmountable obstacles. The Olympic spirit is not just about winning gold medals; it is about taking part and giving one's best effort. The host cities also undergo significant transformations, building state-of-the-art infrastructure. However, organizing the Games is a massive financial undertaking, often [#4#] (leave) host nations with substantial debt. To address these challenges, the International Olympic Committee has introduced reforms aimed at making the Games [#5#] (much) sustainable. Despite the controversies, the magic of the Olympics remains undiminished. The opening ceremony is a moment of global unity. When athletes stand on the podium, tears in their eyes as their national anthem plays, they realize that years of blood, sweat, and tears have finally paid [#6#]. It is a testament to the power of human will. The Olympics remind us that, regardless of our backgrounds, we share a common humanity. As spectators, we are captivated by the grace of gymnasts, the speed of sprinters, and the endurance of marathon runners. These athletes become role models, proving that hard work and dedication can turn dreams into reality. The Olympic flame will continue to burn brightly, illuminating the path toward a better, more peaceful world. Let us embrace the Olympic spirit in our daily lives, striving for excellence [#7#] supporting those around us. By doing so, we contribute to building a society [#8#] values effort, integrity, and friendship. The legacy of the Olympics extends far beyond the closing ceremony; it lives on in the hearts of those who are [#9#] (move) by its ideals. May the Games forever remain a symbol of global unity. We look forward to future Olympics, where new records will be set, and new legends will be [#10#] (bear).",
+                answers: {
+                    1: ["inspired"], 2: ["fostering"], 3: ["inspiring"], 4: ["leaving"], 5: ["more"],
+                    6: ["off"], 7: ["while", "and"], 8: ["that", "which"], 9: ["moved"], 10: ["born"]
+                }
+            },
+            {
+                id: 10,
+                title: "2023 Beijing Gaokao (Authentic)",
+                category: "Authentic Exam",
+                content: "<b>Passage A</b><br/><br/>Every culture is riddled with unwritten rules, such as ones on punctuality. I’m British. Soon after moving to Switzerland, I [#1#] (throw) a house-warming party and was greatly surprised when all 30 guests showed up [#2#] (exact) on time. Years later, having moved to France, I turned up at the appointed hour for a dinner, only to find that no other guest [#3#] (arrive) and my hostess was still in her sleeping suit.<br/><br/><b>Passage B</b><br/><br/>Mangroves, known as “red forest” in China, grow between land and sea, characterised by their complex roots. When [#4#] (see) from afar, the mangrove forests appear more splendid. Mangroves can help soften waves and protect [#5#] (city) from coastal winds. For these reasons, they are praised as “coastal guardians”. Up to now, China [#6#] (establish) a number of protected areas with mangroves.<br/><br/><b>Passage C</b><br/><br/>Nina has run marathons in 32 countries. All of her runs have a guiding purpose: to call attention [#7#] global water issues. Nina recently finished her year-long series of runs in Chicago, [#8#] thousands were attending a water conference. She called for action [#9#] (address) the struggles of people around the world [#10#] (face) “too little water or too dirty water”. Her efforts have encouraged others to take part by running through a global campaign called “Run Blue”.",
+                answers: {
+                    1: ["threw"], 2: ["exactly"], 3: ["had arrived"], 4: ["seen"], 5: ["cities"],
+                    6: ["has established"], 7: ["to"], 8: ["where"], 9: ["to address"], 10: ["facing"]
+                }
+            },
+            {
+                id: 11,
+                title: "2023 National New Curriculum Paper I",
+                category: "Authentic Exam",
+                content: "Xiao long bao (soup dumplings), those amazing constructions of delicate dumpling wrappers, encasing hot, [#1#] (taste) soup and sweet, fresh meat, are far and away my favorite Chinese street food. The dumplings arrive steaming and dangerously hot. To eat one, you have to decide whether [#2#] (bite) a small hole in it first, releasing the stream and risking a spill, [#3#] to put the whole dumpling in your mouth, letting the hot soup explode on your tongue. Shanghai may be the [#4#] (recognize) home of the soup dumplings, but food historians will actually point you to the neighboring canal town of Nanxiang as Xiao long bao’s birthplace. There you will find them prepared differently—more dumpling and less soup, and the wrappers are pressed [#5#] hand rather than rolled. Nanxiang aside, the best Xiao long bao have a fine skin, allowing them [#6#] (lift) out of the steamer basket without allowing them tearing or spilling any of [#7#] (they) contents. The meat should be fresh with [#8#] touch of sweetness and the soup hot, clear and delicious. No matter where I buy them, one steamer is [#9#] (rare) enough, yet two seems greedy, so I am always left [#10#] (want) more next time.",
+                answers: {
+                    1: ["tasty"], 2: ["to bite"], 3: ["or"], 4: ["recognized"], 5: ["by"],
+                    6: ["to be lifted"], 7: ["their"], 8: ["a"], 9: ["rarely"], 10: ["wanting"]
+                }
+            },
+            {
+                id: 12,
+                title: "2024 Beijing Gaokao (Cloze Test)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "I'd just arrived at school, ready for another school day. I was reading a book in the classroom when there was an [#1#]. “<clue>Today at 1:10 there will be auditions</clue> for a musical.” My friends all jumped up in excitement and asked me, “Will you be going, Amy?” “Sure,” I said. I had no [#2#] in drama, but I'd try out <clue>because my friends were doing it</clue>.<br/><br/>At 1:10, there was a [#3#] <clue>outside the drama room</clue>. Everyone looked energetic. I hadn't expected I'd be standing there that morning. But now that I was doing it, I [#4#] felt nervous. What if I wasn't any good?<br/><br/>I entered the room and the teachers made me say some lines from the musical. They then [#5#] my <clue>singing skills</clue> and asked what role I wanted to play. The teachers were smiling and praising me. I felt like I had a [#6#], so I said, “A big role.” They said they’d look into it. I started getting really nervous. What if I didn't get a main role?<br/><br/>Soon, the <clue>cast list</clue> was [#7#]. My friends checked and came back shouting, “Amy, you got the main role!” Sure enough, my name was at the top. I just stared at it and started to [#8#]. <clue>I was so happy</clue>.<br/><br/>After two months we were all prepared and ready to go on stage. It was fun. And when people started [#9#], that gave me a <clue>boost of confidence</clue>. It stayed with me and made me feel [#10#]. I realised that by trying something new, I can have fun—even if it means <clue>stepping out of my comfort zone</clue>.",
+                options: {
+                    1: ["assignment", "initiative", "announcement", "interview"],
+                    2: ["hesitancy", "interest", "worry", "regret"],
+                    3: ["game", "show", "play", "line"],
+                    4: ["suddenly", "continuously", "originally", "generally"],
+                    5: ["advertised", "tested", "challenged", "polished"],
+                    6: ["demand", "credit", "dream", "chance"],
+                    7: ["traded", "posted", "questioned", "claimed"],
+                    8: ["well up", "roll in", "stand out", "go off"],
+                    9: ["whispering", "arguing", "clapping", "stretching"],
+                    10: ["funnier", "fairer", "cleverer", "braver"]
+                },
+                answers: {
+                    1: ["announcement"], 2: ["interest"], 3: ["line"], 4: ["suddenly"], 5: ["tested"],
+                    6: ["chance"], 7: ["posted"], 8: ["well up"], 9: ["clapping"], 10: ["braver"]
+                }
+            },
+            {
+                id: 13,
+                title: "2023 New Gaokao I (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "On Oct. 11, hundreds of runners competed in a cross-country race in Minnesota. Melanie Bailey should have [#1#] the course earlier than she did. Her [#2#] came because she was carrying a [#3#] across the finish line.",
+                options: {
+                    1: ["started", "finished", "missed", "left"],
+                    2: ["reward", "delay", "success", "injury"],
+                    3: ["competitor", "friend", "map", "bottle"]
+                },
+                answers: {
+                    1: ["finished"], 2: ["delay"], 3: ["competitor"]
+                }
+            },
+            {
+                id: 14,
+                title: "2022 National A (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "You can tell a lot about a man by how he treats his dogs. For many years, I enjoyed living with my dogs, Tilly and Chance. Their [#1#] was nearly enough to keep my loneliness at bay. Nearly, last year, I started dating, but with [#2#].",
+                options: {
+                    1: ["companionship", "training", "barking", "feeding"],
+                    2: ["excitement", "reservations", "joy", "anger"]
+                },
+                answers: {
+                    1: ["companionship"], 2: ["reservations"]
+                }
+            },
+            {
+                id: 15,
+                title: "2022 New Gaokao I (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "My husband, our children and I have had wonderful camping experiences over the past ten years. Some of our [#1#] are funny, especially from the early years when our children were little. Once, we [#2#] along Chalk Creek. I was [#3#] that our 15-month-old boy would fall into the creek.",
+                options: {
+                    1: ["memories", "tools", "plans", "meals"],
+                    2: ["camped", "walked", "drove", "fished"],
+                    3: ["glad", "worried", "angry", "sure"]
+                },
+                answers: {
+                    1: ["memories"], 2: ["camped"], 3: ["worried"]
+                }
+            },
+            {
+                id: 16,
+                title: "2021 New Gaokao I (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "My life as a tax-paying employed person began in middle school, when, for three whole days, I worked in a baking factory. My best friend Betsy’s father was a manager at Hough Bakeries, which, at Easter time, [#1#] little bunny cakes for all its [#2#] throughout Cleveland.",
+                options: {
+                    1: ["made", "sold", "ate", "hid"],
+                    2: ["stores", "schools", "homes", "farms"]
+                },
+                answers: {
+                    1: ["made"], 2: ["stores"]
+                }
+            },
+            {
+                id: 17,
+                title: "2020 National I (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "Since our twins began learning to walk, my wife and I have kept telling them that our sliding glass door is just a window. The [#1#] is obvious. If we [#2#] it is a door, they’ll want to go outside [#3#]. It will drive us crazy.",
+                options: {
+                    1: ["reason", "cost", "time", "trick"],
+                    2: ["admit", "forget", "pretend", "deny"],
+                    3: ["constantly", "rarely", "secretly", "barely"]
+                },
+                answers: {
+                    1: ["reason"], 2: ["admit"], 3: ["constantly"]
+                }
+            },
+            {
+                id: 18,
+                title: "2024 New Gaokao II (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "I decided to learn a few phrases to ask for directions or order in a restaurant. When I managed to say [#1#] a sentence of Italian together, the locals smiled at me and offered helpful [#2#].",
+                options: {
+                    1: ["even", "just", "hardly", "mostly"],
+                    2: ["advice", "money", "food", "rides"]
+                },
+                answers: {
+                    1: ["even"], 2: ["advice"]
+                }
+            },
+            {
+                id: 19,
+                title: "2020 National II (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "It was just after sunrise on a June morning. The air was crisp, and the forest was [#1#] with the sound of birds. I had set out early to [#2#] the elusive red fox I had read about in local guides.",
+                options: {
+                    1: ["alive", "silent", "busy", "dark"],
+                    2: ["track", "feed", "hunt", "draw"]
+                },
+                answers: {
+                    1: ["alive"], 2: ["track"]
+                }
+            },
+            {
+                id: 20,
+                title: "2021 Beijing (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "I had always been terrified of public speaking. When my teacher suggested I [#1#] the school debate team, my first instinct was to decline. However, with her [#2#], I decided to give it a try.",
+                options: {
+                    1: ["join", "leave", "lead", "watch"],
+                    2: ["encouragement", "criticism", "permission", "warning"]
+                },
+                answers: {
+                    1: ["join"], 2: ["encouragement"]
+                }
+            },
+            {
+                id: 21,
+                title: "2023 Tianjin (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "The detective knew the case was far from over. Despite the lack of physical evidence, a subtle [#1#] in the witness’s statement gave him a new direction. He decided to [#2#] the timeline of events one more time.",
+                options: {
+                    1: ["inconsistency", "truth", "emotion", "tone"],
+                    2: ["review", "sign", "ignore", "publish"]
+                },
+                answers: {
+                    1: ["inconsistency"], 2: ["review"]
+                }
+            },
+            {
+                id: 22,
+                title: "2020 Zhejiang (Authentic Cloze)",
+                category: "Authentic Exam",
+                type: "cloze",
+                content: "The old bookstore was a hidden gem in the city. While browsing the dusty shelves, I [#1#] a journal from the 1920s. Reading its entries gave me a profound [#2#] of connection to the past.",
+                options: {
+                    1: ["discovered", "lost", "bought", "wrote"],
+                    2: ["sense", "lack", "proof", "loss"]
+                },
+                answers: {
+                    1: ["discovered"], 2: ["sense"]
+                }
+            }
+        ];
+
+        function App() {
+            const [selectedPassageId, setSelectedPassageId] = useState(null);
+            const [userAnswers, setUserAnswers] = useState({});
+            const [submitted, setSubmitted] = useState(false);
+            const [score, setScore] = useState(0);
+            const [focusedBlank, setFocusedBlank] = useState(null);
+
+            const selectedPassage = useMemo(() => 
+                passagesData.find(p => p.id === selectedPassageId), 
+            [selectedPassageId]);
+
+            const handleInputChange = (blankId, value) => {
+                setUserAnswers(prev => ({ ...prev, [blankId]: value }));
+            };
+
+            const handleDrop = (e, blankId) => {
+                e.preventDefault();
+                const data = e.dataTransfer.getData('text/plain');
+                if (data) {
+                    handleInputChange(blankId, data);
+                }
+            };
+
+            const handleDragOver = (e) => {
+                e.preventDefault();
+            };
+
+            const handleSubmit = () => {
+                let currentScore = 0;
+                Object.keys(selectedPassage.answers).forEach(blankId => {
+                    const userAns = (userAnswers[blankId] || "").trim().toLowerCase();
+                    const correctAnswers = selectedPassage.answers[blankId].map(a => a.toLowerCase());
+                    if (correctAnswers.includes(userAns)) {
+                        currentScore += 1;
+                    }
+                });
+                setScore(currentScore);
+                setSubmitted(true);
+            };
+
+            const handleBack = () => {
+                setSelectedPassageId(null);
+                setUserAnswers({});
+                setSubmitted(false);
+                setScore(0);
+                setFocusedBlank(null);
+            };
+
+            const renderPassageText = (text) => {
+                const parts = text.split(/(\[#\d+#\]|<clue>.*?<\/clue>)/g);
+                return parts.map((part, index) => {
+                    const match = part.match(/\[#(\d+)#\]/);
+                    if (match) {
+                        const blankId = match[1];
+                        const isCorrect = submitted && selectedPassage.answers[blankId].map(a=>a.toLowerCase()).includes((userAnswers[blankId] || "").trim().toLowerCase());
+                        const isWrong = submitted && !isCorrect;
+                        
+                        return (
+                            <span key={index} className="gap-container">
+                                <span className="text-[14px] font-bold text-slate-400 absolute -top-6 left-1/2 -translate-x-1/2">{blankId}</span>
+                                <input
+                                    type="text"
+                                    className={`gap-input ${isCorrect ? 'correct' : ''} ${isWrong ? 'incorrect' : ''}`}
+                                    value={userAnswers[blankId] || ""}
+                                    onChange={(e) => handleInputChange(blankId, e.target.value)}
+                                    onFocus={() => setFocusedBlank(blankId)}
+                                    onDrop={(e) => handleDrop(e, blankId)}
+                                    onDragOver={handleDragOver}
+                                    disabled={submitted}
+                                    placeholder="?"
+                                    readOnly={selectedPassage.type === 'cloze'}
+                                />
+                                {isWrong && (
+                                    <span className="text-emerald-600 font-bold ml-1 text-[15px] absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-emerald-50 px-2 py-0.5 rounded-md shadow-sm border border-emerald-100 z-10">
+                                        {selectedPassage.answers[blankId][0]}
+                                    </span>
+                                )}
+                            </span>
+                        );
+                    }
+                    const clueMatch = part.match(/<clue>(.*?)<\/clue>/);
+                    if (clueMatch) {
+                        return <span key={index} className={submitted ? "clue-highlight" : "transition-all"}>{clueMatch[1]}</span>;
+                    }
+                    return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+                });
+            };
+
+            if (selectedPassageId) {
+                return (
+                    <div className="w-full h-screen flex flex-col bg-white">
+                        <header className="sticky top-0 z-50 bg-white border-b border-slate-200 p-4 shadow-sm flex items-center justify-between w-full">
+                            <button onClick={handleBack} className="flex items-center gap-2 text-slate-600 hover:text-blue-600 font-bold px-4 py-2 bg-slate-100 rounded-full transition-colors">
+                                <ArrowLeft size={20} /> Back
+                            </button>
+                            
+                            {!submitted ? (
+                                <button 
+                                    onClick={handleSubmit}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 text-lg rounded-full shadow transition-all transform hover:-translate-y-1"
+                                >
+                                    Submit Answers
+                                </button>
+                            ) : (
+                                <div className="flex items-center gap-4 md:gap-8 bg-slate-50 px-6 py-2 rounded-full border border-slate-200 shadow-inner">
+                                    <div className="flex flex-col text-right">
+                                        <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">Results</span>
+                                        <span className="text-slate-800 font-medium text-base">You scored {score} out of {Object.keys(selectedPassage.answers).length}.</span>
+                                    </div>
+                                    <div className={`text-4xl font-black ${(score / Object.keys(selectedPassage.answers).length) >= 0.8 ? 'text-emerald-500' : (score / Object.keys(selectedPassage.answers).length) >= 0.5 ? 'text-amber-500' : 'text-red-500'}`}>
+                                        {Math.round((score / Object.keys(selectedPassage.answers).length) * 100)}%
+                                    </div>
+                                    <button 
+                                        onClick={handleBack}
+                                        className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 text-lg rounded-full shadow-lg transition-all ml-4"
+                                    >
+                                        Continue
+                                    </button>
+                                </div>
+                            )}
+                        </header>
+
+                        <div className="flex-1 overflow-y-auto px-4 md:px-12 py-8 w-full bg-white">
+                            <div className="passage-text text-slate-800 w-full">
+                                {renderPassageText(selectedPassage.content)}
+                            </div>
+
+                            {selectedPassage.type === 'cloze' && !submitted && (
+                                <div className="mt-16 bg-slate-50 p-6 rounded-2xl border border-slate-200 w-full mb-20 shadow-sm">
+                                    <h3 className="text-xl font-bold text-slate-800 mb-6">Word Choices (Drag, Tap, or Click into blanks)</h3>
+                                    <div className="flex flex-col gap-5">
+                                        {Object.keys(selectedPassage.options).map(blankId => (
+                                            <div key={blankId} className="flex flex-wrap items-center gap-4">
+                                                <span className="font-black text-blue-600 text-2xl w-10 text-right">{blankId}.</span>
+                                                {selectedPassage.options[blankId].map(opt => {
+                                                    const isSelected = userAnswers[blankId] === opt;
+                                                    return (
+                                                        <button
+                                                            key={opt}
+                                                            draggable
+                                                            onDragStart={(e) => {
+                                                                e.dataTransfer.setData('text/plain', opt);
+                                                            }}
+                                                            onClick={() => handleInputChange(blankId, opt)}
+                                                            className={`mcq-option ${isSelected ? 'ring-2 ring-blue-500 bg-blue-50 text-blue-700' : 'text-slate-700'}`}
+                                                        >
+                                                            {opt}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            }
+
+            const clozePassages = passagesData.filter(p => p.type === 'cloze');
+            const gapFillPassages = passagesData.filter(p => p.type !== 'cloze');
+
+            return (
+                <div className="max-w-[1400px] w-full mx-auto p-4 md:p-8 animate-fade-in pb-20">
+                    <header className="mb-10 text-center mt-4 flex items-center justify-center gap-4">
+                        <div className="inline-flex items-center justify-center p-4 bg-blue-600 text-white rounded-2xl shadow-lg transform -rotate-3 hover:rotate-0 transition-transform">
+                            <BookOpen size={36} />
+                        </div>
+                        <h1 className="text-4xl font-black text-slate-800">Gaokao Reading Master</h1>
+                    </header>
+
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-black text-slate-800 mb-6 border-b-4 border-blue-600 pb-2 inline-block">Gap Fill (语法填空)</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                            {gapFillPassages.map((passage, idx) => (
+                                <button 
+                                    key={passage.id}
+                                    onClick={() => setSelectedPassageId(passage.id)}
+                                    className="bg-white rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-lg border border-slate-100 text-left transition-all transform hover:-translate-y-1 group flex flex-col h-full relative overflow-hidden"
+                                >
+                                    <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-slate-50 to-transparent rounded-bl-full -z-0 opacity-50 group-hover:from-blue-50 transition-colors"></div>
+                                    <div className="flex justify-between items-start mb-3 relative z-10">
+                                        <span className="text-slate-200 font-black text-xl md:text-2xl group-hover:text-blue-100 transition-colors">
+                                            #{idx + 1}
+                                        </span>
+                                    </div>
+                                    <h3 className="text-sm md:text-base font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-3 relative z-10">
+                                        {passage.title}
+                                    </h3>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-black text-slate-800 mb-6 border-b-4 border-emerald-600 pb-2 inline-block">Cloze Test (完形填空)</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                            {clozePassages.map((passage, idx) => (
+                                <button 
+                                    key={passage.id}
+                                    onClick={() => setSelectedPassageId(passage.id)}
+                                    className="bg-white rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-lg border border-slate-100 text-left transition-all transform hover:-translate-y-1 group flex flex-col h-full relative overflow-hidden"
+                                >
+                                    <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-slate-50 to-transparent rounded-bl-full -z-0 opacity-50 group-hover:from-emerald-50 transition-colors"></div>
+                                    <div className="flex justify-between items-start mb-3 relative z-10">
+                                        <span className="text-slate-200 font-black text-xl md:text-2xl group-hover:text-emerald-100 transition-colors">
+                                            #{idx + 1}
+                                        </span>
+                                    </div>
+                                    <h3 className="text-sm md:text-base font-bold text-slate-800 group-hover:text-emerald-600 transition-colors line-clamp-3 relative z-10">
+                                        {passage.title}
+                                    </h3>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
