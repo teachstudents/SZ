@@ -1521,6 +1521,47 @@ function resetTimer() {
 
 // ============ INITIALIZATION ============
 function init() {
+  // Shuffle options A-G for all practice pages to prevent predictable answer patterns
+  pages.forEach(page => {
+    if (page.type === 'practice') {
+      const shuffledTexts = [...page.options.map(o => o.text)];
+      // Fisher-Yates shuffle
+      for (let i = shuffledTexts.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledTexts[i], shuffledTexts[j]] = [shuffledTexts[j], shuffledTexts[i]];
+      }
+      
+      const textToNewLetter = {};
+      const newOptions = [];
+      const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+      
+      shuffledTexts.forEach((text, i) => {
+        textToNewLetter[text] = letters[i];
+        newOptions.push({ letter: letters[i], text: text });
+      });
+      
+      const oldToNewLetter = {};
+      page.options.forEach(opt => {
+        oldToNewLetter[opt.letter] = textToNewLetter[opt.text];
+      });
+      
+      // Apply new shuffled options
+      page.options = newOptions;
+      
+      // Update correct answers mapping
+      for (const num in page.answers) {
+        page.answers[num] = oldToNewLetter[page.answers[num]];
+      }
+      
+      // Update letters referenced in the explanations
+      for (const num in page.explanations) {
+        page.explanations[num] = page.explanations[num].replace(/Option\s+([A-G])/gi, (match, p1) => {
+          return 'Option ' + oldToNewLetter[p1.toUpperCase()];
+        });
+      }
+    }
+  });
+
   renderNavButtons();
   loadPage(0);
 }
