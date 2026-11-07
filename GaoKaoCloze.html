@@ -111,6 +111,17 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Print formatting */
+        @media print {
+            header, .print\:hidden { display: none !important; }
+            body, .bg-white, .bg-slate-50 { background: white !important; color: black !important; }
+            .gap-input { border: none !important; border-bottom: 1px solid black !important; background: transparent !important; color: black !important; }
+            .clue-highlight { background: transparent !important; color: black !important; font-weight: bold !important; text-decoration: underline; }
+            .overflow-y-auto { overflow: visible !important; height: auto !important; }
+            .w-full.h-screen { height: auto !important; display: block !important; }
+            .passage-text { width: 100% !important; }
+        }
     </style>
 </head>
 <body>
@@ -219,7 +230,7 @@
                 id: 9,
                 title: "The Olympic Spirit",
                 category: "Sports",
-                content: "The Olympic Games are widely considered the world's foremost sports competition. The modern Olympic movement was founded by Pierre de Coubertin in 1894, [#1#] (inspire) by the ancient Olympic Games. The core philosophy of the Olympics is Olympism, which seeks to create a way of life based on the joy of effort. Beyond the spectacular athletic performances, the Olympics serve as a powerful platform for [#2#] (foster) international peace. Every four years, athletes gather in the host city, setting aside political differences to compete fairly. The stories of dedication that emerge from the Games are incredibly [#3#] (inspire). We witness athletes overcoming seemingly insurmountable obstacles. The Olympic spirit is not just about winning gold medals; it is about taking part and giving one's best effort. The host cities also undergo significant transformations, building state-of-the-art infrastructure. However, organizing the Games is a massive financial undertaking, often [#4#] (leave) host nations with substantial debt. To address these challenges, the International Olympic Committee has introduced reforms aimed at making the Games [#5#] (much) sustainable. Despite the controversies, the magic of the Olympics remains undiminished. The opening ceremony is a moment of global unity. When athletes stand on the podium, tears in their eyes as their national anthem plays, they realize that years of blood, sweat, and tears have finally paid [#6#]. It is a testament to the power of human will. The Olympics remind us that, regardless of our backgrounds, we share a common humanity. As spectators, we are captivated by the grace of gymnasts, the speed of sprinters, and the endurance of marathon runners. These athletes become role models, proving that hard work and dedication can turn dreams into reality. The Olympic flame will continue to burn brightly, illuminating the path toward a better, more peaceful world. Let us embrace the Olympic spirit in our daily lives, striving for excellence [#7#] supporting those around us. By doing so, we contribute to building a society [#8#] values effort, integrity, and friendship. The legacy of the Olympics extends far beyond the closing ceremony; it lives on in the hearts of those who are [#9#] (move) by its ideals. May the Games forever remain a symbol of global unity. We look forward to future Olympics, where new records will be set, and new legends will be [#10#] (bear).",
+                content: "The Olympic Games are widely considered the world's foremost sports competition. The modern Olympic movement was founded by Pierre de Coubertin in 1894, [#1#] (inspire) by the ancient Olympic Games. The core philosophy of Olympism seeks to create a way of life based on the joy of effort. Beyond the spectacular athletic performances, the Olympics serve as a powerful platform for [#2#] (foster) international peace. Every four years, athletes gather in the host city, setting aside political differences to compete fairly. The stories of dedication that emerge from the Games are incredibly [#3#] (inspire). We witness athletes overcoming seemingly insurmountable obstacles. The Olympic spirit is not just about winning gold medals; it is about taking part and giving one's best effort. The host cities also undergo significant transformations, building state-of-the-art infrastructure. However, organizing the Games is a massive financial undertaking, often [#4#] (leave) host nations with substantial debt. To address these challenges, the International Olympic Committee has introduced reforms aimed at making the Games [#5#] (much) sustainable. Despite the controversies, the magic of the Olympics remains undiminished. The opening ceremony is a moment of global unity. When athletes stand on the podium, tears in their eyes as their national anthem plays, they realize that years of blood, sweat, and tears have finally paid [#6#]. It is a testament to the power of human will. The Olympics remind us that, regardless of our backgrounds, we share a common humanity. As spectators, we are captivated by the grace of gymnasts, the speed of sprinters, and the endurance of marathon runners. These athletes become role models, proving that hard work and dedication can turn dreams into reality. The Olympic flame will continue to burn brightly, illuminating the path toward a better, more peaceful world. Let us embrace the Olympic spirit in our daily lives, striving for excellence [#7#] supporting those around us. By doing so, we contribute to building a society [#8#] values effort, integrity, and friendship. The legacy of the Olympics extends far beyond the closing ceremony; it lives on in the hearts of those who are [#9#] (move) by its ideals. May the Games forever remain a symbol of global unity. We look forward to future Olympics, where new records will be set, and new legends will be [#10#] (bear).",
                 answers: {
                     1: ["inspired"], 2: ["fostering"], 3: ["inspiring"], 4: ["leaving"], 5: ["more"],
                     6: ["off"], 7: ["while", "and"], 8: ["that", "which"], 9: ["moved"], 10: ["born"]
@@ -227,8 +238,8 @@
             },
             {
                 id: 10,
-                title: "2023 Beijing Gaokao (Authentic)",
-                category: "Authentic Exam",
+                title: "Cultural Rules & Water Issues",
+                category: "Culture & Environment",
                 content: "<b>Passage A</b><br/><br/>Every culture is riddled with unwritten rules, such as ones on punctuality. I’m British. Soon after moving to Switzerland, I [#1#] (throw) a house-warming party and was greatly surprised when all 30 guests showed up [#2#] (exact) on time. Years later, having moved to France, I turned up at the appointed hour for a dinner, only to find that no other guest [#3#] (arrive) and my hostess was still in her sleeping suit.<br/><br/><b>Passage B</b><br/><br/>Mangroves, known as “red forest” in China, grow between land and sea, characterised by their complex roots. When [#4#] (see) from afar, the mangrove forests appear more splendid. Mangroves can help soften waves and protect [#5#] (city) from coastal winds. For these reasons, they are praised as “coastal guardians”. Up to now, China [#6#] (establish) a number of protected areas with mangroves.<br/><br/><b>Passage C</b><br/><br/>Nina has run marathons in 32 countries. All of her runs have a guiding purpose: to call attention [#7#] global water issues. Nina recently finished her year-long series of runs in Chicago, [#8#] thousands were attending a water conference. She called for action [#9#] (address) the struggles of people around the world [#10#] (face) “too little water or too dirty water”. Her efforts have encouraged others to take part by running through a global campaign called “Run Blue”.",
                 answers: {
                     1: ["threw"], 2: ["exactly"], 3: ["had arrived"], 4: ["seen"], 5: ["cities"],
@@ -237,8 +248,8 @@
             },
             {
                 id: 11,
-                title: "2023 National New Curriculum Paper I",
-                category: "Authentic Exam",
+                title: "Xiao Long Bao: Soup Dumplings",
+                category: "Culture & Food",
                 content: "Xiao long bao (soup dumplings), those amazing constructions of delicate dumpling wrappers, encasing hot, [#1#] (taste) soup and sweet, fresh meat, are far and away my favorite Chinese street food. The dumplings arrive steaming and dangerously hot. To eat one, you have to decide whether [#2#] (bite) a small hole in it first, releasing the stream and risking a spill, [#3#] to put the whole dumpling in your mouth, letting the hot soup explode on your tongue. Shanghai may be the [#4#] (recognize) home of the soup dumplings, but food historians will actually point you to the neighboring canal town of Nanxiang as Xiao long bao’s birthplace. There you will find them prepared differently—more dumpling and less soup, and the wrappers are pressed [#5#] hand rather than rolled. Nanxiang aside, the best Xiao long bao have a fine skin, allowing them [#6#] (lift) out of the steamer basket without allowing them tearing or spilling any of [#7#] (they) contents. The meat should be fresh with [#8#] touch of sweetness and the soup hot, clear and delicious. No matter where I buy them, one steamer is [#9#] (rare) enough, yet two seems greedy, so I am always left [#10#] (want) more next time.",
                 answers: {
                     1: ["tasty"], 2: ["to bite"], 3: ["or"], 4: ["recognized"], 5: ["by"],
@@ -247,8 +258,8 @@
             },
             {
                 id: 12,
-                title: "2024 Beijing Gaokao (Cloze Test)",
-                category: "Authentic Exam",
+                title: "Auditioning for a Musical",
+                category: "School Life",
                 type: "cloze",
                 content: "I'd just arrived at school, ready for another school day. I was reading a book in the classroom when there was an [#1#]. “<clue>Today at 1:10 there will be auditions</clue> for a musical.” My friends all jumped up in excitement and asked me, “Will you be going, Amy?” “Sure,” I said. I had no [#2#] in drama, but I'd try out <clue>because my friends were doing it</clue>.<br/><br/>At 1:10, there was a [#3#] <clue>outside the drama room</clue>. Everyone looked energetic. I hadn't expected I'd be standing there that morning. But now that I was doing it, I [#4#] felt nervous. What if I wasn't any good?<br/><br/>I entered the room and the teachers made me say some lines from the musical. They then [#5#] my <clue>singing skills</clue> and asked what role I wanted to play. The teachers were smiling and praising me. I felt like I had a [#6#], so I said, “A big role.” They said they’d look into it. I started getting really nervous. What if I didn't get a main role?<br/><br/>Soon, the <clue>cast list</clue> was [#7#]. My friends checked and came back shouting, “Amy, you got the main role!” Sure enough, my name was at the top. I just stared at it and started to [#8#]. <clue>I was so happy</clue>.<br/><br/>After two months we were all prepared and ready to go on stage. It was fun. And when people started [#9#], that gave me a <clue>boost of confidence</clue>. It stayed with me and made me feel [#10#]. I realised that by trying something new, I can have fun—even if it means <clue>stepping out of my comfort zone</clue>.",
                 options: {
@@ -270,145 +281,232 @@
             },
             {
                 id: 13,
-                title: "2023 New Gaokao I (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Sportsmanship and Empathy",
+                category: "Sports",
                 type: "cloze",
-                content: "On Oct. 11, hundreds of runners competed in a cross-country race in Minnesota. Melanie Bailey should have [#1#] the course earlier than she did. Her [#2#] came because she was carrying a [#3#] across the finish line.",
+                content: "On Oct. 11, hundreds of runners competed in a cross-country race in Minnesota. Melanie Bailey should have [#1#] the course earlier than she did. Her [#2#] came because she was carrying a [#3#] across the finish line. The other girl was badly [#4#] and sobbing on the track. Seeing this, Melanie [#5#] without hesitation. She [#6#] the girl up and supported her weight. Together, they [#7#] the remaining distance to the end. The crowd watching the race [#8#] wildly for them. It was a beautiful display of [#9#] over winning. Though she lost the race, she earned everyone's [#10#].",
                 options: {
                     1: ["started", "finished", "missed", "left"],
                     2: ["reward", "delay", "success", "injury"],
-                    3: ["competitor", "friend", "map", "bottle"]
+                    3: ["competitor", "friend", "map", "bottle"],
+                    4: ["injured", "frightened", "lost", "tired"],
+                    5: ["stopped", "ran", "cried", "waved"],
+                    6: ["lifted", "pushed", "called", "woke"],
+                    7: ["walked", "raced", "drove", "skipped"],
+                    8: ["cheered", "laughed", "shouted", "cried"],
+                    9: ["kindness", "speed", "strength", "logic"],
+                    10: ["respect", "money", "medal", "sympathy"]
                 },
                 answers: {
-                    1: ["finished"], 2: ["delay"], 3: ["competitor"]
+                    1: ["finished"], 2: ["delay"], 3: ["competitor"], 4: ["injured"], 5: ["stopped"],
+                    6: ["lifted"], 7: ["walked"], 8: ["cheered"], 9: ["kindness"], 10: ["respect"]
                 }
             },
             {
                 id: 14,
-                title: "2022 National A (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Companionship and Dating",
+                category: "Life & Relationships",
                 type: "cloze",
-                content: "You can tell a lot about a man by how he treats his dogs. For many years, I enjoyed living with my dogs, Tilly and Chance. Their [#1#] was nearly enough to keep my loneliness at bay. Nearly, last year, I started dating, but with [#2#].",
+                content: "You can tell a lot about a man by how he treats his dogs. For many years, I enjoyed living with my dogs, Tilly and Chance. Their [#1#] was nearly enough to keep my loneliness at bay. Last year, I started dating, but with [#2#]. The new guy had to [#3#] the ultimate test: my dogs. When he first [#4#] at my house, Tilly barked loudly. He calmly [#5#] her a dog treat from his pocket. Chance immediately [#6#] his tail in excitement. Seeing this, I felt deeply [#7#]. We all went for a long [#8#] in the park together. It turned out to be a [#9#] afternoon. I knew right then he was the [#10#].",
                 options: {
                     1: ["companionship", "training", "barking", "feeding"],
-                    2: ["excitement", "reservations", "joy", "anger"]
+                    2: ["excitement", "reservations", "joy", "anger"],
+                    3: ["pass", "fail", "avoid", "take"],
+                    4: ["arrived", "called", "looked", "pointed"],
+                    5: ["offered", "threw", "showed", "hid"],
+                    6: ["wagged", "bit", "chased", "hid"],
+                    7: ["relieved", "worried", "sad", "angry"],
+                    8: ["walk", "drive", "nap", "swim"],
+                    9: ["perfect", "terrible", "boring", "long"],
+                    10: ["one", "enemy", "stranger", "guest"]
                 },
                 answers: {
-                    1: ["companionship"], 2: ["reservations"]
+                    1: ["companionship"], 2: ["reservations"], 3: ["pass"], 4: ["arrived"], 5: ["offered"],
+                    6: ["wagged"], 7: ["relieved"], 8: ["walk"], 9: ["perfect"], 10: ["one"]
                 }
             },
             {
                 id: 15,
-                title: "2022 New Gaokao I (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Family Camping Memories",
+                category: "Family & Nature",
                 type: "cloze",
-                content: "My husband, our children and I have had wonderful camping experiences over the past ten years. Some of our [#1#] are funny, especially from the early years when our children were little. Once, we [#2#] along Chalk Creek. I was [#3#] that our 15-month-old boy would fall into the creek.",
+                content: "My husband, our children and I have had wonderful camping experiences over the past ten years. Some of our [#1#] are funny, especially from the early years when our children were little. Once, we [#2#] along Chalk Creek. I was [#3#] that our 15-month-old boy would fall into the creek. However, he absolutely [#4#] playing near the water. As evening approached, my husband [#5#] a warm campfire. The stars above were [#6#] brightly in the clear sky. We sat around and roasted [#7#] on long sticks. Suddenly, it started to [#8#] heavily. We all [#9#] quickly into our small tent. Safe inside, we [#10#] together at the unexpected adventure.",
                 options: {
                     1: ["memories", "tools", "plans", "meals"],
                     2: ["camped", "walked", "drove", "fished"],
-                    3: ["glad", "worried", "angry", "sure"]
+                    3: ["worried", "glad", "angry", "sure"],
+                    4: ["loved", "hated", "feared", "stopped"],
+                    5: ["built", "bought", "found", "lost"],
+                    6: ["shining", "falling", "moving", "hiding"],
+                    7: ["marshmallows", "apples", "bread", "beef"],
+                    8: ["rain", "snow", "wind", "clear"],
+                    9: ["rushed", "walked", "looked", "drove"],
+                    10: ["laughed", "cried", "slept", "fought"]
                 },
                 answers: {
-                    1: ["memories"], 2: ["camped"], 3: ["worried"]
+                    1: ["memories"], 2: ["camped"], 3: ["worried"], 4: ["loved"], 5: ["built"],
+                    6: ["shining"], 7: ["marshmallows"], 8: ["rain"], 9: ["rushed"], 10: ["laughed"]
                 }
             },
             {
                 id: 16,
-                title: "2021 New Gaokao I (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Early Work Experience",
+                category: "Personal Growth",
                 type: "cloze",
-                content: "My life as a tax-paying employed person began in middle school, when, for three whole days, I worked in a baking factory. My best friend Betsy’s father was a manager at Hough Bakeries, which, at Easter time, [#1#] little bunny cakes for all its [#2#] throughout Cleveland.",
+                content: "My life as a tax-paying employed person began in middle school, when, for three whole days, I worked in a baking factory. My best friend Betsy’s father was a manager at Hough Bakeries, which, at Easter time, [#1#] little bunny cakes for all its [#2#] throughout Cleveland. I was [#3#] to pack the cakes into boxes. The repetitive work was incredibly [#4#] by the end of the day. I had to [#5#] on my feet for eight hours straight. Soon, my hands and clothes were [#6#] in white flour. But at the end, I [#7#] my very first paycheck. Holding that money made me feel extremely [#8#]. I immediately [#9#] a small gift for my mother. That job taught me the true [#10#] of hard work.",
                 options: {
                     1: ["made", "sold", "ate", "hid"],
-                    2: ["stores", "schools", "homes", "farms"]
+                    2: ["stores", "schools", "homes", "farms"],
+                    3: ["hired", "forced", "invited", "allowed"],
+                    4: ["exhausting", "exciting", "relaxing", "boring"],
+                    5: ["stand", "sit", "walk", "jump"],
+                    6: ["covered", "washed", "painted", "lost"],
+                    7: ["earned", "stole", "found", "borrowed"],
+                    8: ["proud", "sad", "angry", "guilty"],
+                    9: ["bought", "made", "sold", "broke"],
+                    10: ["value", "price", "pain", "secret"]
                 },
                 answers: {
-                    1: ["made"], 2: ["stores"]
+                    1: ["made"], 2: ["stores"], 3: ["hired"], 4: ["exhausting"], 5: ["stand"],
+                    6: ["covered"], 7: ["earned"], 8: ["proud"], 9: ["bought"], 10: ["value"]
                 }
             },
             {
                 id: 17,
-                title: "2020 National I (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Parenting Dilemmas",
+                category: "Family Life",
                 type: "cloze",
-                content: "Since our twins began learning to walk, my wife and I have kept telling them that our sliding glass door is just a window. The [#1#] is obvious. If we [#2#] it is a door, they’ll want to go outside [#3#]. It will drive us crazy.",
+                content: "Since our twins began learning to walk, my wife and I have kept telling them that our sliding glass door is just a window. The [#1#] is obvious. If we [#2#] it is a door, they’ll want to go outside [#3#]. We always kept it securely [#4#] to prevent escapes. The twins often [#5#] through the glass at the yard. One day, a colorful bird [#6#] by the door. The twins excitedly [#7#] at it and giggled. We finally [#8#] they were just curious about nature, not trying to run away. Raising children truly requires a lot of [#9#] and patience. Smiling, we [#10#] the door and let them explore the grass.",
                 options: {
                     1: ["reason", "cost", "time", "trick"],
                     2: ["admit", "forget", "pretend", "deny"],
-                    3: ["constantly", "rarely", "secretly", "barely"]
+                    3: ["constantly", "rarely", "secretly", "barely"],
+                    4: ["locked", "opened", "broken", "painted"],
+                    5: ["stared", "knocked", "threw", "crawled"],
+                    6: ["flew", "walked", "ran", "jumped"],
+                    7: ["pointed", "shouted", "cried", "waved"],
+                    8: ["realized", "doubted", "forgot", "feared"],
+                    9: ["creativity", "money", "food", "space"],
+                    10: ["opened", "closed", "cleaned", "hid"]
                 },
                 answers: {
-                    1: ["reason"], 2: ["admit"], 3: ["constantly"]
+                    1: ["reason"], 2: ["admit"], 3: ["constantly"], 4: ["locked"], 5: ["stared"],
+                    6: ["flew"], 7: ["pointed"], 8: ["realized"], 9: ["creativity"], 10: ["opened"]
                 }
             },
             {
                 id: 18,
-                title: "2024 New Gaokao II (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Cultural Immersion",
+                category: "Culture",
                 type: "cloze",
-                content: "I decided to learn a few phrases to ask for directions or order in a restaurant. When I managed to say [#1#] a sentence of Italian together, the locals smiled at me and offered helpful [#2#].",
+                content: "I decided to learn a few phrases to ask for directions or order in a restaurant. When I managed to say [#1#] a sentence of Italian together, the locals smiled at me and offered helpful [#2#]. Encouraged, I visited a very [#3#] local market the next day. The friendly fruit vendor [#4#] me with a loud \"Buongiorno!\". I nervously [#5#] some fresh apples and bread. To my delight, the food tasted absolutely [#6#]. Before leaving, I [#7#] him using my newly learned Italian words. He [#8#] broadly and handed me an extra apple. It proved that language is a powerful [#9#] across cultures. It truly [#10#] people in the most wonderful ways.",
                 options: {
                     1: ["even", "just", "hardly", "mostly"],
-                    2: ["advice", "money", "food", "rides"]
+                    2: ["advice", "money", "food", "rides"],
+                    3: ["traditional", "modern", "empty", "quiet"],
+                    4: ["greeted", "scolded", "ignored", "pushed"],
+                    5: ["ordered", "cooked", "stole", "threw"],
+                    6: ["amazing", "terrible", "bland", "sour"],
+                    7: ["thanked", "paid", "asked", "hugged"],
+                    8: ["smiled", "frowned", "cried", "shouted"],
+                    9: ["bridge", "wall", "weapon", "secret"],
+                    10: ["connects", "divides", "hurts", "hides"]
                 },
                 answers: {
-                    1: ["even"], 2: ["advice"]
+                    1: ["even"], 2: ["advice"], 3: ["traditional"], 4: ["greeted"], 5: ["ordered"],
+                    6: ["amazing"], 7: ["thanked"], 8: ["smiled"], 9: ["bridge"], 10: ["connects"]
                 }
             },
             {
                 id: 19,
-                title: "2020 National II (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Nature and Observation",
+                category: "Nature",
                 type: "cloze",
-                content: "It was just after sunrise on a June morning. The air was crisp, and the forest was [#1#] with the sound of birds. I had set out early to [#2#] the elusive red fox I had read about in local guides.",
+                content: "It was just after sunrise on a June morning. The air was crisp, and the forest was [#1#] with the sound of birds. I had set out early to [#2#] the elusive red fox I had read about in local guides. The dirt path was quite [#3#] from the rain the night before. I made sure to step very [#4#] so I wouldn't make a sound. Suddenly, I heard a soft [#5#] in the tall grass. I immediately [#6#] in my tracks, holding my breath. A beautiful red fox gracefully [#7#] from behind the bushes. For a long moment, it just [#8#] right at me. Slowly, I raised my camera and took a [#9#]. Experiencing that quiet connection with nature was truly a [#10#] moment.",
                 options: {
                     1: ["alive", "silent", "busy", "dark"],
-                    2: ["track", "feed", "hunt", "draw"]
+                    2: ["track", "feed", "hunt", "draw"],
+                    3: ["muddy", "dry", "paved", "hot"],
+                    4: ["quietly", "loudly", "quickly", "heavily"],
+                    5: ["rustle", "bang", "shout", "song"],
+                    6: ["froze", "ran", "jumped", "screamed"],
+                    7: ["appeared", "vanished", "slept", "fell"],
+                    8: ["stared", "barked", "bit", "smiled"],
+                    9: ["photo", "breath", "step", "look"],
+                    10: ["magical", "boring", "scary", "sad"]
                 },
                 answers: {
-                    1: ["alive"], 2: ["track"]
+                    1: ["alive"], 2: ["track"], 3: ["muddy"], 4: ["quietly"], 5: ["rustle"],
+                    6: ["froze"], 7: ["appeared"], 8: ["stared"], 9: ["photo"], 10: ["magical"]
                 }
             },
             {
                 id: 20,
-                title: "2021 Beijing (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Public Speaking Courage",
+                category: "Personal Growth",
                 type: "cloze",
-                content: "I had always been terrified of public speaking. When my teacher suggested I [#1#] the school debate team, my first instinct was to decline. However, with her [#2#], I decided to give it a try.",
+                content: "I had always been terrified of public speaking. When my teacher suggested I [#1#] the school debate team, my first instinct was to decline. However, with her [#2#], I decided to give it a try. My first practice session was absolutely [#3#]. I stood at the front and [#4#] while holding my notes. But to my surprise, my teammates were very [#5#] and kind. Determined to improve, I [#6#] in front of my mirror every single night. Finally, the day of the regional [#7#] arrived. When it was my turn, I spoke clearly and confidently. Unbelievably, our team [#8#] the match that day. I walked off the stage feeling incredibly [#9#]. I had finally [#10#] my greatest fear.",
                 options: {
                     1: ["join", "leave", "lead", "watch"],
-                    2: ["encouragement", "criticism", "permission", "warning"]
+                    2: ["encouragement", "criticism", "permission", "warning"],
+                    3: ["terrifying", "fun", "easy", "boring"],
+                    4: ["shook", "laughed", "sang", "slept"],
+                    5: ["supportive", "mean", "loud", "lazy"],
+                    6: ["practiced", "cried", "read", "danced"],
+                    7: ["competition", "party", "test", "holiday"],
+                    8: ["won", "lost", "missed", "watched"],
+                    9: ["confident", "ashamed", "tired", "sad"],
+                    10: ["overcame", "found", "lost", "forgot"]
                 },
                 answers: {
-                    1: ["join"], 2: ["encouragement"]
+                    1: ["join"], 2: ["encouragement"], 3: ["terrifying"], 4: ["shook"], 5: ["supportive"],
+                    6: ["practiced"], 7: ["competition"], 8: ["won"], 9: ["confident"], 10: ["overcame"]
                 }
             },
             {
                 id: 21,
-                title: "2023 Tianjin (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Detective Problem-Solving",
+                category: "Mystery",
                 type: "cloze",
-                content: "The detective knew the case was far from over. Despite the lack of physical evidence, a subtle [#1#] in the witness’s statement gave him a new direction. He decided to [#2#] the timeline of events one more time.",
+                content: "The detective knew the case was far from over. Despite the lack of physical evidence, a subtle [#1#] in the witness’s statement gave him a new direction. He decided to [#2#] the timeline of events one more time. The primary witness [#3#] he had been home all night. But security camera footage from the street [#4#] otherwise. Armed with this new information, the detective [#5#] the suspect's apartment. He sat down and [#6#] a series of very tough questions. Unable to keep up the lie, the suspect finally [#7#]. The hidden [#8#] of the mystery was finally revealed to everyone. The detective felt relieved that justice was [#9#]. He closed the file, feeling deeply [#10#] with his day's work.",
                 options: {
                     1: ["inconsistency", "truth", "emotion", "tone"],
-                    2: ["review", "sign", "ignore", "publish"]
+                    2: ["review", "sign", "ignore", "publish"],
+                    3: ["claimed", "forgot", "asked", "denied"],
+                    4: ["showed", "hid", "recorded", "sounded"],
+                    5: ["visited", "called", "cleaned", "sold"],
+                    6: ["asked", "answered", "wrote", "ignored"],
+                    7: ["confessed", "ran", "laughed", "slept"],
+                    8: ["truth", "lie", "money", "weapon"],
+                    9: ["served", "delayed", "denied", "lost"],
+                    10: ["satisfied", "angry", "confused", "bored"]
                 },
                 answers: {
-                    1: ["inconsistency"], 2: ["review"]
+                    1: ["inconsistency"], 2: ["review"], 3: ["claimed"], 4: ["showed"], 5: ["visited"],
+                    6: ["asked"], 7: ["confessed"], 8: ["truth"], 9: ["served"], 10: ["satisfied"]
                 }
             },
             {
                 id: 22,
-                title: "2020 Zhejiang (Authentic Cloze)",
-                category: "Authentic Exam",
+                title: "Connecting to the Past",
+                category: "History",
                 type: "cloze",
-                content: "The old bookstore was a hidden gem in the city. While browsing the dusty shelves, I [#1#] a journal from the 1920s. Reading its entries gave me a profound [#2#] of connection to the past.",
+                content: "The old bookstore was a hidden gem in the city. While browsing the dusty shelves, I [#1#] a journal from the 1920s. Reading its entries gave me a profound [#2#] of connection to the past. The unknown writer intricately [#3#] daily city life a century ago. Closing my eyes, I [#4#] the bustling streets and horse-drawn carriages. The faded ink and elegant [#5#] made the diary feel like a time machine. Without hesitation, I [#6#] the book and took it home. The next day, I [#7#] the stories with my close friends. We were all deeply [#8#] by how much history it held. It even [#9#] me to start keeping my own daily diary. It proved that the past is never truly [#10#].",
                 options: {
                     1: ["discovered", "lost", "bought", "wrote"],
-                    2: ["sense", "lack", "proof", "loss"]
+                    2: ["sense", "lack", "proof", "loss"],
+                    3: ["described", "ignored", "painted", "forgot"],
+                    4: ["imagined", "saw", "built", "drew"],
+                    5: ["handwriting", "cover", "price", "smell"],
+                    6: ["purchased", "sold", "hid", "tore"],
+                    7: ["shared", "kept", "burned", "hid"],
+                    8: ["amazed", "bored", "scared", "confused"],
+                    9: ["inspired", "forced", "stopped", "warned"],
+                    10: ["gone", "here", "real", "new"]
                 },
                 answers: {
-                    1: ["discovered"], 2: ["sense"]
+                    1: ["discovered"], 2: ["sense"], 3: ["described"], 4: ["imagined"], 5: ["handwriting"],
+                    6: ["purchased"], 7: ["shared"], 8: ["amazed"], 9: ["inspired"], 10: ["gone"]
                 }
             }
         ];
@@ -503,21 +601,21 @@
 
             if (selectedPassageId) {
                 return (
-                    <div className="w-full h-screen flex flex-col bg-white">
+                    <div className="w-full h-screen flex flex-col bg-white overflow-hidden">
                         <header className="sticky top-0 z-50 bg-white border-b border-slate-200 p-4 shadow-sm flex items-center justify-between w-full">
-                            <button onClick={handleBack} className="flex items-center gap-2 text-slate-600 hover:text-blue-600 font-bold px-4 py-2 bg-slate-100 rounded-full transition-colors">
+                            <button onClick={handleBack} className="flex items-center gap-2 text-slate-600 hover:text-blue-600 font-bold px-4 py-2 bg-slate-100 rounded-full transition-colors print:hidden">
                                 <ArrowLeft size={20} /> Back
                             </button>
                             
                             {!submitted ? (
                                 <button 
                                     onClick={handleSubmit}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 text-lg rounded-full shadow transition-all transform hover:-translate-y-1"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 text-lg rounded-full shadow transition-all transform hover:-translate-y-1 print:hidden"
                                 >
                                     Submit Answers
                                 </button>
                             ) : (
-                                <div className="flex items-center gap-4 md:gap-8 bg-slate-50 px-6 py-2 rounded-full border border-slate-200 shadow-inner">
+                                <div className="flex items-center gap-4 md:gap-8 bg-slate-50 px-6 py-2 rounded-full border border-slate-200 shadow-inner print:hidden">
                                     <div className="flex flex-col text-right">
                                         <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">Results</span>
                                         <span className="text-slate-800 font-medium text-base">You scored {score} out of {Object.keys(selectedPassage.answers).length}.</span>
@@ -535,36 +633,44 @@
                             )}
                         </header>
 
-                        <div className="flex-1 overflow-y-auto px-4 md:px-12 py-8 w-full bg-white">
-                            <div className="passage-text text-slate-800 w-full">
-                                {renderPassageText(selectedPassage.content)}
+                        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden w-full bg-white print:overflow-visible">
+                            {/* Left: Scrollable Reading Area */}
+                            <div className={`overflow-y-auto px-4 md:px-12 py-8 print:px-0 ${selectedPassage.type === 'cloze' && !submitted ? 'lg:w-3/5' : 'w-full'} ${submitted ? 'lg:w-full' : ''}`}>
+                                <div className="passage-text text-slate-800 max-w-4xl mx-auto">
+                                    {renderPassageText(selectedPassage.content)}
+                                </div>
                             </div>
 
+                            {/* Right: Fixed/Scrollable Word Choices (Only for Cloze, before submit) */}
                             {selectedPassage.type === 'cloze' && !submitted && (
-                                <div className="mt-16 bg-slate-50 p-6 rounded-2xl border border-slate-200 w-full mb-20 shadow-sm">
-                                    <h3 className="text-xl font-bold text-slate-800 mb-6">Word Choices (Drag, Tap, or Click into blanks)</h3>
-                                    <div className="flex flex-col gap-5">
-                                        {Object.keys(selectedPassage.options).map(blankId => (
-                                            <div key={blankId} className="flex flex-wrap items-center gap-4">
-                                                <span className="font-black text-blue-600 text-2xl w-10 text-right">{blankId}.</span>
-                                                {selectedPassage.options[blankId].map(opt => {
-                                                    const isSelected = userAnswers[blankId] === opt;
-                                                    return (
-                                                        <button
-                                                            key={opt}
-                                                            draggable
-                                                            onDragStart={(e) => {
-                                                                e.dataTransfer.setData('text/plain', opt);
-                                                            }}
-                                                            onClick={() => handleInputChange(blankId, opt)}
-                                                            className={`mcq-option ${isSelected ? 'ring-2 ring-blue-500 bg-blue-50 text-blue-700' : 'text-slate-700'}`}
-                                                        >
-                                                            {opt}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        ))}
+                                <div className="lg:w-2/5 shrink-0 overflow-y-auto bg-slate-50 border-l border-slate-200 p-6 print:hidden shadow-inner">
+                                    <div className="max-w-md mx-auto">
+                                        <h3 className="text-xl font-bold text-slate-800 mb-4">Word Choices</h3>
+                                        <p className="text-sm text-slate-500 mb-6">Drag and drop, or tap an option to fill the active blank.</p>
+                                        <div className="flex flex-col gap-6">
+                                            {Object.keys(selectedPassage.options).map(blankId => (
+                                                <div key={blankId} className="flex flex-wrap items-center gap-2">
+                                                    <span className={`font-black text-lg w-6 text-right ${focusedBlank === blankId ? 'text-blue-600' : 'text-slate-400'}`}>{blankId}.</span>
+                                                    {selectedPassage.options[blankId].map(opt => {
+                                                        const isSelected = userAnswers[blankId] === opt;
+                                                        return (
+                                                            <button
+                                                                key={opt}
+                                                                draggable
+                                                                onDragStart={(e) => {
+                                                                    e.dataTransfer.setData('text/plain', opt);
+                                                                }}
+                                                                onClick={() => handleInputChange(blankId, opt)}
+                                                                className={`mcq-option text-sm md:text-base rounded-lg border ${isSelected ? 'border-blue-500 bg-blue-50 text-blue-700 font-bold shadow-sm' : 'border-slate-300 text-slate-700 bg-white hover:border-blue-400'}`}
+                                                                style={{ padding: '6px 12px' }}
+                                                            >
+                                                                {opt}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             )}
