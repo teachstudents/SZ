@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PKXYS Classroom Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --indigo-50: #eef2ff;
+            --indigo-100: #e0e7ff;
+            --indigo-200: #c7d2fe;
+            --indigo-500: #6366f1;
+            --indigo-600: #4f46e5;
+            --indigo-700: #4338ca;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1;
+            --slate-500: #64748b;
+            --slate-600: #475569;
+            --slate-700: #334155;
+            --slate-800: #1e293b;
+            --slate-900: #0f172a;
+            --amber-500: #f59e0b;
+            --emerald-500: #10b981;
+            --pink-500: #ec4899;
+            --cyan-500: #06b6d4;
+            --rose-500: #f43f5e;
+        }
+
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--slate-50);
+            font-family: 'Nunito', sans-serif;
+            font-size: 12pt;
+        }
+
+        body::-webkit-scrollbar { display: none; }
+
+        .font-display { font-family: 'Fredoka', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        .glass-panel {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .reading-bg {
+            background: linear-gradient(-45deg, #4f46e5, #06b6d4, #10b981, #f59e0b, #ec4899, #8b5cf6, #3b82f6, #14b8a6);
+            background-size: 400% 400%;
+            animation: kidsRainbowPalette 14s ease infinite;
+        }
+        @keyframes kidsRainbowPalette {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 100%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 0%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .fun-bg {
+            background: linear-gradient(-45deg, #0b021a, #200d49, #4a1a7c, #2c0b59);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .tech-bg { background-color: #050505; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; }
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+        }
+
+        .student-chip { cursor: grab; transition: all 0.2s ease; user-select: none; }
+        .student-chip:active { cursor: grabbing; transform: scale(0.95); }
+
+        .table-drop-zone { transition: all 0.2s; }
+        .table-drop-zone.drag-over {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            transform: scale(1.02);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+
+        .huge-clock {
+            font-size: clamp(8rem, 25vw, 15rem);
+            line-height: 1;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .floating-kid-emoji {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.12));
+            animation: floatEmoji 6s ease-in-out infinite;
+            z-index: 1;
+        }
+        @keyframes floatEmoji {
+            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg) scale(1); }
+            25% { transform: translateY(-22px) translateX(12px) rotate(8deg) scale(1.08); }
+            50% { transform: translateY(-8px) translateX(-12px) rotate(-6deg) scale(1.03); }
+            75% { transform: translateY(-28px) translateX(8px) rotate(6deg) scale(1.1); }
+        }
+
+        .kids-fun-palette-bg {
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb, #d4fc79, #96e6a1, #fbc2eb, #f6d365, #fda085, #84fab0, #8fd3f4);
+            background-size: 400% 400%;
+            animation: kidsRainbowPalette 16s ease infinite;
+        }
+
+        #timer-progress-container { position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background: transparent; }
+        #timer-progress-bar { height: 100%; width: 100%; background: #6366f1; transition: width 1s linear, background-color 1s; }
+
+        .progress-gradient {
+            background: linear-gradient(90deg, #00ff88, #00aaff, #bd00ff, #00ff88);
+            background-size: 300% 100%;
+            animation: gradientMove 3s infinite linear;
+            box-shadow: 0 0 15px rgba(0, 170, 255, 0.5);
+        }
+        @keyframes gradientMove {
+            0% { background-position: 100% 0; }
+            100% { background-position: 0 0; }
+        }
+        .pulse-danger { animation: pulse-red 1s infinite; }
+        @keyframes pulse-red {
+            0%, 100% { background-color: #ef4444; }
+            50% { background-color: #991b1b; }
+        }
+
+        .grade-card {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            animation: float 6s ease-in-out infinite;
+        }
+        .grade-card:hover { border-color: rgba(192, 132, 252, 0.8); transform: translateY(-10px); }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .plan-btn-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(0,0,0,0.15);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .plan-btn-tag:hover {
+            transform: translateY(-1px);
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+        }
+        .plan-btn-tag:active { transform: translateY(1px); }
+
+        .plan-card-hover {
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .plan-card-hover:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px -1px rgba(0,0,0,0.12);
+        }
+
+        @media print {
+            body * { visibility: hidden !important; }
+            #lessonPlanModal, #lessonPlanModal * { visibility: visible !important; }
+            #lessonPlanModal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                background: white !important;
+                color: black !important;
+                z-index: 99999 !important;
+            }
+            #lessonPlanModal .no-print,
+            #lessonPlanModal button { display: none !important; }
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col relative">
+    <header id="main-header" class="bg-white border-b border-slate-200 h-14 flex-shrink-0 flex items-center justify-between px-3 md:px-4 shadow-sm z-30 relative transition-all duration-300">
+        <div id="timer-progress-container"><div id="timer-progress-bar"></div></div>
+
+        <div class="flex items-center gap-3 w-auto md:w-[45%]">
+            <button id="menu-toggle" class="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg transition-colors border border-indigo-200 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+                <span class="font-bold text-sm hidden sm:inline">Menu</span>
+            </button>
+            <div class="hidden lg:block">
+                <p id="header-date" class="text-xs font-semibold text-slate-500 truncate whitespace-nowrap"></p>
+            </div>
+            <div class="hidden md:flex items-center gap-1 bg-indigo-50 border border-indigo-200 rounded-lg p-0.5 shadow-sm z-10 ml-2">
+                <button onclick="setGlobalTimer(5)" class="px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-200 rounded transition-colors active:scale-95 whitespace-nowrap">⏱️ 5m</button>
+                <button onclick="setGlobalTimer(10)" class="px-2 py-1 text-xs font-bold text-indigo-700 hover:bg-indigo-200 rounded transition-colors active:scale-95 whitespace-nowrap">⏱️ 10m</button>
+                <div class="w-px h-5 bg-indigo-300 mx-0.5"></div>
+                <button id="timer-btn" onclick="toggleTimer()" class="flex items-center gap-1 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded transition-all active:scale-95">
+                    <span id="timer-display" class="font-display font-bold text-sm tracking-wide">40:00</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="w-[10%] flex justify-center flex-col items-center">
+            <h2 id="header-class-name" class="text-[13px] sm:text-[15px] md:text-[18px] font-display font-bold text-indigo-800 tracking-wide drop-shadow-sm text-center px-2 truncate leading-none">PKXYS</h2>
+            <span id="header-room-name" class="text-[10px] font-bold text-slate-400 uppercase hidden"></span>
+        </div>
+
+        <div class="flex flex-row items-center justify-end gap-2 sm:gap-3 w-auto md:w-[45%]">
+            <div class="group relative hidden lg:block">
+                <button class="p-1.5 rounded-md bg-purple-50 text-purple-600 hover:bg-purple-100 border border-purple-200 transition-colors font-bold flex items-center justify-center">
+                    🔊
+                </button>
+            </div>
+            <div class="flex items-center gap-1 bg-slate-100/50 p-1 rounded-lg border border-slate-200/50">
+                <button onclick="awardPoint(event)" title="Point" class="p-1.5 rounded-md hover:bg-yellow-100 text-yellow-500 transition-colors active:scale-95 font-bold">⭐</button>
+                <div class="w-px h-4 bg-slate-300 mx-1"></div>
+                <button onclick="playSFX('loudbell')" title="Bell" class="p-1.5 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-600 border border-amber-200 transition-colors active:scale-95 font-bold">🔔</button>
+                <button onclick="playSFX('loudbuzz')" title="Buzzer" class="p-1.5 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors active:scale-95 font-bold">🚨</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative w-full h-full">
+        <aside id="sidebar" class="absolute inset-y-0 left-0 w-64 bg-white border-r border-slate-200 shadow-[20px_0_30px_rgba(0,0,0,0.1)] z-50 overflow-y-auto transform -translate-x-full transition-transform duration-300">
+            <div class="p-4 flex flex-col h-full">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-xl font-display font-bold text-indigo-600 tracking-wide">PKXYS Hub</h1>
+                    <button onclick="document.getElementById('menu-toggle').click()" class="text-slate-400 hover:text-slate-600">❌</button>
+                </div>
+
+                <button onclick="switchView('dashboard')" class="w-full text-left px-4 py-2.5 rounded-lg mb-4 text-sm font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-2">
+                    🏠 Dashboard
+                </button>
+
+                <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">My Classes</p>
+                <div id="class-list-container" class="space-y-1 mb-4"></div>
+
+                <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Seating Charts</p>
+                <div class="space-y-1 mb-6">
+                    <button onclick="switchView('seating'); initSeating('5m2');" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-cyan-50 hover:text-cyan-700 text-slate-600 transition-colors">
+                        5M2 Seating
+                    </button>
+                </div>
+
+                <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tools</p>
+                <div class="space-y-1 mb-6">
+                    <button onclick="switchView('reading-timer')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-teal-50 hover:text-teal-700 text-slate-600 transition-colors">
+                        Reading Timer
+                    </button>
+                    <button onclick="switchView('pro-timer')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-emerald-50 hover:text-emerald-700 text-slate-600 transition-colors">
+                        Pro Timer
+                    </button>
+                    <button onclick="switchView('class-roles')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 transition-colors">
+                        Class Roles
+                    </button>
+                    <button onclick="switchView('awards'); renderAwards('5m2');" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-amber-50 hover:text-amber-700 text-slate-600 transition-colors">
+                        Awards
+                    </button>
+                    <button onclick="switchView('quiet-timer')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-red-50 hover:text-red-700 text-slate-600 transition-colors">
+                        Quiet Timer
+                    </button>
+                    <button onclick="switchView('fun-pickers')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-pink-50 hover:text-pink-700 text-slate-600 transition-colors">
+                        Fun Pickers
+                    </button>
+                    <button onclick="switchView('tech-shuffler')" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-50 hover:text-blue-700 text-slate-600 transition-colors">
+                        Tech Shuffler
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <main id="main-content" class="flex-1 w-full h-full overflow-y-auto bg-slate-50 relative z-0">
+            <div id="view-dashboard" class="p-2 md:p-6 w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto space-y-5">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-800 px-3 sm:px-4 py-2 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-white font-display text-lg font-bold flex items-center gap-2">(MITCHELL)</h2>
+                            <span class="bg-slate-700 text-slate-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-slate-600 hidden md:inline">Term Starts: Week of Sept 1</span>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-900/90 px-2 sm:px-3 py-1 rounded-xl border border-slate-700 shadow-inner">
+                            <button onclick="changeWeek(-1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-bold text-lg">‹</button>
+                            <div class="text-center min-w-[170px] sm:min-w-[210px] px-1">
+                                <div id="week-display-title" class="text-white font-bold text-xs sm:text-sm tracking-wide">Week 10</div>
+                                <div id="week-display-sub" class="text-[10px] text-indigo-300 font-mono">Curriculum Plans Active</div>
+                            </div>
+                            <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-bold text-lg">›</button>
+                        </div>
+                    </div>
+                    <div class="p-0 overflow-x-auto" id="timetable-container"></div>
+                </div>
+            </div>
+
+            <div id="view-reading-timer" class="hidden h-full flex flex-col justify-between items-center reading-bg text-white relative overflow-hidden z-0">
+                <div class="absolute inset-0 bg-black/10 z-0 pointer-events-none" id="reading-alarm-overlay"></div>
+                <div id="reading-fireworks-container" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"></div>
+
+                <div class="w-full flex justify-between items-center p-4 z-10">
+                    <button onclick="switchView('dashboard')" class="bg-white/20 hover:bg-white/30 backdrop-blur border border-white/40 text-white font-extrabold py-2 px-4 rounded-xl transition">
+                        ← Back
+                    </button>
+                    <h2 class="text-2xl md:text-3xl font-display font-bold text-white drop-shadow-md tracking-wider">Silent Reading Session</h2>
+                    <div class="w-24"></div>
+                </div>
+
+                <div class="z-10 flex flex-col items-center bg-white/15 backdrop-blur-md px-10 py-8 rounded-3xl border-2 border-white/30 shadow-2xl">
+                    <div id="big-reading-clock" class="huge-clock font-mono font-bold tracking-tighter tabular-nums text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.35)]">10:00</div>
+                    <div id="reading-status-text" class="text-2xl md:text-3xl mt-4 text-white uppercase tracking-widest font-extrabold drop-shadow">Ready to Focus</div>
+                </div>
+
+                <div class="w-full max-w-4xl px-8 z-10 flex flex-col items-center gap-6 mb-12">
+                    <div class="w-full h-5 bg-black/30 rounded-full overflow-hidden border-2 border-white/40 shadow-inner relative">
+                        <div id="reading-progress" class="h-full bg-white w-full transition-all duration-1000 ease-linear"></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <button id="btn-reading-start" onclick="startReadingTimer()" class="bg-emerald-500 hover:bg-emerald-400 border-2 border-white/50 text-white font-extrabold text-xl py-3 px-8 rounded-full shadow-xl transition">
+                            Start
+                        </button>
+                        <button id="btn-reading-pause" onclick="pauseReadingTimer()" class="hidden bg-amber-500 hover:bg-amber-400 border-2 border-white/50 text-white font-extrabold text-xl py-3 px-8 rounded-full shadow-xl transition">
+                            Pause
+                        </button>
+                        <button onclick="resetReadingTimer()" class="bg-slate-800/80 hover:bg-slate-700 border-2 border-white/40 text-white font-extrabold text-xl py-3 px-8 rounded-full shadow-xl transition">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-class-roles" class="hidden h-full flex flex-col bg-slate-50 overflow-y-auto">
+                <div class="p-4 md:p-8 w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto">
+                    <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
+                        <div>
+                            <h2 class="text-3xl font-display font-black text-indigo-900 tracking-tight">5M2 一人一職</h2>
+                            <p class="text-slate-500 font-bold uppercase tracking-widest text-sm mt-1">Class responsibilities</p>
+                        </div>
+                        <button onclick="switchView('dashboard')" class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold py-2 px-4 rounded-lg shadow-sm transition">Back</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" id="roles-container"></div>
+                </div>
+            </div>
+
+            <div id="view-quiet-timer" class="hidden flex h-full kids-fun-palette-bg relative overflow-hidden z-0">
+                <div class="floating-kid-emoji text-5xl md:text-6xl" style="top: 8%; left: 6%; animation-duration: 5.5s; animation-delay: 0s;">💧</div>
+                <div class="floating-kid-emoji text-5xl md:text-6xl" style="top: 14%; left: 44%; animation-duration: 6.8s; animation-delay: 0.7s;">🚰</div>
+                <div class="floating-kid-emoji text-5xl md:text-6xl" style="top: 78%; left: 8%; animation-duration: 6.2s; animation-delay: 1.2s;">🚽</div>
+                <div class="floating-kid-emoji text-5xl md:text-6xl" style="top: 82%; left: 42%; animation-duration: 7.1s; animation-delay: 0.4s;">🧼</div>
+                <div class="floating-kid-emoji text-5xl md:text-6xl" style="top: 48%; left: 48%; animation-duration: 5.8s; animation-delay: 1.8s;">🫧</div>
+                <div class="floating-kid-emoji text-5xl md:text-6xl" style="top: 10%; right: 8%; animation-duration: 6.4s; animation-delay: 0.9s;">🤸</div>
+                <div class="floating-kid-emoji text-5xl md:text-6xl" style="top: 45%; right: 4%; animation-duration: 5.3s; animation-delay: 1.5s;">🧘</div>
+                <div class="floating-kid-emoji text-5xl md:text-6xl" style="top: 84%; right: 10%; animation-duration: 6.9s; animation-delay: 0.3s;">🪑</div>
+
+                <button onclick="switchView('dashboard')" class="absolute top-5 left-6 bg-white/90 hover:bg-white border-2 border-indigo-200 text-indigo-800 px-4 py-2 rounded-xl font-extrabold">
+                    ← Back
+                </button>
+
+                <div class="flex-1 flex flex-col lg:flex-row items-center justify-between w-full max-w-[96%] 2xl:max-w-[1850px] mx-auto px-6 md:px-12 py-12 gap-8 relative z-10">
+                    <div class="w-full lg:w-[30%] flex flex-col justify-center space-y-2.5 bg-white/85 backdrop-blur-md p-4 md:p-5 rounded-3xl border-4 border-white shadow-2xl">
+                        <div id="quiet-flashing-text" class="space-y-2.5">
+                            <div class="flex items-center gap-3 bg-sky-100/90 border-2 border-sky-300 rounded-xl p-2.5 shadow-sm">
+                                <span class="text-xl md:text-2xl shrink-0">💧🚰</span>
+                                <span class="text-base md:text-xl font-display font-black text-sky-900 tracking-tight">Get Water</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-amber-100/90 border-2 border-amber-300 rounded-xl p-2.5 shadow-sm">
+                                <span class="text-xl md:text-2xl shrink-0">🚽🚻</span>
+                                <span class="text-base md:text-xl font-display font-black text-amber-900 tracking-tight">Go to Toilet</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-teal-100/90 border-2 border-teal-300 rounded-xl p-2.5 shadow-sm">
+                                <span class="text-xl md:text-2xl shrink-0">🧼🫧</span>
+                                <span class="text-base md:text-xl font-display font-black text-teal-900 tracking-tight">Wash Your Face</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-pink-100/90 border-2 border-pink-300 rounded-xl p-2.5 shadow-sm">
+                                <span class="text-xl md:text-2xl shrink-0">🤸🧘</span>
+                                <span class="text-base md:text-xl font-display font-black text-pink-900 tracking-tight">Stretch</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-purple-100/90 border-2 border-purple-300 rounded-xl p-2.5 shadow-sm">
+                                <span class="text-xl md:text-2xl shrink-0">🪑✨</span>
+                                <span class="text-base md:text-xl font-display font-black text-purple-900 tracking-tight">Clear Your Desk</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full lg:w-[66%] flex flex-col items-center justify-center bg-white/85 backdrop-blur-md p-6 md:p-10 rounded-3xl border-4 border-white shadow-2xl">
+                        <div class="flex items-center justify-center mb-4 w-full">
+                            <select id="quiet-time-select" onchange="startQuietTimer()" class="bg-white text-indigo-900 text-lg md:text-2xl font-extrabold rounded-2xl px-6 py-3 border-2 border-indigo-200 shadow-sm">
+                                <option value="10">10 Seconds (10s)</option>
+                                <option value="30">30 Seconds (30s)</option>
+                                <option value="60" selected>1 Minute (1 Min)</option>
+                                <option value="120">2 Minutes (2 Min)</option>
+                                <option value="180">3 Minutes (3 Min)</option>
+                                <option value="240">4 Minutes (4 Min)</option>
+                                <option value="300">5 Minutes (5 Min)</option>
+                            </select>
+                        </div>
+
+                        <div class="relative w-full flex flex-col items-center">
+                            <div id="quiet-timer-display" onclick="toggleQuietTimerPause()" title="Click timer to start or pause" style="font-size: clamp(10rem, 22vw, 18rem);" class="font-mono font-black text-indigo-900 leading-none tabular-nums">1:00</div>
+                            <p class="text-xs font-bold text-indigo-500 uppercase tracking-widest mt-3">Select time from pull-down or tap clock to start / pause</p>
+                            <div class="w-full max-w-4xl h-8 bg-slate-200 rounded-full mt-6 overflow-hidden shadow-inner border-2 border-white">
+                                <div id="quiet-timer-bar" class="h-full bg-gradient-to-r from-sky-400 via-indigo-500 to-purple-500 transition-all duration-1000 ease-linear w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-awards" class="hidden flex flex-col h-full bg-slate-50">
+                <div class="p-4 md:p-6 flex-1 flex flex-col w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto">
+                    <div class="flex justify-center items-center mb-4">
+                        <div class="flex gap-2 bg-white p-1 rounded-lg shadow-sm border border-slate-200 z-10 relative">
+                            <button id="award-tab-5m2" onclick="renderAwards('5m2')" class="px-6 py-1.5 rounded font-bold transition-colors bg-indigo-100 text-indigo-700">5M2</button>
+                        </div>
+                    </div>
+                    <div id="awards-grid" class="flex-1 grid grid-cols-6 gap-2 content-start pr-2 pb-8 w-full mx-auto"></div>
+                </div>
+            </div>
+
+            <div id="view-class" class="hidden flex flex-col h-full bg-slate-50">
+                <div class="p-4 md:p-6 flex-1 flex flex-col w-full max-w-[98%] 2xl:max-w-[1920px] mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-slate-200 pb-4">
+                        <div class="flex flex-col gap-2 w-full md:w-auto">
+                            <h2 class="text-2xl font-display font-bold text-indigo-900 drop-shadow-sm">Group Organizer</h2>
+                            <div id="group-timer-bar-container" class="hidden flex items-center gap-3">
+                                <span id="group-timer-text" class="font-mono font-bold text-sm text-slate-700 w-8">60s</span>
+                                <div class="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden max-w-xs">
+                                    <div id="group-timer-bar" class="h-full bg-indigo-500 w-full transition-all duration-1000 ease-linear"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 bg-white p-2 rounded-xl shadow-sm border border-slate-200 items-center justify-center">
+                            <button onclick="startGroupTimer(1)" class="px-3 py-1.5 bg-cyan-50 text-cyan-700 text-sm font-bold rounded-lg border border-cyan-200 shadow-sm active:scale-95">⏳ 1m</button>
+                            <button onclick="setGlobalTimer(5)" class="px-3 py-1.5 bg-cyan-50 text-cyan-700 text-sm font-bold rounded-lg border border-cyan-200 shadow-sm active:scale-95">⏳ 5m</button>
+                            <button onclick="setGlobalTimer(10)" class="px-3 py-1.5 bg-cyan-50 text-cyan-700 text-sm font-bold rounded-lg border border-cyan-200 shadow-sm active:scale-95">⏳ 10m</button>
+                            <div class="w-px h-6 bg-slate-200 mx-0.5"></div>
+                            <button onclick="shuffleStudents(2)" class="px-4 py-2 bg-indigo-50 text-indigo-700 text-sm font-bold rounded-lg border border-indigo-200 shadow-sm active:scale-95">Pairs</button>
+                            <button onclick="shuffleStudents(3)" class="px-4 py-2 bg-emerald-50 text-emerald-700 text-sm font-bold rounded-lg border border-emerald-200 shadow-sm active:scale-95">Trios</button>
+                            <button onclick="shuffleStudents(4)" class="px-4 py-2 bg-amber-50 text-amber-700 text-sm font-bold rounded-lg border border-amber-200 shadow-sm active:scale-95">Quads</button>
+                            <button onclick="shuffleStudents(5)" class="px-4 py-2 bg-rose-50 text-rose-700 text-sm font-bold rounded-lg border border-rose-200 shadow-sm active:scale-95">Fives</button>
+                            <button onclick="shuffleStudents(6)" class="px-4 py-2 bg-purple-50 text-purple-700 text-sm font-bold rounded-lg border border-purple-200 shadow-sm active:scale-95">Sixes</button>
+                        </div>
+                    </div>
+                    <div id="shuffler-display" class="flex-1 grid gap-4 content-start pb-12 w-full"></div>
+                </div>
+            </div>
+
+            <div id="view-fun-pickers" class="hidden absolute inset-0 overflow-y-auto fun-bg z-40">
+                <div id="main-menu" class="min-h-screen flex flex-col items-center justify-center p-4">
+                    <button onclick="switchView('dashboard')" class="absolute top-4 left-4 bg-white/20 hover:bg-white/40 border border-white/30 text-white font-bold py-2 px-4 rounded-xl transition">
+                        ← Back
+                    </button>
+                    <div class="text-center w-full max-w-4xl mx-auto mt-10">
+                        <h1 class="text-5xl md:text-6xl font-black tracking-tight mb-10 text-shadow-lg text-white">Interactive Pickers</h1>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="grade-card rounded-3xl p-8 shadow-2xl">
+                                <h2 class="text-4xl font-black mb-8 text-center text-white">Random Picker</h2>
+                                <button onclick="showPicker('random')" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-300 to-cyan-400 text-slate-900 font-black">Open</button>
+                            </div>
+                            <div class="grade-card rounded-3xl p-8 shadow-2xl">
+                                <h2 class="text-4xl font-black mb-8 text-center text-white">Team Picker</h2>
+                                <button onclick="showPicker('teams')" class="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-300 to-purple-400 text-slate-900 font-black">Open</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="fun-random-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-50"></div>
+                <div id="fun-teams-picker" class="picker-container hidden absolute inset-0 bg-black/50 backdrop-blur-sm z-50"></div>
+                <div id="celebration-container"></div>
+            </div>
+
+            <div id="view-tech-shuffler" class="hidden absolute inset-0 z-40 tech-bg overflow-hidden">
+                <div class="scanlines"></div>
+                <button onclick="switchView('dashboard')" class="absolute top-4 left-4 z-50 bg-black/50 hover:bg-white/20 border border-slate-600 text-white font-bold py-2 px-4 rounded transition duration-200">
+                    ← Back
+                </button>
+                <div id="techMenuView" class="absolute inset-0 flex flex-col items-center justify-center bg-[#050505] z-40 transition-opacity duration-500">
+                    <div class="text-center mb-12">
+                        <h1 class="text-5xl md:text-6xl font-black tracking-tight text-white">Tech Shuffler</h1>
+                    </div>
+                    <button onclick="launchTechShuffle()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-indigo-500 text-slate-900 font-bold text-xl shadow-xl">
+                        Shuffle
+                    </button>
+                </div>
+                <div id="techShuffleView" class="flex h-full w-full hidden opacity-0 transition-opacity duration-1000 pt-14">
+                    <main class="w-3/4 h-full p-4 flex flex-col border-r border-slate-800 bg-slate-950">
+                        <div id="tech-shuffle-display" class="flex-1 grid gap-3 content-start p-4"></div>
+                    </main>
+                </div>
+            </div>
+
+            <div id="view-seating" class="hidden flex-col h-full relative overflow-hidden z-0" style="background: linear-gradient(120deg, #fce7f3, #fef08a, #e0f2fe, #dcfce7); background-size: 300% 300%; animation: bgShift 20s ease-in-out infinite;">
+                <div class="w-full bg-white/90 backdrop-blur border-b border-slate-200 p-2 flex items-center justify-between z-20 shrink-0 shadow-sm">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="switchView('dashboard')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition active:scale-95">← Back</button>
+                        <button onclick="initSeating(currentClassId)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm border border-slate-300 transition active:scale-95">Refresh</button>
+                        <span class="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest hidden sm:inline ml-2">Activity Timer:</span>
+                        <select id="seating-timer-select" class="text-sm font-bold bg-white border border-slate-300 rounded px-2 py-1 outline-none text-indigo-700 shadow-sm">
+                            <option value="2">2 Min</option>
+                            <option value="3">3 Min</option>
+                            <option value="5" selected>5 Min</option>
+                        </select>
+                        <button onclick="startSeatingTimer()" class="bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold py-1.5 px-4 rounded-lg shadow-sm transition active:scale-95">Start</button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <div class="font-mono font-bold text-indigo-700 bg-white px-4 py-2 rounded-xl text-4xl border-2 border-indigo-200 shadow-sm tracking-tighter" id="seating-timer-display">5:00</div>
+                    </div>
+                </div>
+
+                <div class="flex-none px-2 py-1 bg-white/70 backdrop-blur border-b-2 border-slate-200/50 shadow-sm z-10">
+                    <div id="unassignedStudents" class="flex flex-wrap gap-1 min-h-[40px] max-h-[15vh] overflow-y-auto custom-scrollbar p-1 border border-dashed border-slate-400/50 rounded-xl bg-white/80"></div>
+                </div>
+
+                <div class="flex-1 p-2 flex flex-col min-h-0">
+                    <div id="tablesContainer" class="flex-1 grid gap-2 min-h-0 pb-2"></div>
+                </div>
+            </div>
+
+            <div id="view-pro-timer" class="hidden bg-slate-900 text-white h-full w-full flex flex-col items-center justify-center overflow-hidden selection:bg-white selection:text-black relative z-0">
+                <button onclick="switchView('dashboard')" class="absolute top-4 left-4 bg-white/15 hover:bg-white/25 backdrop-blur border border-white/30 text-white font-bold py-2 px-4 rounded-xl transition duration-200">
+                    ← Back
+                </button>
+
+                <canvas id="pro-confetti-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-50"></canvas>
+
+                <div id="pro-main-container" class="w-full max-w-5xl px-6 relative z-10">
+                    <div id="pro-setup-view" class="glass-panel rounded-3xl p-10 max-w-md mx-auto shadow-2xl text-center">
+                        <div class="mb-8 mt-4">
+                            <div class="flex items-center justify-center space-x-4">
+                                <button onclick="adjustProSetupTime(-1)" class="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-xl font-bold transition flex items-center justify-center cursor-pointer">−</button>
+                                <input type="number" id="pro-time-input" value="10" min="1" max="240" class="w-24 text-center text-4xl font-bold bg-transparent border-b-2 border-white/50 focus:outline-none text-white">
+                                <button onclick="adjustProSetupTime(1)" class="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-xl font-bold transition flex items-center justify-center cursor-pointer">+</button>
+                            </div>
+                        </div>
+                        <button onclick="startProTimer()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-900 text-xl font-bold shadow-lg">
+                            START TIMER
+                        </button>
+                    </div>
+
+                    <div id="pro-timer-view" class="hidden flex-col items-center w-full">
+                        <div class="flex flex-wrap items-center justify-between w-full mb-4 md:mb-10 gap-4">
+                            <div class="flex items-center space-x-2">
+                                <button onclick="addProMinutes(-1)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">-1 Min</button>
+                                <button onclick="addProMinutes(1)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">+1 Min</button>
+                                <button onclick="addProMinutes(5)" class="px-4 py-2 rounded-lg bg-white/20 hover:bg-white/30 font-semibold transition cursor-pointer">+5 Min</button>
+                            </div>
+
+                            <div class="flex items-center space-x-4">
+                                <button onclick="toggleProFullscreen()" class="text-white/70 hover:text-white transition cursor-pointer" title="Fullscreen">
+                                    ⤢
+                                </button>
+                                <button onclick="resetProTimer()" class="text-white/70 hover:text-white transition cursor-pointer" title="Reset">
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="pro-time-display" class="font-mono text-[12vw] leading-none font-bold text-white drop-shadow-2xl mb-12 tracking-tight transition-transform duration-300">
+                            10:00
+                        </div>
+
+                        <div class="w-full max-w-4xl h-6 bg-black/40 rounded-full overflow-hidden mb-8 border border-white/20 shadow-inner">
+                            <div id="pro-progress-bar" class="h-full w-full rounded-full progress-gradient transition-all duration-1000 ease-linear"></div>
+                        </div>
+
+                        <div class="w-full max-w-4xl relative h-16 bg-slate-800 rounded-2xl flex items-center px-4 overflow-hidden border-4 border-slate-600 shadow-xl mb-10">
+                            <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: repeating-linear-gradient(45deg, #000 0, #000 2px, transparent 2px, transparent 8px);"></div>
+                            <div class="absolute inset-0 w-full h-1 border-b-4 border-dashed border-yellow-400 top-1/2 -mt-0.5 opacity-60"></div>
+                            <div class="absolute left-4 text-4xl z-10 drop-shadow-md">🏁</div>
+                            <div id="pro-car" class="absolute text-5xl transition-all duration-1000 ease-linear z-10 origin-bottom" style="left: 95%; transform: translateY(-8px);">🏎️</div>
+                        </div>
+
+                        <button onclick="toggleProPlayPause()" id="pro-play-pause-btn" class="w-24 h-24 rounded-full bg-white text-slate-900 flex items-center justify-center hover:bg-slate-200 transition shadow-[0_10px_30px_rgba(255,255,255,0.2)]">
+                            <svg id="pro-icon-play" class="w-10 h-10 ml-2 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <svg id="pro-icon-pause" class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const females5m2 = ["Julia", "Freya", "Anna", "Grace", "Avery", "Yihan", "Emma", "Abigail", "Susie", "Nina"];
+        const males5m2 = ["Kenneth", "Dafa", "Jim", "Charles", "Henry", "Patrick", "Ryan", "David", "Justin", "Jason Ma", "Edwin", "Jason Shen", "Terrance"];
+
+        const classes = [
+            { id: '5m2', name: '5M2 English', room: 'Room 105', students: [...females5m2, ...males5m2] }
+        ];
+
+        const studentGenders = {};
+        females5m2.forEach(n => studentGenders[n] = 'F');
+        males5m2.forEach(n => studentGenders[n] = 'M');
+
+        let currentClassId = '5m2';
+        let isSidebarOpen = false;
+
+        function secureShuffle(arr) {
+            const s = [...arr];
+            for (let i = s.length - 1; i > 0; i--) {
+                const buf = new Uint32Array(1);
+                window.crypto.getRandomValues(buf);
+                const j = buf[0] % (i + 1);
+                [s[i], s[j]] = [s[j], s[i]];
+            }
+            return s;
+        }
+
+        classes.forEach(c => {
+            c.students = secureShuffle(c.students);
+        });
+
+        function setGlobalTimer(minutes) {
+            const timerDisplay = document.getElementById('timer-display');
+            if (timerDisplay) {
+                const total = minutes * 60;
+                const mins = Math.floor(total / 60);
+                const secs = total % 60;
+                timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+            const timerBar = document.getElementById('timer-progress-bar');
+            if (timerBar) {
+                timerBar.style.width = '100%';
+                timerBar.style.background = '#6366f1';
+            }
+        }
+
+        function toggleTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            if (timerDisplay) timerDisplay.textContent = '00:00';
+            const timerBar = document.getElementById('timer-progress-bar');
+            if (timerBar) {
+                timerBar.style.width = '0%';
+                timerBar.style.background = '#ef4444';
+            }
+        }
+
+        function awardPoint(event) {
+            const point = document.createElement('div');
+            point.textContent = '+1';
+            point.className = 'point-anim';
+            point.style.left = `${event.clientX || window.innerWidth / 2}px`;
+            point.style.top = `${event.clientY || window.innerHeight / 2}px`;
+            document.body.appendChild(point);
+            setTimeout(() => point.remove(), 1000);
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 40,
+                    spread: 60,
+                    origin: { y: 0.5 }
+                });
+            }
+        }
+
+        const soundMap = {
+            click: { freq: 660, duration: 0.08, gain: 0.05, type: 'sine' },
+            chime: { freq: 880, duration: 0.18, gain: 0.07, type: 'triangle' },
+            sweep: { freq: 440, duration: 0.25, gain: 0.06, type: 'sawtooth' },
+            loudbell: { freq: 1040, duration: 0.28, gain: 0.12, type: 'square' },
+            loudbuzz: { freq: 180, duration: 0.3, gain: 0.09, type: 'square' }
+        };
+
+        let audioCtx = null;
+
+        function initAudio() {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            if (!audioCtx) audioCtx = new AudioCtx();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSFX(name) {
+            const settings = soundMap[name];
+            if (!settings) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = settings.type;
+                osc.frequency.value = settings.freq;
+                gain.gain.value = settings.gain;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + settings.duration);
+            } catch (e) {}
+        }
+
+        function switchView(viewId) {
+            const views = ['view-dashboard','view-reading-timer','view-class-roles','view-quiet-timer','view-awards','view-class','view-fun-pickers','view-tech-shuffler','view-seating','view-pro-timer'];
+            views.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            const target = document.getElementById(viewId);
+            if (target) target.classList.remove('hidden');
+
+            if (viewId === 'dashboard') {
+                document.getElementById('menu-toggle').click();
+            }
+        }
+
+        function loadClass(classId) {
+            currentClassId = classId;
+            const found = classes.find(c => c.id === classId);
+            if (!found) return;
+
+            const headerClassName = document.getElementById('header-class-name');
+            const headerRoomName = document.getElementById('header-room-name');
+            if (headerClassName) headerClassName.textContent = found.name;
+            if (headerRoomName) {
+                headerRoomName.textContent = found.room;
+                headerRoomName.classList.remove('hidden');
+            }
+            if (typeof renderTimetable === 'function') renderTimetable();
+        }
+
+        function populateClassList() {
+            const container = document.getElementById('class-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+            classes.forEach(cls => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-50 hover:text-indigo-700 text-slate-600 transition-colors border border-transparent hover:border-indigo-200';
+                btn.innerHTML = `${cls.name}<span class=\"text-[10px] ml-2 text-slate-400\">${cls.room}</span>`;
+                btn.onclick = () => {
+                    playSFX('click');
+                    loadClass(cls.id);
+                    switchView('dashboard');
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderTimetable() {
+            const container = document.getElementById('timetable-container');
+            if (!container) return;
+
+            const timetableData = [
+                ['Mon', 'Home Group', 'Math', 'Reading', 'Art'],
+                ['Tue', 'Science', 'Writing', 'PE', 'Library'],
+                ['Wed', 'English', 'Math', 'Music', 'Project'],
+                ['Thu', 'Inquiry', 'Reading', 'STEM', 'Assembly'],
+                ['Fri', 'Review', 'English', 'Games', 'Reward']
+            ];
+
+            const rows = timetableData.map((row, rowIndex) => `
+                <tr class="border-b border-slate-200">
+                    <td class="p-2 text-xs font-bold text-slate-600 border-r border-slate-200">${row[0]}</td>
+                    ${row.slice(1).map((cell, index) => `
+                        <td class="timetable-cell">
+                            <div class="rounded-md bg-slate-50 px-2 py-2">
+                                <span class="font-bold text-slate-700">${cell}</span>
+                            </div>
+                        </td>
+                    `).join('')}
+                </tr>
+            `).join('');
+
+            container.innerHTML = `
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100">
+                            <th class="p-2 text-left text-[11px] font-bold text-slate-600 uppercase border-r border-slate-200">Day</th>
+                            <th class="p-2 text-left text-[11px] font-bold text-slate-600 uppercase">Period 1</th>
+                            <th class="p-2 text-left text-[11px] font-bold text-slate-600 uppercase">Period 2</th>
+                            <th class="p-2 text-left text-[11px] font-bold text-slate-600 uppercase">Period 3</th>
+                            <th class="p-2 text-left text-[11px] font-bold text-slate-600 uppercase">Period 4</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+        }
+
+        function changeWeek(delta) {
+            const title = document.getElementById('week-display-title');
+            const sub = document.getElementById('week-display-sub');
+            if (title) title.textContent = `Week ${10 + delta}`;
+            if (sub) sub.textContent = delta > 0 ? 'Next week' : 'Previous week';
+        }
+
+        const lessonPlans = {
+            1: {
+                "thu_p3_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5",
+                    unit: "Unit 1: Welcome & Routine",
+                    icon: "👋",
+                    objective: "I can introduce myself and participate in classroom routines.",
+                    skill: "Speaking & classroom communication",
+                    activity: `
+                        <div><strong>Phase 1: Welcome (10m):</strong> Teacher introduction and course overview.</div>
+                        <div><strong>Phase 2: Icebreaker (15m):</strong> Pair interviews and self-introductions.</div>
+                        <div><strong>Phase 3: Class routines (15m):</strong> Discuss classroom expectations and group roles.</div>
+                    `,
+                    assessment: "Teacher observation and informal speaking check",
+                    homework: "Bring your English notebook tomorrow."
+                },
+                "thu_p4_5m2": {
+                    classTitle: "5M2 English",
+                    badge: "Grade 5",
+                    unit: "Unit 1: Reading routines",
+                    icon: "📖",
+                    objective: "I can set a reading goal and understand classroom reading routines.",
+                    skill: "Reading routines & goal setting",
+                    activity: `
+                        <div><strong>Phase 1: Reading routines (10m):</strong> Overview of silent reading expectations.</div>
+                        <div><strong>Phase 2: Book selection (15m):</strong> Select a suitable reader and set a reading goal.</div>
+                        <div><strong>Phase 3: Reflection (10m):</strong> Record reading intentions in journals.</div>
+                    `,
+                    assessment: "Book choice and reading goal note",
+                    homework: "Read for 10 minutes at home."
+                }
+            }
+        };
+
+        const weeklyLessonPlans = lessonPlans;
+
+        function renderLessonCards() {
+            const container = document.getElementById('roles-container');
+            if (!container) return;
+
+            const plans = weeklyLessonPlans[1] || {};
+            const cards = Object.entries(plans).map(([key, plan]) => `
+                <div class="plan-card-hover border-b border-slate-200 p-4 bg-white">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${plan.icon || '📘'}</span>
+                            <div>
+                                <h3 class="font-display text-xl font-black text-indigo-900">${plan.classTitle}</h3>
+                                <p class="text-xs uppercase tracking-wider text-slate-500">${plan.badge}</p>
+                            </div>
+                        </div>
+                        <button class="plan-btn-tag" onclick="openLessonPlan('${key}')">Open</button>
+                    </div>
+                    <div class="mt-3">
+                        <p class="text-sm font-bold text-slate-700">${plan.unit}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = cards;
+        }
+
+        function openLessonPlan(key) {
+            const plan = (weeklyLessonPlans[1] && weeklyLessonPlans[1][key]) || null;
+            if (!plan) return;
+
+            const modal = document.createElement('div');
+            modal.id = 'lessonPlanModal';
+            modal.className = 'fixed inset-0 bg-slate-900/60 z-[999] flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden shadow-2xl border border-slate-200">
+                    <div class="flex items-center justify-between bg-slate-900 text-white px-5 py-3">
+                        <div>
+                            <h3 class="font-display text-xl font-black">${plan.classTitle}</h3>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-300">${plan.badge}</p>
+                        </div>
+                        <button onclick="this.closest('#lessonPlanModal').remove()" class="text-white text-xl">✕</button>
+                    </div>
+                    <div class="p-5 overflow-y-auto max-h-[75vh]">
+                        <div class="mb-4">
+                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold">${plan.icon || '📘'} ${plan.unit}</span>
+                        </div>
+                        <div class="space-y-4 text-slate-700">
+                            <div>
+                                <h4 class="font-black text-slate-800 uppercase tracking-wider text-xs mb-1">Objective</h4>
+                                <p>${plan.objective}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-slate-800 uppercase tracking-wider text-xs mb-1">Skill</h4>
+                                <p>${plan.skill}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-slate-800 uppercase tracking-wider text-xs mb-1">Activity</h4>
+                                <div>${plan.activity}</div>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-slate-800 uppercase tracking-wider text-xs mb-1">Assessment</h4>
+                                <p>${plan.assessment}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-black text-slate-800 uppercase tracking-wider text-xs mb-1">Homework</h4>
+                                <p>${plan.homework}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function renderAwards(classId) {
+            const grid = document.getElementById('awards-grid');
+            if (!grid) return;
+
+            const awards = [
+                'Participation', 'Kindness', 'Helpfulness', 'Great Teamwork', 'Focused Reading', 'Positive Attitude',
+                'Listening', 'Confidence', 'Creativity', 'Responsibility', 'Problem Solving', 'Best Effort',
+                'Leadership', 'Homework', 'Improvement', 'Punctuality', 'Curiosity', 'Respect'
+            ];
+
+            const students = classes.find(c => c.id === classId)?.students || [];
+            const cards = students.slice(0, 18).map((student, index) => `
+                <div class="border border-slate-200 rounded-xl p-3 bg-white shadow-sm">
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">${awards[index % awards.length]}</div>
+                    <div class="mt-2 text-base font-black text-slate-800">${student}</div>
+                </div>
+            `).join('');
+            grid.innerHTML = cards;
+        }
+
+        function startReadingTimer() {
+            const display = document.getElementById('big-reading-clock');
+            const progress = document.getElementById('reading-progress');
+            const status = document.getElementById('reading-status-text');
+            const btnStart = document.getElementById('btn-reading-start');
+            const btnPause = document.getElementById('btn-reading-pause');
+
+            if (btnStart) btnStart.classList.add('hidden');
+            if (btnPause) btnPause.classList.remove('hidden');
+            if (status) status.textContent = 'Reading in Progress';
+
+            let remaining = 600; // 10 min
+            const interval = setInterval(() => {
+                remaining--;
+                const mins = Math.floor(remaining / 60);
+                const secs = remaining % 60;
+                if (display) display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                if (progress) progress.style.width = `${(remaining / 600) * 100}%`;
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    if (status) status.textContent = 'Time is up! Great job!';
+                    if (btnPause) btnPause.classList.add('hidden');
+                    if (btnStart) btnStart.classList.remove('hidden');
+                    if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80 });
+                }
+            }, 1000);
+        }
+
+        function pauseReadingTimer() {
+            const btnStart = document.getElementById('btn-reading-start');
+            const btnPause = document.getElementById('btn-reading-pause');
+            const status = document.getElementById('reading-status-text');
+
+            if (btnPause) btnPause.classList.add('hidden');
+            if (btnStart) btnStart.classList.remove('hidden');
+            if (status) status.textContent = 'Paused';
+        }
+
+        function resetReadingTimer() {
+            const display = document.getElementById('big-reading-clock');
+            const progress = document.getElementById('reading-progress');
+            const status = document.getElementById('reading-status-text');
+            const btnStart = document.getElementById('btn-reading-start');
+            const btnPause = document.getElementById('btn-reading-pause');
+
+            if (display) display.textContent = '10:00';
+            if (progress) progress.style.width = '100%';
+            if (status) status.textContent = 'Ready to Focus';
+            if (btnPause) btnPause.classList.add('hidden');
+            if (btnStart) btnStart.classList.remove('hidden');
+        }
+
+        function startQuietTimer() {
+            const select = document.getElementById('quiet-time-select');
+            const display = document.getElementById('quiet-timer-display');
+            const bar = document.getElementById('quiet-timer-bar');
+            const value = Number(select?.value || 60);
+
+            let remaining = value;
+            if (display) display.textContent = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')}`;
+            if (bar) bar.style.width = '100%';
+
+            const interval = setInterval(() => {
+                remaining--;
+                if (display) display.textContent = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')}`;
+                if (bar) bar.style.width = `${(remaining / value) * 100}%`;
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    if (display) display.textContent = '0:00';
+                    playSFX('loudbell');
+                    if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70 });
+                }
+            }, 1000);
+        }
+
+        function toggleQuietTimerPause() {
+            playSFX('click');
+        }
+
+        function startGroupTimer(minutes) {
+            const bar = document.getElementById('group-timer-bar');
+            const text = document.getElementById('group-timer-text');
+            const container = document.getElementById('group-timer-bar-container');
+            if (container) container.classList.remove('hidden');
+
+            let total = minutes * 60;
+            if (text) text.textContent = `${minutes}s`;
+
+            const interval = setInterval(() => {
+                total--;
+                if (text) {
+                    text.textContent = `${Math.ceil(total / 60)}s`;
+                }
+                if (bar) bar.style.width = `${(total / (minutes * 60)) * 100}%`;
+                if (total <= 0) {
+                    clearInterval(interval);
+                    if (bar) bar.style.width = '0%';
+                    playSFX('loudbell');
+                }
+            }, 1000);
+        }
+
+        function shuffleStudents(groupSize) {
+            const display = document.getElementById('shuffler-display');
+            if (!display) return;
+            const students = [...classes[0].students];
+            const shuffled = secureShuffle(students);
+
+            const groups = [];
+            for (let i = 0; i < shuffled.length; i += groupSize) {
+                groups.push(shuffled.slice(i, i + groupSize));
+            }
+
+            display.innerHTML = groups.map(group => `
+                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <h3 class="text-sm uppercase tracking-wider text-slate-500 font-bold mb-3">Group ${groups.indexOf(group) + 1}</h3>
+                    <div class="flex flex-wrap gap-2">
+                        ${group.map(name => `<span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-bold">${name}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showPicker(type) {
+            const container = document.getElementById(type === 'random' ? 'fun-random-picker' : 'fun-teams-picker');
+            const students = classes[0].students;
+            const picked = students[Math.floor(Math.random() * students.length)];
+            if (container) {
+                container.classList.remove('hidden');
+                container.innerHTML = `
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="bg-white rounded-3xl p-8 shadow-2xl max-w-xl w-full text-center">
+                            <h2 class="text-3xl font-black text-indigo-800 mb-6">${type === 'random' ? 'Selected Student' : 'Team Pick'}</h2>
+                            <div class="text-5xl font-black text-indigo-700">${picked}</div>
+                            <button onclick="this.closest('.picker-container').classList.add('hidden')" class="mt-8 px-6 py-3 rounded-xl bg-indigo-600 text-white font-bold">Close</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function launchTechShuffle() {
+            const menu = document.getElementById('techMenuView');
+            const view = document.getElementById('techShuffleView');
+            if (menu) menu.classList.add('hidden');
+            if (view) {
+                view.classList.remove('hidden');
+                view.classList.add('opacity-100');
+            }
+
+            const display = document.getElementById('tech-shuffle-display');
+            if (!display) return;
+            const students = classes[0].students;
+            const shuffled = secureShuffle(students);
+
+            display.innerHTML = shuffled.map((name, idx) => `
+                <div class="rounded-xl border border-slate-700 bg-slate-900 p-3 text-white font-mono font-bold text-sm">
+                    ${idx + 1}. ${name}
+                </div>
+            `).join('');
+        }
+
+        function initSeating(classId) {
+            const classInfo = classes.find(c => c.id === classId) || classes[0];
+            const container = document.getElementById('tablesContainer');
+            const unassigned = document.getElementById('unassignedStudents');
+
+            const students = [...classInfo.students];
+            const tables = Array.from({ length: 5 }, (_, idx) => ({
+                id: idx + 1,
+                students: []
+            }));
+
+            students.forEach((student, idx) => {
+                const tableIndex = idx % tables.length;
+                tables[tableIndex].students.push(student);
+            });
+
+            if (container) {
+                container.innerHTML = tables.map(table => `
+                    <div class="table-drop-zone bg-white/75 border-2 border-slate-200 rounded-2xl p-2 min-h-[120px] shadow-sm">
+                        <div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-2">Table ${table.id}</div>
+                        <div class="flex flex-wrap gap-1">
+                            ${table.students.map(name => `
+                                <div class="student-chip px-2 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[11px] font-bold">${name}</div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (unassigned) {
+                unassigned.innerHTML = '';
+                const extras = [];
+                for (let i = 0; i < students.length % 5; i++) {
+                    extras.push(students[students.length - 1 - i]);
+                }
+                extras.forEach(name => {
+                    const chip = document.createElement('div');
+                    chip.className = 'student-chip px-2 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold';
+                    chip.textContent = name;
+                    unassigned.appendChild(chip);
+                });
+            }
+        }
+
+        function startSeatingTimer() {
+            const select = document.getElementById('seating-timer-select');
+            const display = document.getElementById('seating-timer-display');
+            const value = Number(select?.value || 5) * 60;
+            let remaining = value;
+            const interval = setInterval(() => {
+                remaining--;
+                const mins = Math.floor(remaining / 60);
+                const secs = remaining % 60;
+                if (display) display.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    playSFX('loudbell');
+                }
+            }, 1000);
+        }
+
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            isSidebarOpen = !isSidebarOpen;
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                if (isSidebarOpen) sidebar.classList.remove('-translate-x-full');
+                else sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+        function updateDate() {
+            const date = document.getElementById('header-date');
+            if (!date) return;
+            const now = new Date();
+            date.textContent = now.toLocaleDateString('en-SG', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        populateClassList();
+        updateDate();
+        renderTimetable();
+        renderLessonCards();
+        renderAwards('5m2');
+        loadClass('5m2');
+        initSeating('5m2');
+        setGlobalTimer(40);
+    </script>
+</body>
+</html>
