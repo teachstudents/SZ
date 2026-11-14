@@ -1,0 +1,2644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Unit 2 Detective Sentence Lab: When, While & Reported Speech</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #fffbeb 0%, #e0f2fe 50%, #eef2ff 100%);
+      color: #1e293b;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    h1, h2, h3, .fun-font {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+    }
+    .tile {
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+    .tile:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+    }
+    .tile:active {
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
+    .drop-zone-active {
+      border-color: #f59e0b !important;
+      background-color: #fef3c7 !important;
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.25);
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    .animate-shake {
+      animation: shake 0.35s ease-in-out;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop {
+      animation: popIn 0.2s ease-out forwards;
+    }
+    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 9999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+
+  <!-- LANDING / MENU SCREEN -->
+  <div id="menu-screen" class="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
+    <div class="w-full max-w-5xl">
+      <div class="text-center mb-7">
+        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-100 border-2 border-amber-300 text-amber-800 text-sm md:text-base font-extrabold shadow-sm mb-3">
+          <span>🕵️‍♂️ Grade 5 • Unit 2: Detective Stories 🔍</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-slate-800 mb-2">
+          Detective <span class="text-indigo-600">Sentence Lab</span>
+        </h1>
+        <p class="text-slate-600 text-base md:text-xl font-bold max-w-2xl mx-auto">
+          Tap or drag word tiles to solve mysteries using <span class="text-sky-600">When &amp; While</span> and <span class="text-emerald-600">Reported Speech</span>!
+        </p>
+      </div>
+
+      <!-- Detective Name & Settings -->
+      <div class="bg-white border-4 border-indigo-200 rounded-3xl p-4 md:p-5 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+        <div class="flex items-center gap-3 w-full sm:w-auto flex-1">
+          <span class="text-4xl" aria-hidden="true">🪪</span>
+          <div class="flex-1">
+            <label for="player-name-input" class="block text-xs font-black uppercase tracking-wider text-indigo-500 mb-1">Your Detective Name</label>
+            <input id="player-name-input" type="text" maxlength="24" placeholder="Type your name (e.g. Detective Leo)"
+              class="w-full bg-slate-50 border-2 border-slate-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 rounded-2xl px-4 py-2.5 text-slate-800 text-base md:text-lg font-extrabold outline-none transition" />
+          </div>
+        </div>
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <button id="toggle-timer-pref-btn" type="button"
+            class="px-4 py-3 rounded-2xl bg-sky-50 border-2 border-sky-300 hover:bg-sky-100 text-sm md:text-base font-extrabold text-sky-800 flex items-center gap-2 shadow-sm transition">
+            <span id="timer-pref-icon">⏱️</span>
+            <span id="timer-pref-label">Timer: ON (45s)</span>
+          </button>
+          <button id="menu-wordbank-btn" type="button"
+            class="px-4 py-3 rounded-2xl bg-purple-50 border-2 border-purple-300 hover:bg-purple-100 text-sm md:text-base font-extrabold text-purple-800 flex items-center gap-2 shadow-sm transition">
+            <span>📚 Word Bank</span>
+          </button>
+          <button id="menu-mute-btn" type="button"
+            class="px-4 py-3 rounded-2xl bg-amber-50 border-2 border-amber-300 hover:bg-amber-100 text-sm md:text-base font-extrabold text-amber-800 flex items-center gap-2 shadow-sm transition">
+            <span class="mute-label">Sound: ON</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Mode 1: When & While -->
+        <div class="bg-white border-4 border-sky-300 hover:border-sky-400 rounded-3xl p-6 flex flex-col justify-between shadow-lg transition">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-5xl" aria-hidden="true">⏱️</span>
+              <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-black border border-sky-300">20 CASES</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">When &amp; While</h2>
+            <p class="text-slate-600 text-sm md:text-base font-semibold leading-relaxed mb-5">
+              Connect longer actions (<span class="text-sky-600 font-extrabold">was/were + -ing</span>) with sudden clues using <strong>when</strong> and <strong>while</strong>!
+            </p>
+          </div>
+          <button data-mode="when_while" class="start-mode-btn w-full py-3.5 px-4 rounded-2xl bg-sky-500 hover:bg-sky-400 border-b-4 border-sky-700 text-white font-black text-lg shadow transition flex items-center justify-center gap-2">
+            <span>Play Cases</span> <span>▶</span>
+          </button>
+        </div>
+
+        <!-- Mode 2: Reported Speech -->
+        <div class="bg-white border-4 border-emerald-300 hover:border-emerald-400 rounded-3xl p-6 flex flex-col justify-between shadow-lg transition">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-5xl" aria-hidden="true">🗣️</span>
+              <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-black border border-emerald-300">20 CASES</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Reported Speech</h2>
+            <p class="text-slate-600 text-sm md:text-base font-semibold leading-relaxed mb-5">
+              Turn witness &amp; suspect quotes into police reports using <span class="text-emerald-600 font-extrabold">said that</span> and <span class="text-emerald-600 font-extrabold">told</span>!
+            </p>
+          </div>
+          <button data-mode="reported" class="start-mode-btn w-full py-3.5 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 border-b-4 border-emerald-700 text-white font-black text-lg shadow transition flex items-center justify-center gap-2">
+            <span>Interview Witnesses</span> <span>▶</span>
+          </button>
+        </div>
+
+        <!-- Mode 3: Master Detective Mix -->
+        <div class="bg-white border-4 border-amber-300 hover:border-amber-400 rounded-3xl p-6 flex flex-col justify-between shadow-lg transition">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-5xl" aria-hidden="true">🕵️‍♀️</span>
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-black border border-amber-300">20 MIXED</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Chief Inspector Mix</h2>
+            <p class="text-slate-600 text-sm md:text-base font-semibold leading-relaxed mb-5">
+              Solve a fun mix of <strong>When &amp; While</strong> clues and <strong>Reported Speech</strong> statements to earn your Chief badge!
+            </p>
+          </div>
+          <button data-mode="mixed" class="start-mode-btn w-full py-3.5 px-4 rounded-2xl bg-amber-400 hover:bg-amber-300 border-b-4 border-amber-600 text-slate-900 font-black text-lg shadow transition flex items-center justify-center gap-2">
+            <span>Start Final Case</span> <span>▶</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Second Row: New Unit 2 Modes -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+        <!-- Mode 4: Crime Report Builder -->
+        <div class="bg-white border-4 border-purple-300 hover:border-purple-400 rounded-3xl p-6 flex flex-col justify-between shadow-lg transition">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-5xl" aria-hidden="true">📝</span>
+              <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-black border border-purple-300">GUIDED FRAMES</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Crime Report Builder</h2>
+            <p class="text-slate-600 text-sm md:text-base font-semibold leading-relaxed mb-4">
+              Arrange Unit 2 sentence starters and fill in forensic evidence frames (<em>evidence bag, shoeprint, DNA sample</em>) to build a 3-part mystery report!
+            </p>
+          </div>
+          <button id="open-report-builder-btn" type="button" class="w-full py-3.5 px-4 rounded-2xl bg-purple-500 hover:bg-purple-400 border-b-4 border-purple-700 text-white font-black text-lg shadow transition flex items-center justify-center gap-2">
+            <span>Build Crime Report</span> <span>▶</span>
+          </button>
+        </div>
+
+        <!-- Mode 5: 9-10/10 Writing Helper & Rubric Studio -->
+        <div class="bg-white border-4 border-rose-300 hover:border-rose-400 rounded-3xl p-6 flex flex-col justify-between shadow-lg transition">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-5xl" aria-hidden="true">🏅</span>
+              <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-black border border-rose-300">9–10/10 RUBRIC</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">9–10/10 Writing Helper</h2>
+            <p class="text-slate-600 text-sm md:text-base font-semibold leading-relaxed mb-4">
+              Write a 120–150 word crime account using the 5-paragraph formula, strong detective &amp; reporting verbs, red herrings, and the 30-mark rubric checklist!
+            </p>
+          </div>
+          <button id="open-writing-helper-btn" type="button" class="w-full py-3.5 px-4 rounded-2xl bg-rose-500 hover:bg-rose-400 border-b-4 border-rose-700 text-white font-black text-lg shadow transition flex items-center justify-center gap-2">
+            <span>Open Writing Studio</span> <span>▶</span>
+          </button>
+        </div>
+      </div>
+
+      <p class="text-center text-sm font-bold text-slate-500 mt-6">
+        👆 Tap a tile or drag it into the box! Voice speed is set to 85% for clear listening.
+      </p>
+    </div>
+  </div>
+
+  <!-- GAMEPLAY SCREEN -->
+  <div id="game-screen" class="hidden flex-1 flex flex-col h-screen overflow-hidden">
+    <!-- Top Header Bar (Consolidated Controls + Check Button + Digital Timer) -->
+    <header class="bg-white border-b-4 border-indigo-200 px-3 md:px-5 py-2 flex flex-col gap-2 shrink-0 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+          <button id="back-to-menu-btn" type="button"
+            class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 text-xs md:text-sm font-extrabold text-slate-700 transition">
+            🏠 Menu
+          </button>
+          <span id="mode-badge" class="px-3 py-1 rounded-xl bg-sky-100 text-sky-800 border border-sky-300 text-xs md:text-sm font-black">When &amp; While</span>
+          <span id="player-badge" class="hidden md:inline-block px-3 py-1 rounded-xl bg-indigo-50 text-indigo-700 text-xs md:text-sm font-extrabold border border-indigo-200">Junior Detective</span>
+          <span id="case-topic-badge" class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-xs md:text-sm font-black">
+            🔍 Case
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <div id="timer-controls-group" class="flex items-center gap-1.5">
+            <div class="px-3 py-1 rounded-xl bg-slate-900 border-2 border-slate-700 text-sm md:text-base font-mono font-black text-emerald-400 tracking-wider flex items-center gap-1.5" title="Digital Timer">
+              <span>⏱️</span><span id="timer-seconds-display">00:45</span>
+            </div>
+            <button id="pause-timer-btn" type="button" title="Pause or Resume Timer"
+              class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 text-amber-900 text-xs md:text-sm font-black transition flex items-center gap-1 shadow-sm">
+              <span id="pause-btn-icon">⏸️</span>
+              <span id="pause-btn-label">Pause</span>
+            </button>
+          </div>
+
+          <div class="px-2.5 py-1 rounded-xl bg-orange-50 border-2 border-orange-200 text-xs md:text-sm font-black text-orange-600 flex items-center gap-1" title="Current Streak">
+            <span>🔥</span><span id="streak-display">0</span>
+          </div>
+          <div class="px-2.5 py-1 rounded-xl bg-amber-50 border-2 border-amber-200 text-xs md:text-sm font-black text-amber-700 flex items-center gap-1" title="Total Score">
+            <span>⭐</span><span id="score-display">0</span>
+          </div>
+          <div class="px-2.5 py-1 rounded-xl bg-slate-100 border-2 border-slate-200 text-xs md:text-sm font-extrabold text-slate-700">
+            <span id="progress-display">1 / 20</span>
+          </div>
+          <button id="toggle-tables-btn" type="button" title="Class 5M2 6-Table Scoreboard"
+            class="px-2.5 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 text-emerald-800 text-xs md:text-sm font-black transition">
+            🏆 Tables
+          </button>
+          <button id="game-wordbank-btn" type="button" title="Detective Word Bank"
+            class="px-2.5 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 border-2 border-purple-300 text-purple-800 text-xs md:text-sm font-black transition">
+            📚 Word Bank
+          </button>
+          <button id="rules-btn" type="button" title="Grammar Rules"
+            class="px-2.5 py-1.5 rounded-xl bg-indigo-100 hover:bg-indigo-200 border-2 border-indigo-300 text-indigo-800 text-xs md:text-sm font-black transition">
+            📖 Rules
+          </button>
+          <button id="game-mute-btn" type="button" title="Toggle Sound"
+            class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 text-xs md:text-sm font-extrabold text-slate-700 transition">
+            <span class="mute-label">Sound: ON</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Second Header Strip: Joining Words + Sentence Action Buttons + Check My Answer -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-slate-100">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span id="sidebar-title" class="text-xs font-black uppercase tracking-wider text-amber-700">🔗 Joining Words:</span>
+          <div id="joining-words-list" class="flex flex-wrap items-center gap-2">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap ml-auto">
+          <button id="speak-built-btn" type="button"
+            class="px-3 py-1.5 rounded-xl bg-sky-100 hover:bg-sky-200 border-2 border-sky-300 text-xs md:text-sm font-extrabold text-sky-800 transition">
+            Read Mine
+          </button>
+          <button id="clear-zone-btn" type="button"
+            class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border-2 border-rose-200 text-xs md:text-sm font-extrabold text-rose-700 transition">
+            ↺ Clear
+          </button>
+          <button id="check-answer-btn" type="button"
+            class="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 border-b-4 border-emerald-700 text-white font-black text-sm md:text-base shadow transition disabled:opacity-40 disabled:cursor-not-allowed">
+            ✔ Check My Sentence!
+          </button>
+        </div>
+      </div>
+
+      <!-- Optional Class 5M2 6-Table Scoreboard -->
+      <div id="tables-scoreboard" class="hidden grid grid-cols-3 sm:grid-cols-6 gap-2 pt-1.5 border-t border-slate-100">
+        <!-- Populated by JS -->
+      </div>
+    </header>
+
+    <!-- Main Workspace (Full Width for Larger Sentences & Tiles) -->
+    <main class="flex-1 flex flex-col gap-3 overflow-y-auto custom-scroll p-3 md:p-5 max-w-7xl w-full mx-auto">
+      <!-- Case File Clues -->
+      <section class="bg-white border-4 border-sky-200 rounded-3xl p-4 md:p-5 shadow-md">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <h2 id="prompt-question" class="text-xl md:text-2xl font-bold text-slate-800">
+            Combine the clues into one detective sentence:
+          </h2>
+          <span id="case-type-badge" class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black">
+            Time Clause (Tap a clue to listen)
+          </span>
+        </div>
+
+        <div id="base-clues-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Base sentences / direct quote populated here -->
+        </div>
+      </section>
+
+      <!-- Sentence Drop / Build Zone (Much Larger!) -->
+      <section class="bg-white border-4 border-indigo-200 rounded-3xl p-4 md:p-5 flex flex-col gap-3 shadow-md">
+        <div class="flex items-center justify-between">
+          <span class="text-xs md:text-sm font-black uppercase tracking-wider text-indigo-600">
+            🧩 Build Sentence Here (Tap or Drag Tiles • Don't Forget Punctuation!)
+          </span>
+        </div>
+
+        <div id="build-zone"
+          class="min-h-[116px] md:min-h-[136px] rounded-2xl border-3 border-dashed border-indigo-300 bg-indigo-50/60 p-4 flex flex-wrap items-center gap-3 transition">
+          <span id="build-placeholder" class="text-slate-400 text-lg md:text-xl font-bold pointer-events-none">
+            Tap or drag word tiles here in the right order...
+          </span>
+        </div>
+
+        <!-- Feedback Banner -->
+        <div id="feedback-banner" class="hidden rounded-2xl p-4 text-sm md:text-base font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span id="feedback-icon" class="text-3xl leading-none">✅</span>
+            <div>
+              <div id="feedback-title" class="text-lg font-black"></div>
+              <div id="feedback-detail" class="text-sm md:text-base font-semibold mt-1 space-y-1"></div>
+            </div>
+          </div>
+          <button id="next-question-btn" type="button"
+            class="shrink-0 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 border-b-4 border-indigo-800 text-white font-black text-base shadow transition">
+            Next Case ▶
+          </button>
+        </div>
+      </section>
+
+      <!-- Word & Punctuation Tile Tray (Much Larger!) -->
+      <section class="bg-white border-4 border-slate-200 rounded-3xl p-4 md:p-5 flex-1 flex flex-col justify-start gap-3 shadow-md">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="text-xs md:text-sm font-black uppercase tracking-wider text-slate-600">🗂️ Evidence Word &amp; Punctuation Tiles</span>
+          <span class="text-xs md:text-sm font-bold text-slate-400">Tap a tile to add • Tap in box to remove</span>
+        </div>
+        <div id="tile-tray" class="flex flex-wrap gap-3">
+          <!-- Tiles populated dynamically -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Timer Bar -->
+    <div id="timer-bar-wrapper" class="h-4 w-full bg-slate-200 shrink-0 overflow-hidden border-t border-slate-300">
+      <div id="timer-bar" class="h-full bg-emerald-500 transition-all duration-100" style="width: 100%"></div>
+    </div>
+  </div>
+
+  <!-- RULES MODAL -->
+  <div id="rules-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border-4 border-indigo-300 rounded-3xl max-w-2xl w-full p-6 md:p-7 shadow-2xl animate-pop max-h-[90vh] overflow-y-auto custom-scroll">
+      <div class="flex items-center justify-between mb-4">
+        <h2 id="rules-modal-title" class="text-2xl md:text-3xl font-bold text-indigo-700">📖 Detective Grammar Rules</h2>
+        <button id="close-rules-x" type="button" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xl">×</button>
+      </div>
+      <div id="rules-modal-body" class="space-y-4 text-sm md:text-base text-slate-700 leading-relaxed">
+        <!-- Populated dynamically -->
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button id="rules-start-btn" type="button" class="px-7 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 border-b-4 border-indigo-800 text-white font-black text-lg shadow-lg transition">
+          Let's Investigate! ▶
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- END / REVIEW MISTAKES SCREEN -->
+  <div id="summary-screen" class="hidden flex-1 flex flex-col items-center justify-center p-4 md:p-8">
+    <div class="w-full max-w-3xl bg-white border-4 border-amber-300 rounded-3xl p-6 md:p-8 shadow-2xl">
+      <div class="text-center mb-6">
+        <div class="text-6xl mb-2" aria-hidden="true">🏆</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-1">Case File Complete!</h2>
+        <p id="summary-subtitle" class="text-slate-600 text-base md:text-lg font-bold"></p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-center">
+          <div class="text-xs font-black text-amber-700 uppercase">Score</div>
+          <div id="final-score" class="text-3xl font-black text-amber-600 mt-1">0</div>
+        </div>
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 text-center">
+          <div class="text-xs font-black text-emerald-700 uppercase">Accuracy</div>
+          <div id="final-accuracy" class="text-3xl font-black text-emerald-600 mt-1">0%</div>
+        </div>
+        <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-4 text-center">
+          <div class="text-xs font-black text-orange-700 uppercase">Best Streak</div>
+          <div id="final-streak" class="text-3xl font-black text-orange-500 mt-1">0</div>
+        </div>
+      </div>
+
+      <div id="mistakes-section" class="mb-6">
+        <h3 class="text-sm font-black uppercase tracking-wider text-rose-600 mb-2">🔎 Case Review (Mistakes)</h3>
+        <div id="mistakes-list" class="max-h-60 overflow-y-auto custom-scroll space-y-2.5 pr-1">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button id="play-again-btn" type="button" class="flex-1 py-3.5 px-5 rounded-2xl bg-amber-400 hover:bg-amber-300 border-b-4 border-amber-600 text-slate-900 font-black text-lg shadow transition">
+          🔄 Play Again
+        </button>
+        <button id="summary-menu-btn" type="button" class="flex-1 py-3.5 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 text-slate-700 font-extrabold text-lg transition">
+          🏠 Back to Case Menu
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- CRIME REPORT BUILDER SCREEN -->
+  <div id="report-builder-screen" class="hidden flex-1 flex flex-col h-screen overflow-hidden">
+    <header class="bg-white border-b-4 border-purple-200 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 shrink-0 shadow-sm">
+      <div class="flex items-center gap-2">
+        <button id="rb-menu-btn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 text-sm font-extrabold text-slate-700 transition">🏠 Menu</button>
+        <span class="px-3 py-1.5 rounded-xl bg-purple-100 text-purple-800 border border-purple-300 text-sm font-black">📝 Crime Report Builder</span>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <button id="rb-wordbank-btn" type="button" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 text-sm font-black transition">📚 Word Bank</button>
+        <button id="rb-listen-btn" type="button" class="px-3.5 py-1.5 rounded-xl bg-sky-100 hover:bg-sky-200 border-2 border-sky-300 text-sky-800 text-sm font-black transition">Listen to Report</button>
+        <button id="rb-clear-btn" type="button" class="px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border-2 border-rose-200 text-rose-700 text-sm font-black transition">↺ Reset</button>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto custom-scroll p-4 md:p-6 max-w-6xl w-full mx-auto space-y-4">
+      <div class="bg-white border-4 border-purple-200 rounded-3xl p-4 md:p-5 shadow-md">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <h2 class="text-xl md:text-2xl font-bold text-slate-800">Choose a Mystery Case &amp; Fill the Frames</h2>
+          <div class="flex gap-2">
+            <button data-case="trophy" class="rb-case-btn px-3 py-1.5 rounded-xl bg-purple-600 text-white text-xs md:text-sm font-black">🏆 The Missing Trophy</button>
+            <button data-case="cruz" class="rb-case-btn px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 border-2 border-slate-300 text-xs md:text-sm font-black">💎 Detective Cruz</button>
+          </div>
+        </div>
+        <p id="rb-case-prompt" class="text-sm md:text-base font-semibold text-slate-600 bg-purple-50 border-2 border-purple-100 rounded-2xl p-3"></p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Left: Interactive Sentence Frames -->
+        <div class="bg-white border-4 border-sky-200 rounded-3xl p-4 md:p-5 shadow-md space-y-3">
+          <h3 class="text-lg font-bold text-sky-800">1. Tap a Blank, Then Tap a Word Chip</h3>
+          <div id="rb-frames-container" class="space-y-3 text-base md:text-lg font-bold text-slate-800">
+            <!-- Populated by JS -->
+          </div>
+          <div class="pt-2 border-t-2 border-slate-100">
+            <div class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Tap a Chip to Fill the Selected Blank:</div>
+            <div id="rb-chips-container" class="flex flex-wrap gap-2">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Live Co-Constructed Report + Starters -->
+        <div class="bg-white border-4 border-emerald-200 rounded-3xl p-4 md:p-5 shadow-md flex flex-col justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-bold text-emerald-800 mb-2">2. Your Official Crime Report</h3>
+            <div id="rb-preview" class="bg-emerald-50/70 border-2 border-emerald-200 rounded-2xl p-4 text-base md:text-lg font-bold text-slate-800 leading-relaxed min-h-[160px]"></div>
+          </div>
+          <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3.5">
+            <div class="text-xs font-black uppercase tracking-wider text-amber-800 mb-1.5">✨ Sentence Starters (Tap to Listen)</div>
+            <div id="rb-starters-list" class="flex flex-wrap gap-1.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 9-10/10 WRITING HELPER & RUBRIC STUDIO -->
+  <div id="writing-helper-screen" class="hidden flex-1 flex flex-col h-screen overflow-hidden">
+    <header class="bg-white border-b-4 border-rose-200 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 shrink-0 shadow-sm">
+      <div class="flex items-center gap-2">
+        <button id="wh-menu-btn" type="button" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 text-sm font-extrabold text-slate-700 transition">🏠 Menu</button>
+        <span class="px-3 py-1.5 rounded-xl bg-rose-100 text-rose-800 border border-rose-300 text-sm font-black">🏅 9–10/10 Crime Account Studio</span>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <span id="wh-word-count-badge" class="px-3 py-1.5 rounded-xl bg-slate-100 border-2 border-slate-300 text-slate-800 text-xs md:text-sm font-black">Words: 0 / 120–150</span>
+        <span id="wh-rubric-score-badge" class="px-3 py-1.5 rounded-xl bg-emerald-100 border-2 border-emerald-300 text-emerald-800 text-xs md:text-sm font-black">Checklist: 0 / 13</span>
+        <button id="wh-wordbank-btn" type="button" class="px-3 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 border-2 border-purple-300 text-purple-800 text-xs md:text-sm font-black transition">📚 Word Bank</button>
+        <button id="wh-model-btn" type="button" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 border-2 border-amber-300 text-amber-900 text-xs md:text-sm font-black transition">⭐ 10/10 Models</button>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto custom-scroll p-3 md:p-5 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- Left Column (7 cols): 5-Paragraph Formula + Writing Pad + Power Upgrades -->
+      <div class="lg:col-span-7 flex flex-col gap-3">
+        <!-- 5-Paragraph Formula Stepper -->
+        <div class="bg-white border-4 border-indigo-200 rounded-3xl p-4 shadow-md">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+            <h2 class="text-lg md:text-xl font-bold text-indigo-800">5-Paragraph Formula (Tap a Step)</h2>
+            <span class="text-xs font-bold text-slate-500">Content (10) • Language (10) • Org (5) • Style (5)</span>
+          </div>
+          <div id="wh-formula-tabs" class="flex flex-wrap gap-1.5 mb-3">
+            <!-- Populated by JS -->
+          </div>
+          <div id="wh-formula-detail" class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-3 text-sm md:text-base font-semibold text-slate-700">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Tap-to-Insert Power Upgrades -->
+        <div class="bg-white border-4 border-amber-200 rounded-3xl p-4 shadow-md space-y-2.5">
+          <div class="text-xs font-black uppercase tracking-wider text-amber-800">⚡ Tap Any Chip to Insert Into Your Draft:</div>
+          <div class="space-y-2">
+            <div>
+              <span class="text-xs font-black text-sky-700 mr-1">Transitions:</span>
+              <span id="wh-transitions" class="inline-flex flex-wrap gap-1.5"></span>
+            </div>
+            <div>
+              <span class="text-xs font-black text-emerald-700 mr-1">Strong Detective Verbs:</span>
+              <span id="wh-detective-verbs" class="inline-flex flex-wrap gap-1.5"></span>
+            </div>
+            <div>
+              <span class="text-xs font-black text-purple-700 mr-1">Strong Reporting Verbs:</span>
+              <span id="wh-reporting-verbs" class="inline-flex flex-wrap gap-1.5"></span>
+            </div>
+            <div>
+              <span class="text-xs font-black text-rose-700 mr-1">Forensic Clues:</span>
+              <span id="wh-forensic-clues" class="inline-flex flex-wrap gap-1.5"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Draft Box -->
+        <div class="bg-white border-4 border-emerald-200 rounded-3xl p-4 shadow-md flex-1 flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <label for="wh-draft-textarea" class="text-sm font-black uppercase tracking-wider text-emerald-700">✍️ Your Crime-Scene Account (Target: 120–150 Words)</label>
+            <div class="flex gap-2">
+              <button id="wh-listen-draft-btn" type="button" class="px-3 py-1 rounded-xl bg-sky-100 hover:bg-sky-200 border border-sky-300 text-sky-800 text-xs font-black">Listen to Draft</button>
+              <button id="wh-copy-draft-btn" type="button" class="px-3 py-1 rounded-xl bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 text-emerald-800 text-xs font-black">Copy</button>
+            </div>
+          </div>
+          <textarea id="wh-draft-textarea" rows="7" placeholder="One rainy afternoon, the school museum was unusually quiet..."
+            class="w-full flex-1 bg-slate-50 border-2 border-slate-300 focus:border-emerald-500 rounded-2xl p-3.5 text-slate-800 text-base font-semibold leading-relaxed outline-none resize-y"></textarea>
+          <div id="wh-copy-status" class="hidden text-xs font-black text-emerald-700">✔ Copied to clipboard!</div>
+        </div>
+      </div>
+
+      <!-- Right Column (5 cols): 9-10/10 Success Criteria + Weak vs Strong Style -->
+      <div class="lg:col-span-5 flex flex-col gap-3">
+        <!-- Weak vs Strong Style Toggle -->
+        <div class="bg-white border-4 border-sky-200 rounded-3xl p-4 shadow-md">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-base font-bold text-sky-800">🎭 Style &amp; Tone (5 Marks): Suspense!</h3>
+            <button id="wh-style-toggle-btn" type="button" class="px-3 py-1 rounded-xl bg-sky-500 text-white text-xs font-black">Show Weak vs. Strong</button>
+          </div>
+          <div id="wh-style-box" class="text-sm font-semibold text-slate-700 bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 leading-relaxed">
+            <div class="text-emerald-700 font-black mb-1">⭐ Strong (Suspenseful):</div>
+            "Detective Mia noticed a muddy shoeprint beside the broken display case. A torn piece of blue fabric hung from the window latch. As she examined the evidence, she began to suspect that the thief was someone familiar with the museum."
+          </div>
+        </div>
+
+        <!-- 13-Point High-Level Success Criteria Checklist -->
+        <div class="bg-white border-4 border-rose-200 rounded-3xl p-4 shadow-md flex-1 flex flex-col">
+          <h3 class="text-base font-bold text-rose-800 mb-2">✅ 9–10/10 Success Criteria Checklist</h3>
+          <div id="wh-checklist" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-1.5 overflow-y-auto custom-scroll pr-1 text-sm font-bold text-slate-700">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- WORD BANK MODAL -->
+  <div id="wordbank-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border-4 border-purple-300 rounded-3xl max-w-4xl w-full p-5 md:p-6 shadow-2xl animate-pop max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between mb-3 shrink-0">
+        <h2 class="text-2xl font-bold text-purple-800">📚 Unit 2 Crime Scene Word Bank (Tap Any Word to Hear)</h2>
+        <button id="close-wordbank-x" type="button" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xl">×</button>
+      </div>
+      <div id="wordbank-tabs" class="flex flex-wrap gap-2 mb-3 shrink-0">
+        <!-- Populated by JS -->
+      </div>
+      <div id="wordbank-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 overflow-y-auto custom-scroll pr-1">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 10/10 MODEL MODAL -->
+  <div id="model-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border-4 border-amber-300 rounded-3xl max-w-4xl w-full p-5 md:p-6 shadow-2xl animate-pop max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between mb-3 shrink-0">
+        <h2 id="model-modal-title" class="text-xl md:text-2xl font-bold text-amber-800">⭐ Top-Band 9–10/10 Model Accounts</h2>
+        <button id="close-model-x" type="button" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-lg">×</button>
+      </div>
+      <div id="model-tabs" class="flex flex-wrap gap-2 mb-3 shrink-0">
+        <!-- Populated by JS -->
+      </div>
+      <div class="overflow-y-auto custom-scroll pr-1 space-y-4 flex-1">
+        <div id="model-highlight-banner" class="hidden rounded-2xl bg-yellow-100 border-2 border-amber-400 px-4 py-2.5 flex items-center justify-between gap-2 text-xs md:text-sm font-black text-amber-900">
+          <span id="model-highlight-label">🔍 Highlighting: ...</span>
+          <button id="clear-model-highlight-btn" type="button" class="px-2.5 py-1 rounded-lg bg-white border border-amber-300 text-amber-900 hover:bg-amber-50 text-xs font-black">Clear Highlight</button>
+        </div>
+        <div id="model-paragraphs" class="space-y-2.5 text-sm md:text-base font-semibold text-slate-700 leading-relaxed">
+          <!-- Populated by JS -->
+        </div>
+        <div id="model-rubric-box" class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 text-xs md:text-sm font-semibold text-slate-700">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+      <div class="mt-4 pt-3 border-t border-slate-100 flex justify-end gap-2 shrink-0">
+        <button id="listen-model-btn" type="button" class="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-black text-sm">Listen to Model</button>
+        <button id="use-model-btn" type="button" class="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-black text-sm">Load Into Draft Pad</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAP-TO-DEFINE POPOVER -->
+  <div id="vocab-popover" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white border-4 border-purple-400 rounded-2xl px-5 py-3.5 shadow-2xl max-w-md w-[92%] animate-pop">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <span id="vp-word" class="text-lg font-black text-purple-800"></span>
+          <span id="vp-pos" class="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-black"></span>
+        </div>
+        <p id="vp-meaning" class="text-sm font-bold text-slate-700 mt-1"></p>
+        <p id="vp-example" class="text-xs font-semibold text-slate-500 italic mt-0.5"></p>
+      </div>
+      <button id="vp-close" type="button" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black">×</button>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. GRADE 5 UNIT 2 DETECTIVE QUESTION BANKS
+    // =========================================================================
+    const WHEN_WHILE_BANK = [
+      {
+        id: 'ww1',
+        topic: 'The Jewelry Store Robbery',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The security guard was rubbing his eyes.', 'He noticed flashing police lights.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the security guard was rubbing his eyes', 'he noticed flashing police lights', ',', '.'],
+        answers: [
+          'While the security guard was rubbing his eyes , he noticed flashing police lights .',
+          'He noticed flashing police lights while the security guard was rubbing his eyes .',
+          'The security guard was rubbing his eyes when he noticed flashing police lights .'
+        ],
+        tip: 'Use WHILE before the longer action in progress (was rubbing), or WHEN before the sudden action (noticed).'
+      },
+      {
+        id: 'ww2',
+        topic: 'The Jewelry Store Robbery',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The frightened clerk was crouching on the floor.', 'She spotted the masked robber.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the frightened clerk was crouching on the floor', 'she spotted the masked robber', ',', '.'],
+        answers: [
+          'While the frightened clerk was crouching on the floor , she spotted the masked robber .',
+          'She spotted the masked robber while the frightened clerk was crouching on the floor .',
+          'The frightened clerk was crouching on the floor when she spotted the masked robber .'
+        ],
+        tip: '"was crouching" goes after WHILE; "spotted" goes after WHEN.'
+      },
+      {
+        id: 'ww3',
+        topic: 'The Jewelry Store Robbery',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The detective opened the drawer.', 'He found a shiny silver key.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the detective opened the drawer', 'he found a shiny silver key', ',', '.'],
+        answers: [
+          'When the detective opened the drawer , he found a shiny silver key .',
+          'He found a shiny silver key when the detective opened the drawer .'
+        ],
+        tip: '"opened the drawer" is a short, completed action, so use WHEN.'
+      },
+      {
+        id: 'ww4',
+        topic: 'The Museum Diamond',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The gardener was planting flowers.', 'He heard a loud scream.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the gardener was planting flowers', 'he heard a loud scream', ',', '.'],
+        answers: [
+          'The gardener was planting flowers when he heard a loud scream .',
+          'While the gardener was planting flowers , he heard a loud scream .',
+          'He heard a loud scream while the gardener was planting flowers .'
+        ],
+        tip: 'Use WHILE + was planting, or WHEN + heard.'
+      },
+      {
+        id: 'ww5',
+        topic: 'The Museum Diamond',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['Detective Ross arrived at the museum.', 'He saw a broken glass case.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['Detective Ross arrived at the museum', 'he saw a broken glass case', ',', '.'],
+        answers: [
+          'When Detective Ross arrived at the museum , he saw a broken glass case .',
+          'He saw a broken glass case when Detective Ross arrived at the museum .'
+        ],
+        tip: '"arrived" is a quick completed action, so use WHEN.'
+      },
+      {
+        id: 'ww6',
+        topic: 'The Museum Diamond',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The cleaner was sweeping the floor.', 'A tiny mouse jumped on her leg.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the cleaner was sweeping the floor', 'a tiny mouse jumped on her leg', ',', '.'],
+        answers: [
+          'The cleaner was sweeping the floor when a tiny mouse jumped on her leg .',
+          'While the cleaner was sweeping the floor , a tiny mouse jumped on her leg .',
+          'A tiny mouse jumped on her leg while the cleaner was sweeping the floor .'
+        ],
+        tip: 'Sweeping was in progress (was sweeping); jumping happened suddenly (when + jumped).'
+      },
+      {
+        id: 'ww7',
+        topic: 'The School Library Break-In',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The detectives were examining the footprints.', 'They noticed blue paint on the door.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the detectives were examining the footprints', 'they noticed blue paint on the door', ',', '.'],
+        answers: [
+          'While the detectives were examining the footprints , they noticed blue paint on the door .',
+          'The detectives were examining the footprints when they noticed blue paint on the door .',
+          'They noticed blue paint on the door while the detectives were examining the footprints .'
+        ],
+        tip: 'Use WHILE + were examining, or WHEN + noticed.'
+      },
+      {
+        id: 'ww8',
+        topic: 'The Bank Robbery',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The masked robber was speeding away on a motorcycle.', 'The police officer fired his gun.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the masked robber was speeding away on a motorcycle', 'the police officer fired his gun', ',', '.'],
+        answers: [
+          'While the masked robber was speeding away on a motorcycle , the police officer fired his gun .',
+          'The masked robber was speeding away on a motorcycle when the police officer fired his gun .',
+          'The police officer fired his gun while the masked robber was speeding away on a motorcycle .'
+        ],
+        tip: '"was speeding away" is the ongoing action; "fired" is the sudden event.'
+      },
+      {
+        id: 'ww9',
+        topic: 'The Science Lab Mystery',
+        type: 'When & While',
+        prompt: 'Build the detective question:',
+        clues: ['What were you doing?', 'The ceramic beaker broke.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['what were you doing', 'the ceramic beaker broke', '?'],
+        answers: [
+          'What were you doing when the ceramic beaker broke ?'
+        ],
+        tip: 'Questions end with a question mark (?). Use WHEN before the sudden past simple event (broke).'
+      },
+      {
+        id: 'ww10',
+        topic: 'The Art Room Clue',
+        type: 'When & While',
+        prompt: 'Build the detective question:',
+        clues: ['Where was the suspect hiding?', 'The school bell rang.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['where was the suspect hiding', 'the school bell rang', '?'],
+        answers: [
+          'Where was the suspect hiding when the school bell rang ?'
+        ],
+        tip: 'Question word order: Where was + subject + -ing + when + past simple + ?'
+      },
+      {
+        id: 'ww11',
+        topic: 'The Jewelry Store Robbery',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The worried owner was standing inside the messy shop.', 'He saw the shattered glass.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the worried owner was standing inside the messy shop', 'he saw the shattered glass', ',', '.'],
+        answers: [
+          'While the worried owner was standing inside the messy shop , he saw the shattered glass .',
+          'The worried owner was standing inside the messy shop when he saw the shattered glass .',
+          'He saw the shattered glass while the worried owner was standing inside the messy shop .'
+        ],
+        tip: 'Use WHILE with the continuous action (was standing), or WHEN with "saw".'
+      },
+      {
+        id: 'ww12',
+        topic: 'The Gym Trophy Mystery',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The witness was walking past the gym.', 'She saw a student in a red hoodie.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the witness was walking past the gym', 'she saw a student in a red hoodie', ',', '.'],
+        answers: [
+          'While the witness was walking past the gym , she saw a student in a red hoodie .',
+          'The witness was walking past the gym when she saw a student in a red hoodie .',
+          'She saw a student in a red hoodie while the witness was walking past the gym .'
+        ],
+        tip: '"was walking" = longer action (after while); "saw" = short action (after when).'
+      },
+      {
+        id: 'ww13',
+        topic: 'The Museum Diamond',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The mice were chewing the cable.', 'All the museum lights went out.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the mice were chewing the cable', 'all the museum lights went out', ',', '.'],
+        answers: [
+          'While the mice were chewing the cable , all the museum lights went out .',
+          'The mice were chewing the cable when all the museum lights went out .',
+          'All the museum lights went out while the mice were chewing the cable .'
+        ],
+        tip: 'Plural subject "the mice" takes "were chewing"!'
+      },
+      {
+        id: 'ww14',
+        topic: 'The Bank Robbery',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The police arrived at the bank.', 'The robbers were running out the back door.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the police arrived at the bank', 'the robbers were running out the back door', ',', '.'],
+        answers: [
+          'When the police arrived at the bank , the robbers were running out the back door .',
+          'The robbers were running out the back door when the police arrived at the bank .',
+          'While the robbers were running out the back door , the police arrived at the bank .'
+        ],
+        tip: 'WHEN introduces the short action ("arrived"); WHILE introduces the ongoing action ("were running").'
+      },
+      {
+        id: 'ww15',
+        topic: 'The Street Curb Evidence',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The detective was collecting a strand of hair.', 'He spotted a bloodstain on the curb.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the detective was collecting a strand of hair', 'he spotted a bloodstain on the curb', ',', '.'],
+        answers: [
+          'While the detective was collecting a strand of hair , he spotted a bloodstain on the curb .',
+          'The detective was collecting a strand of hair when he spotted a bloodstain on the curb .',
+          'He spotted a bloodstain on the curb while the detective was collecting a strand of hair .'
+        ],
+        tip: '"was collecting" is ongoing; "spotted" happened during it.'
+      },
+      {
+        id: 'ww16',
+        topic: 'The CCTV Footage',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The inspector was watching the CCTV video.', 'She recognized the suspect’s sneakers.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the inspector was watching the CCTV video', 'she recognized the suspect’s sneakers', ',', '.'],
+        answers: [
+          'While the inspector was watching the CCTV video , she recognized the suspect’s sneakers .',
+          'The inspector was watching the CCTV video when she recognized the suspect’s sneakers .',
+          'She recognized the suspect’s sneakers while the inspector was watching the CCTV video .'
+        ],
+        tip: 'Don’t forget the comma after the first clause if you start with When or While!'
+      },
+      {
+        id: 'ww17',
+        topic: 'The School Library Break-In',
+        type: 'When & While',
+        prompt: 'Build the detective question:',
+        clues: ['Who was sealing off the crime scene?', 'The principal walked in.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['who was sealing off the crime scene', 'the principal walked in', '?'],
+        answers: [
+          'Who was sealing off the crime scene when the principal walked in ?'
+        ],
+        tip: 'Use "?" at the end of a detective question!'
+      },
+      {
+        id: 'ww18',
+        topic: 'The Science Lab Mystery',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['Detective Chen checked the window.', 'He noticed muddy footprints outside.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['Detective Chen checked the window', 'he noticed muddy footprints outside', ',', '.'],
+        answers: [
+          'When Detective Chen checked the window , he noticed muddy footprints outside .',
+          'He noticed muddy footprints outside when Detective Chen checked the window .'
+        ],
+        tip: 'Two quick past simple actions in sequence use WHEN.'
+      },
+      {
+        id: 'ww19',
+        topic: 'The Art Room Clue',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['We were dusting the magnifying glass.', 'We found a clear loop fingerprint.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['we were dusting the magnifying glass', 'we found a clear loop fingerprint', ',', '.'],
+        answers: [
+          'While we were dusting the magnifying glass , we found a clear loop fingerprint .',
+          'We were dusting the magnifying glass when we found a clear loop fingerprint .',
+          'We found a clear loop fingerprint while we were dusting the magnifying glass .'
+        ],
+        tip: '"we were dusting" takes WHILE, or WHEN before "we found".'
+      },
+      {
+        id: 'ww20',
+        topic: 'The Arrest',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The frightened suspect was hiding behind the curtain.', 'The police arrested him.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the frightened suspect was hiding behind the curtain', 'the police arrested him', ',', '.'],
+        answers: [
+          'While the frightened suspect was hiding behind the curtain , the police arrested him .',
+          'The frightened suspect was hiding behind the curtain when the police arrested him .',
+          'The police arrested him while the frightened suspect was hiding behind the curtain .'
+        ],
+        tip: 'Great job! "was hiding" = ongoing; "arrested" = completed action.'
+      },
+      {
+        id: 'ww21',
+        topic: 'Detective Cruz’s Case',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['Detective Cruz arrived at the crime scene.', 'She noticed a bloodstain near the broken window.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['Detective Cruz arrived at the crime scene', 'she noticed a bloodstain near the broken window', ',', '.'],
+        answers: [
+          'When Detective Cruz arrived at the crime scene , she noticed a bloodstain near the broken window .',
+          'She noticed a bloodstain near the broken window when Detective Cruz arrived at the crime scene .'
+        ],
+        tip: 'Use WHEN with the short action "arrived at the crime scene".'
+      },
+      {
+        id: 'ww22',
+        topic: 'The Forensic Lab',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['The forensic scientist was analyzing the DNA sample.', 'The lab phone rang.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['the forensic scientist was analyzing the DNA sample', 'the lab phone rang', ',', '.'],
+        answers: [
+          'While the forensic scientist was analyzing the DNA sample , the lab phone rang .',
+          'The forensic scientist was analyzing the DNA sample when the lab phone rang .',
+          'The lab phone rang while the forensic scientist was analyzing the DNA sample .'
+        ],
+        tip: '"was analyzing" is an ongoing action, so it follows WHILE!'
+      },
+      {
+        id: 'ww23',
+        topic: 'The Missing Trophy',
+        type: 'When & While',
+        prompt: 'Combine the two crime-scene clues:',
+        clues: ['Students were eating lunch.', 'The school trophy disappeared from the hall.'],
+        joiningWords: ['when', 'while'],
+        tiles: ['students were eating lunch', 'the school trophy disappeared from the hall', ',', '.'],
+        answers: [
+          'While students were eating lunch , the school trophy disappeared from the hall .',
+          'Students were eating lunch when the school trophy disappeared from the hall .',
+          'The school trophy disappeared from the hall while students were eating lunch .'
+        ],
+        tip: '"were eating" = ongoing lunch action; "disappeared" = sudden event.'
+      }
+    ];
+
+    const REPORTED_SPEECH_BANK = [
+      {
+        id: 'rs1',
+        topic: 'The Bank Robbery',
+        type: 'Reported Speech',
+        prompt: 'Report what the robber said to the bank cashier:',
+        clues: ['The robber said: “I want you to put all the money in the bag.”'],
+        joiningWords: ['said that', 'told', 'asked'],
+        tiles: ['The robber', 'he wanted the bank cashier', 'to put all the money in the bag', 'I want you', '.'],
+        answers: [
+          'The robber said that he wanted the bank cashier to put all the money in the bag .'
+        ],
+        tip: 'Shift "I" → "he", "want" → "wanted", and "you" → "the bank cashier". Remove quotation marks!'
+      },
+      {
+        id: 'rs2',
+        topic: 'The Bank Robbery',
+        type: 'Reported Speech',
+        prompt: 'Report what the male security guard said:',
+        clues: ['The security guard said: “I don’t have a gun.”'],
+        joiningWords: ['said that', 'told', 'asked'],
+        tiles: ['The security guard', 'he didn’t have a gun', 'I don’t have a gun', 'he doesn’t have a gun', '.'],
+        answers: [
+          'The security guard said that he didn’t have a gun .'
+        ],
+        tip: 'Pronoun "I" → "he", and present negative "don’t" → past "didn’t".'
+      },
+      {
+        id: 'rs3',
+        topic: 'The Bank Robbery',
+        type: 'Reported Speech',
+        prompt: 'Report what the female robber said:',
+        clues: ['The female robber said: “I won’t hurt you.”'],
+        joiningWords: ['said that', 'told', 'asked'],
+        tiles: ['The female robber', 'she wouldn’t hurt', 'the cashier', 'she won’t hurt', '.'],
+        answers: [
+          'The female robber said that she wouldn’t hurt the cashier .'
+        ],
+        tip: 'Shift "I" → "she" (female) and "won’t" → "wouldn’t".'
+      },
+      {
+        id: 'rs4',
+        topic: 'The Museum Diamond',
+        type: 'Reported Speech',
+        prompt: 'Report what the male gardener told the detective:',
+        clues: ['The gardener said: “I saw a woman running out of the door.”'],
+        joiningWords: ['said that', 'told the detective that'],
+        tiles: ['The gardener', 'he had seen a woman running out of the door', 'he saw a woman running out of the door', 'I saw a woman', '.'],
+        answers: [
+          'The gardener said that he had seen a woman running out of the door .',
+          'The gardener said that he saw a woman running out of the door .',
+          'The gardener told the detective that he had seen a woman running out of the door .',
+          'The gardener told the detective that he saw a woman running out of the door .'
+        ],
+        tip: 'Change "I" → "he", and shift "saw" → "had seen" (or keep past simple).'
+      },
+      {
+        id: 'rs5',
+        topic: 'The Museum Diamond',
+        type: 'Reported Speech',
+        prompt: 'Report what the female cleaner said:',
+        clues: ['The cleaner said: “Something jumped on my leg!”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['The cleaner', 'something had jumped on her leg', 'something jumped on her leg', 'something jumped on my leg', '.'],
+        answers: [
+          'The cleaner said that something had jumped on her leg .',
+          'The cleaner said that something jumped on her leg .'
+        ],
+        tip: 'Remember to change "my leg" → "her leg"!'
+      },
+      {
+        id: 'rs6',
+        topic: 'The Jewelry Store Robbery',
+        type: 'Reported Speech',
+        prompt: 'Report what the terrified clerk told the police:',
+        clues: ['The clerk said: “The robber is wearing a black mask.”'],
+        joiningWords: ['told the police that', 'said that'],
+        tiles: ['The clerk', 'the robber was wearing a black mask', 'the robber is wearing a black mask', '.'],
+        answers: [
+          'The clerk told the police that the robber was wearing a black mask .',
+          'The clerk said that the robber was wearing a black mask .'
+        ],
+        tip: 'Present continuous "is wearing" shifts back to past continuous "was wearing".'
+      },
+      {
+        id: 'rs7',
+        topic: 'The Gym Trophy Mystery',
+        type: 'Reported Speech',
+        prompt: 'Report what the school guard said:',
+        clues: ['The school guard said: “I see a student in a red hoodie.”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['The school guard', 'he saw a student in a red hoodie', 'he sees a student in a red hoodie', '.'],
+        answers: [
+          'The school guard said that he saw a student in a red hoodie .'
+        ],
+        tip: 'Present simple "see" shifts back to past simple "saw".'
+      },
+      {
+        id: 'rs8',
+        topic: 'The Science Lab Mystery',
+        type: 'Reported Speech',
+        prompt: 'Report what Emma said to Detective Chen:',
+        clues: ['Emma said: “I am not near the science lab.”'],
+        joiningWords: ['told Detective Chen that', 'said that'],
+        tiles: ['Emma', 'she was not near the science lab', 'she is not near the science lab', '.'],
+        answers: [
+          'Emma told Detective Chen that she was not near the science lab .',
+          'Emma said that she was not near the science lab .'
+        ],
+        tip: '"I am" shifts to "she was" in reported speech.'
+      },
+      {
+        id: 'rs9',
+        topic: 'The Art Room Clue',
+        type: 'Reported Speech',
+        prompt: 'Report what the art teacher said:',
+        clues: ['The art teacher said: “My golden paintbrush is missing!”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['The art teacher', 'her golden paintbrush was missing', 'my golden paintbrush is missing', '.'],
+        answers: [
+          'The art teacher said that her golden paintbrush was missing .'
+        ],
+        tip: 'Change "My" → "her" and "is" → "was".'
+      },
+      {
+        id: 'rs10',
+        topic: 'The School Library Break-In',
+        type: 'Reported Speech',
+        prompt: 'Report what the librarian told the inspector:',
+        clues: ['Librarian Maya said: “I can’t find the rare book.”'],
+        joiningWords: ['told the inspector that', 'said that'],
+        tiles: ['Librarian Maya', 'she couldn’t find the rare book', 'she can’t find the rare book', '.'],
+        answers: [
+          'Librarian Maya told the inspector that she couldn’t find the rare book .',
+          'Librarian Maya said that she couldn’t find the rare book .'
+        ],
+        tip: 'Modal verb "can’t" shifts back to "couldn’t".'
+      },
+      {
+        id: 'rs11',
+        topic: 'Suspect Interrogation',
+        type: 'Reported Speech',
+        prompt: 'Report what the two suspects said:',
+        clues: ['The suspects said: “We are watching a movie at home.”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['The suspects', 'they were watching a movie at home', 'we are watching a movie at home', '.'],
+        answers: [
+          'The suspects said that they were watching a movie at home .'
+        ],
+        tip: '"We are" shifts to "they were"!'
+      },
+      {
+        id: 'rs12',
+        topic: 'Suspect Interrogation',
+        type: 'Reported Speech',
+        prompt: 'Report what Oliver told the detective:',
+        clues: ['Oliver said: “I don’t wear size 8 sneakers.”'],
+        joiningWords: ['told the detective that', 'said that'],
+        tiles: ['Oliver', 'he didn’t wear size 8 sneakers', 'he doesn’t wear size 8 sneakers', '.'],
+        answers: [
+          'Oliver told the detective that he didn’t wear size 8 sneakers .',
+          'Oliver said that he didn’t wear size 8 sneakers .'
+        ],
+        tip: '"don’t wear" shifts back to "didn’t wear".'
+      },
+      {
+        id: 'rs13',
+        topic: 'The Witness Statement',
+        type: 'Reported Speech',
+        prompt: 'Report what the witness said:',
+        clues: ['The witness said: “I hear strange footsteps outside.”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['The witness', 'she heard strange footsteps outside', 'she hears strange footsteps outside', '.'],
+        answers: [
+          'The witness said that she heard strange footsteps outside .'
+        ],
+        tip: 'Present simple "hear" shifts back to past simple "heard".'
+      },
+      {
+        id: 'rs14',
+        topic: 'The Forensic Lab',
+        type: 'Reported Speech',
+        prompt: 'Report what the lab scientist told the chief:',
+        clues: ['The scientist said: “The fingerprint matches the suspect.”'],
+        joiningWords: ['told the chief that', 'said that'],
+        tiles: ['The scientist', 'the fingerprint matched the suspect', 'the fingerprint matches the suspect', '.'],
+        answers: [
+          'The scientist told the chief that the fingerprint matched the suspect .',
+          'The scientist said that the fingerprint matched the suspect .'
+        ],
+        tip: '"matches" shifts back to past simple "matched".'
+      },
+      {
+        id: 'rs15',
+        topic: 'The Crime Scene',
+        type: 'Reported Speech',
+        prompt: 'Report what Detective Matt told his partner:',
+        clues: ['Detective Matt said: “We need to seal off the crime scene.”'],
+        joiningWords: ['told his partner that', 'said that'],
+        tiles: ['Detective Matt', 'they needed to seal off the crime scene', 'we need to seal off the crime scene', '.'],
+        answers: [
+          'Detective Matt told his partner that they needed to seal off the crime scene .',
+          'Detective Matt said that they needed to seal off the crime scene .'
+        ],
+        tip: 'Change "We" → "they" and "need" → "needed".'
+      },
+      {
+        id: 'rs16',
+        topic: 'The Missing Watch',
+        type: 'Reported Speech',
+        prompt: 'Report what Kelly said:',
+        clues: ['Kelly said: “My smart watch is on the desk.”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['Kelly', 'her smart watch was on the desk', 'my smart watch is on the desk', '.'],
+        answers: [
+          'Kelly said that her smart watch was on the desk .'
+        ],
+        tip: 'Change "My" → "her" and "is" → "was".'
+      },
+      {
+        id: 'rs17',
+        topic: 'The Jewelry Store Robbery',
+        type: 'Reported Speech',
+        prompt: 'Report what the police officer said:',
+        clues: ['The officer said: “I will catch the culprit soon.”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['The officer', 'he would catch the culprit soon', 'he will catch the culprit soon', '.'],
+        answers: [
+          'The officer said that he would catch the culprit soon .'
+        ],
+        tip: '"will" shifts back to "would" in reported speech.'
+      },
+      {
+        id: 'rs18',
+        topic: 'The Bank Robbery',
+        type: 'Reported Speech',
+        prompt: 'Report what the frightened cashier said:',
+        clues: ['The cashier said: “I have never seen that robber before.”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['The cashier', 'she had never seen that robber before', 'she has never seen that robber before', '.'],
+        answers: [
+          'The cashier said that she had never seen that robber before .'
+        ],
+        tip: 'Present perfect "have never seen" shifts back to past perfect "had never seen".'
+      },
+      {
+        id: 'rs19',
+        topic: 'The Confession',
+        type: 'Reported Speech',
+        prompt: 'Report what the suspect admitted:',
+        clues: ['The suspect said: “I am sorry for breaking the case.”'],
+        joiningWords: ['said that', 'told'],
+        tiles: ['The suspect', 'he was sorry for breaking the case', 'he is sorry for breaking the case', '.'],
+        answers: [
+          'The suspect said that he was sorry for breaking the case .'
+        ],
+        tip: 'Shift "I am" → "he was".'
+      },
+      {
+        id: 'rs20',
+        topic: 'Case Closed',
+        type: 'Reported Speech',
+        prompt: 'Report what the Police Chief told 5M2:',
+        clues: ['The Police Chief said: “You solved the mystery!”'],
+        joiningWords: ['told 5M2 that', 'said that'],
+        tiles: ['The Police Chief', 'they had solved the mystery', 'they solved the mystery', 'you solved the mystery', '.'],
+        answers: [
+          'The Police Chief told 5M2 that they had solved the mystery .',
+          'The Police Chief told 5M2 that they solved the mystery .',
+          'The Police Chief said that they had solved the mystery .',
+          'The Police Chief said that they solved the mystery .'
+        ],
+        tip: 'Change "You" → "they" and shift "solved" → "had solved"!'
+      },
+      {
+        id: 'rs21',
+        topic: 'The Missing Trophy',
+        type: 'Reported Speech',
+        prompt: 'Report what the witness whispered:',
+        clues: ['The witness whispered: “I saw a muddy shoeprint near the display case.”'],
+        joiningWords: ['whispered that', 'said that', 'told'],
+        tiles: ['The witness', 'she had seen a muddy shoeprint near the display case', 'she saw a muddy shoeprint near the display case', '.'],
+        answers: [
+          'The witness whispered that she had seen a muddy shoeprint near the display case .',
+          'The witness whispered that she saw a muddy shoeprint near the display case .',
+          'The witness said that she had seen a muddy shoeprint near the display case .',
+          'The witness said that she saw a muddy shoeprint near the display case .'
+        ],
+        tip: 'Using strong reporting verbs like "whispered" adds suspense!'
+      },
+      {
+        id: 'rs22',
+        topic: 'The Suspect’s Alibi',
+        type: 'Reported Speech',
+        prompt: 'Report what the suspect exclaimed:',
+        clues: ['The suspect exclaimed: “I have a strong alibi!”'],
+        joiningWords: ['exclaimed that', 'said that'],
+        tiles: ['The suspect', 'he had a strong alibi', 'he has a strong alibi', '.'],
+        answers: [
+          'The suspect exclaimed that he had a strong alibi .',
+          'The suspect said that he had a strong alibi .'
+        ],
+        tip: '"have" shifts back to "had", and "I" shifts to "he".'
+      },
+      {
+        id: 'rs23',
+        topic: 'Detective Cruz’s Case',
+        type: 'Reported Speech',
+        prompt: 'Report what the forensic scientist mentioned:',
+        clues: ['The forensic scientist mentioned: “The DNA sample came from a strand of hair.”'],
+        joiningWords: ['mentioned that', 'said that'],
+        tiles: ['The forensic scientist', 'the DNA sample had come from a strand of hair', 'the DNA sample came from a strand of hair', '.'],
+        answers: [
+          'The forensic scientist mentioned that the DNA sample had come from a strand of hair .',
+          'The forensic scientist mentioned that the DNA sample came from a strand of hair .',
+          'The forensic scientist said that the DNA sample had come from a strand of hair .',
+          'The forensic scientist said that the DNA sample came from a strand of hair .'
+        ],
+        tip: 'Strong reporting verb "mentioned that" makes your report sound official!'
+      }
+    ];
+
+    // =========================================================================
+    // 2. AUDIO & TTS (Microsoft Andrew / Brian / Emma rotation @ 85% speed)
+    // =========================================================================
+    let isMuted = false;
+    let audioCtx = null;
+    const TARGET_VOICES = ['Andrew', 'Brian', 'Emma'];
+    let voiceRotateIdx = 0;
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx) audioCtx = new Ctx();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+    }
+
+    function playTone(freq, duration, type = 'sine', delay = 0) {
+      if (isMuted) return;
+      initAudioContext();
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + delay);
+        osc.stop(audioCtx.currentTime + delay + duration);
+      } catch (e) {}
+    }
+
+    function playSuccessSound() {
+      playTone(523.25, 0.12, 'triangle', 0);
+      playTone(659.25, 0.12, 'triangle', 0.1);
+      playTone(783.99, 0.22, 'triangle', 0.2);
+    }
+
+    function playErrorSound() {
+      playTone(220, 0.16, 'sawtooth', 0);
+      playTone(180, 0.22, 'sawtooth', 0.12);
+    }
+
+    function playTapSound() {
+      playTone(440, 0.05, 'sine', 0);
+    }
+
+    function cleanTextForSpeech(text) {
+      return text
+        .replace(/[\u{1F300}-\u{1FAFF}]/gu, '')
+        .replace(/_+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function pickRotatingMicrosoftVoice() {
+      if (!('speechSynthesis' in window)) return null;
+      const voices = window.speechSynthesis.getVoices() || [];
+      if (!voices.length) return null;
+      const preferredName = TARGET_VOICES[voiceRotateIdx % TARGET_VOICES.length];
+      voiceRotateIdx++;
+      let match = voices.find(v => v.name.includes('Microsoft') && v.name.includes(preferredName));
+      if (!match) {
+        match = voices.find(v => TARGET_VOICES.some(n => v.name.includes(n)));
+      }
+      if (!match) {
+        match = voices.find(v => v.lang && v.lang.startsWith('en'));
+      }
+      return match || null;
+    }
+
+    function speakText(rawText) {
+      if (isMuted || !('speechSynthesis' in window)) return;
+      const cleaned = cleanTextForSpeech(rawText);
+      if (!cleaned) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(cleaned);
+        const voice = pickRotatingMicrosoftVoice();
+        if (voice) utter.voice = voice;
+        utter.lang = 'en-US';
+        utter.rate = 0.85; // 85% speed per preference
+        window.speechSynthesis.speak(utter);
+      } catch (e) {}
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+
+    // =========================================================================
+    // 3. STATE MANAGEMENT
+    // =========================================================================
+    const state = {
+      playerName: 'Junior Detective',
+      mode: 'when_while', // 'when_while' | 'reported' | 'mixed'
+      timerEnabled: true,
+      timerPaused: false,
+      timerSeconds: 45,
+      timerRemaining: 45,
+      timerInterval: null,
+      questions: [],
+      currentIndex: 0,
+      score: 0,
+      streak: 0,
+      bestStreak: 0,
+      correctCount: 0,
+      answeredCurrent: false,
+      placedTiles: [], // array of { id, text, source: 'tray'|'joining' }
+      trayTiles: [],   // array of { id, text, used: bool }
+      mistakes: []
+    };
+
+    try {
+      const savedName = localStorage.getItem('detective_lab_name');
+      if (savedName) {
+        state.playerName = savedName;
+        document.getElementById('player-name-input').value = savedName;
+      }
+    } catch (e) {}
+
+    // =========================================================================
+    // 4. DOM REFERENCES
+    // =========================================================================
+    const menuScreen = document.getElementById('menu-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const summaryScreen = document.getElementById('summary-screen');
+    const rulesModal = document.getElementById('rules-modal');
+    const buildZone = document.getElementById('build-zone');
+    const tileTray = document.getElementById('tile-tray');
+    const joiningWordsList = document.getElementById('joining-words-list');
+    const feedbackBanner = document.getElementById('feedback-banner');
+    const checkAnswerBtn = document.getElementById('check-answer-btn');
+    const timerBar = document.getElementById('timer-bar');
+    const timerBarWrapper = document.getElementById('timer-bar-wrapper');
+
+    // =========================================================================
+    // 5. NAVIGATION & RULES MODAL
+    // =========================================================================
+    function showScreen(screenEl) {
+      [menuScreen, gameScreen, summaryScreen].forEach(el => el.classList.add('hidden'));
+      screenEl.classList.remove('hidden');
+    }
+
+    function updateMuteUI() {
+      document.querySelectorAll('.mute-icon').forEach(el => {
+        el.textContent = isMuted ? '🔇' : '🔊';
+      });
+      document.querySelectorAll('.mute-label').forEach(el => {
+        el.textContent = isMuted ? 'Sound: OFF' : 'Sound: ON';
+      });
+    }
+
+    document.getElementById('menu-mute-btn').addEventListener('click', () => {
+      isMuted = !isMuted;
+      updateMuteUI();
+    });
+    document.getElementById('game-mute-btn').addEventListener('click', () => {
+      isMuted = !isMuted;
+      updateMuteUI();
+    });
+
+    document.getElementById('toggle-timer-pref-btn').addEventListener('click', () => {
+      state.timerEnabled = !state.timerEnabled;
+      document.getElementById('timer-pref-label').textContent = state.timerEnabled ? 'Timer: ON (45s)' : 'Timer: OFF';
+      document.getElementById('timer-pref-icon').textContent = state.timerEnabled ? '⏱️' : '⏸️';
+    });
+
+    function openRulesModal(mode, isInitial = false) {
+      const titleEl = document.getElementById('rules-modal-title');
+      const bodyEl = document.getElementById('rules-modal-body');
+      const startBtn = document.getElementById('rules-start-btn');
+
+      if (mode === 'when_while') {
+        titleEl.textContent = '⏱️ Rules: When & While (Detective Timelines)';
+        bodyEl.innerHTML = `
+          <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4">
+            <h3 class="font-extrabold text-sky-700 mb-1">1. WHILE = Longer Action in Progress</h3>
+            <p class="text-slate-700 text-sm md:text-base">Use <strong>while</strong> before <strong>was / were + verb-ing</strong>.</p>
+            <p class="text-sky-700 text-sm md:text-base mt-1 font-bold">✔ While the guard <u>was rubbing</u> his eyes, he noticed flashing lights.</p>
+          </div>
+          <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4">
+            <h3 class="font-extrabold text-amber-800 mb-1">2. WHEN = Short / Completed Action</h3>
+            <p class="text-slate-700 text-sm md:text-base">Use <strong>when</strong> before a quick Past Simple verb (arrived, opened, heard).</p>
+            <p class="text-amber-800 text-sm md:text-base mt-1 font-bold">✔ <u>When</u> the detective <u>opened</u> the drawer, he found a key.</p>
+          </div>
+          <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4">
+            <h3 class="font-extrabold text-indigo-700 mb-1">3. Comma &amp; Question Rule</h3>
+            <p class="text-slate-700 text-sm md:text-base">• Put a <strong>comma (,)</strong> after the first clause if you start with <strong>When</strong> or <strong>While</strong>.</p>
+            <p class="text-slate-700 text-sm md:text-base mt-1">• No comma if <strong>when/while</strong> is in the middle. Use <strong>?</strong> for detective questions!</p>
+          </div>
+        `;
+      } else if (mode === 'reported') {
+        titleEl.textContent = '🗣️ Rules: Reported Speech (Police Logs)';
+        bodyEl.innerHTML = `
+          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4">
+            <h3 class="font-extrabold text-emerald-700 mb-1">1. Drop Quotation Marks &amp; Use Reporting Words</h3>
+            <p class="text-slate-700 text-sm md:text-base">Use <strong>said that</strong> or <strong>told [person] that</strong> (no “ ” marks).</p>
+          </div>
+          <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4">
+            <h3 class="font-extrabold text-sky-700 mb-1">2. Shift Pronouns (Who is speaking?)</h3>
+            <p class="text-slate-700 text-sm md:text-base">• <strong>I</strong> → <strong>he / she</strong> &nbsp;|&nbsp; <strong>we</strong> → <strong>they</strong> &nbsp;|&nbsp; <strong>my</strong> → <strong>his / her</strong></p>
+          </div>
+          <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4">
+            <h3 class="font-extrabold text-amber-800 mb-1">3. Shift Verb Tenses Back</h3>
+            <p class="text-slate-700 text-sm md:text-base">• <strong>am / is</strong> → <strong>was</strong> &nbsp;|&nbsp; <strong>are</strong> → <strong>were</strong> &nbsp;|&nbsp; <strong>want</strong> → <strong>wanted</strong></p>
+            <p class="text-slate-700 text-sm md:text-base mt-1">• <strong>don’t</strong> → <strong>didn’t</strong> &nbsp;|&nbsp; <strong>won’t</strong> → <strong>wouldn’t</strong> &nbsp;|&nbsp; <strong>can’t</strong> → <strong>couldn’t</strong></p>
+          </div>
+        `;
+      } else {
+        titleEl.textContent = '🕵️‍♀️ Rules: Chief Inspector Mix';
+        bodyEl.innerHTML = `
+          <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4">
+            <h3 class="font-extrabold text-amber-800 mb-1">Mixed Detective Case Files</h3>
+            <p class="text-slate-700 text-sm md:text-base">You will solve both <strong>When &amp; While</strong> timeline clues and <strong>Reported Speech</strong> witness statements!</p>
+          </div>
+          <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 text-sm md:text-base text-slate-700 space-y-1.5 font-semibold">
+            <p>• <strong>While</strong> + was/were + -ing | <strong>When</strong> + Past Simple</p>
+            <p>• <strong>Reported Speech:</strong> Drop quotes, shift pronouns (I → he/she), and shift verbs back!</p>
+            <p>• Don’t forget <strong>commas (,)</strong>, <strong>periods (.)</strong>, or <strong>question marks (?)</strong>.</p>
+          </div>
+        `;
+      }
+
+      startBtn.textContent = isInitial ? "Let's Investigate! ▶" : 'Back to Case';
+      rulesModal.classList.remove('hidden');
+    }
+
+    document.getElementById('close-rules-x').addEventListener('click', () => rulesModal.classList.add('hidden'));
+    document.getElementById('rules-start-btn').addEventListener('click', () => rulesModal.classList.add('hidden'));
+    document.getElementById('rules-btn').addEventListener('click', () => openRulesModal(state.mode, false));
+
+    // =========================================================================
+    // 6. GAME LIFECYCLE
+    // =========================================================================
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function startGame(mode) {
+      initAudioContext();
+      const inputName = document.getElementById('player-name-input').value.trim();
+      state.playerName = inputName || 'Junior Detective';
+      try {
+        localStorage.setItem('detective_lab_name', state.playerName);
+      } catch (e) {}
+
+      state.mode = mode;
+      state.currentIndex = 0;
+      state.score = 0;
+      state.streak = 0;
+      state.bestStreak = 0;
+      state.correctCount = 0;
+      state.mistakes = [];
+
+      if (mode === 'when_while') {
+        state.questions = shuffleArray(WHEN_WHILE_BANK);
+      } else if (mode === 'reported') {
+        state.questions = shuffleArray(REPORTED_SPEECH_BANK);
+      } else {
+        state.questions = shuffleArray([...WHEN_WHILE_BANK, ...REPORTED_SPEECH_BANK]).slice(0, 20);
+      }
+
+      const modeLabels = {
+        when_while: 'When & While',
+        reported: 'Reported Speech',
+        mixed: 'Chief Inspector Mix'
+      };
+      document.getElementById('mode-badge').textContent = modeLabels[mode];
+      document.getElementById('player-badge').textContent = state.playerName;
+
+      showScreen(gameScreen);
+      renderQuestion();
+      openRulesModal(mode, true);
+    }
+
+    document.querySelectorAll('.start-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => startGame(btn.dataset.mode));
+    });
+
+    document.getElementById('back-to-menu-btn').addEventListener('click', () => {
+      stopTimer();
+      showScreen(menuScreen);
+    });
+    document.getElementById('summary-menu-btn').addEventListener('click', () => {
+      stopTimer();
+      showScreen(menuScreen);
+    });
+    document.getElementById('play-again-btn').addEventListener('click', () => startGame(state.mode));
+
+    // =========================================================================
+    // 7. RENDERING QUESTION & TILES
+    // =========================================================================
+    function renderQuestion() {
+      const q = state.questions[state.currentIndex];
+      state.answeredCurrent = false;
+      state.placedTiles = [];
+      state.trayTiles = shuffleArray(q.tiles).map((text, idx) => ({
+        id: `tray_${idx}`,
+        text,
+        used: false
+      }));
+
+      // Header stats
+      document.getElementById('streak-display').textContent = state.streak;
+      document.getElementById('score-display').textContent = state.score;
+      document.getElementById('progress-display').textContent = `${state.currentIndex + 1} / ${state.questions.length}`;
+
+      // Prompt & Clues
+      document.getElementById('case-topic-badge').textContent = `🔍 Case: ${q.topic}`;
+      document.getElementById('case-type-badge').textContent = q.type;
+      document.getElementById('prompt-question').textContent = q.prompt;
+
+      const cluesContainer = document.getElementById('base-clues-container');
+      cluesContainer.innerHTML = '';
+      q.clues.forEach((clue, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-sky-50 hover:bg-sky-100 active:scale-[0.99] border-2 border-sky-200 rounded-2xl px-4 py-3 cursor-pointer transition shadow-sm';
+        const label = q.clues.length === 1 ? 'Direct Quote (Tap to Listen)' : `Clue ${idx + 1} (Tap to Listen)`;
+        card.innerHTML = `
+          <div class="text-xs font-black uppercase tracking-wider text-sky-600">${label}</div>
+          <div class="text-lg md:text-xl font-extrabold text-slate-800 mt-0.5">${highlightVocabInText(clue)}</div>
+        `;
+        card.addEventListener('click', e => {
+          const termEl = e.target.closest('[data-vocab-key]');
+          if (termEl) {
+            e.stopPropagation();
+            showVocabPopover(termEl.dataset.vocabKey);
+            return;
+          }
+          speakText(clue);
+        });
+        cluesContainer.appendChild(card);
+      });
+
+      // Sidebar Joining / Reporting Words
+      const isReported = q.type === 'Reported Speech';
+      document.getElementById('sidebar-title').textContent = isReported ? '🔗 Reporting Words:' : '🔗 Joining Words:';
+
+      joiningWordsList.innerHTML = '';
+      q.joiningWords.forEach((word, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.draggable = true;
+        btn.className = 'tile px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 border-b-4 text-amber-900 font-black text-base md:text-lg transition';
+        btn.textContent = word;
+        btn.dataset.source = 'joining';
+        btn.dataset.text = word;
+        btn.dataset.id = `join_${idx}`;
+
+        btn.addEventListener('click', () => {
+          if (state.answeredCurrent) return;
+          playTapSound();
+          state.placedTiles.push({ id: `placed_${Date.now()}_${Math.random()}`, text: word, source: 'joining' });
+          renderBuildAndTray();
+        });
+
+        btn.addEventListener('dragstart', e => {
+          if (state.answeredCurrent) { e.preventDefault(); return; }
+          e.dataTransfer.setData('text/plain', JSON.stringify({ source: 'joining', text: word }));
+        });
+
+        joiningWordsList.appendChild(btn);
+      });
+
+      feedbackBanner.classList.add('hidden');
+      checkAnswerBtn.disabled = false;
+      renderBuildAndTray();
+      startTimer();
+    }
+
+    function formatTileForPosition(text, idx) {
+      if (/^[.,?]$/.test(text)) return text;
+      if (idx === 0) {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+      }
+      return text;
+    }
+
+    function renderBuildAndTray() {
+      // Render Build Zone
+      buildZone.innerHTML = '';
+      if (state.placedTiles.length === 0) {
+        const ph = document.createElement('span');
+        ph.id = 'build-placeholder';
+        ph.className = 'text-slate-400 text-lg md:text-xl font-bold pointer-events-none';
+        ph.textContent = 'Tap or drag word tiles here in the right order...';
+        buildZone.appendChild(ph);
+      } else {
+        state.placedTiles.forEach((tile, idx) => {
+          const isPunct = /^[.,?]$/.test(tile.text);
+          const displayWord = formatTileForPosition(tile.text, idx);
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = isPunct
+            ? 'tile px-4 py-2.5 rounded-2xl bg-orange-400 border-b-4 border-orange-600 text-white font-black text-xl md:text-2xl shadow animate-pop'
+            : 'tile px-5 py-2.5 rounded-2xl bg-indigo-500 hover:bg-indigo-400 border-b-4 border-indigo-700 text-white font-extrabold text-xl md:text-2xl shadow animate-pop';
+          chip.textContent = displayWord;
+          chip.draggable = !state.answeredCurrent;
+          chip.title = 'Tap to remove or drag to reorder';
+          chip.addEventListener('click', () => {
+            if (state.answeredCurrent) return;
+            playTapSound();
+            removePlacedTile(idx);
+          });
+          chip.addEventListener('dragstart', e => {
+            if (state.answeredCurrent) { e.preventDefault(); return; }
+            e.dataTransfer.setData('text/plain', JSON.stringify({ source: 'reorder', fromIdx: idx }));
+          });
+          chip.addEventListener('dragover', e => {
+            e.preventDefault();
+          });
+          chip.addEventListener('drop', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (state.answeredCurrent) return;
+            try {
+              const payload = JSON.parse(e.dataTransfer.getData('text/plain'));
+              if (payload.source === 'reorder' && payload.fromIdx !== idx) {
+                playTapSound();
+                const [moved] = state.placedTiles.splice(payload.fromIdx, 1);
+                state.placedTiles.splice(idx, 0, moved);
+                renderBuildAndTray();
+              }
+            } catch (err) {}
+          });
+          buildZone.appendChild(chip);
+        });
+      }
+
+      // Render Tray
+      tileTray.innerHTML = '';
+      state.trayTiles.forEach(tile => {
+        const isPunct = /^[.,?]$/.test(tile.text);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.draggable = !tile.used;
+        btn.disabled = tile.used;
+        btn.className = tile.used
+          ? 'px-5 py-3 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-300 font-extrabold text-xl md:text-2xl cursor-default'
+          : isPunct
+            ? 'tile px-5 py-3 rounded-2xl bg-orange-100 hover:bg-orange-200 border-2 border-orange-400 border-b-4 text-orange-900 font-black text-2xl'
+            : 'tile px-5 py-3 rounded-2xl bg-white hover:bg-sky-50 border-2 border-sky-300 border-b-4 text-slate-800 font-extrabold text-xl md:text-2xl';
+        btn.textContent = tile.text;
+
+        btn.addEventListener('click', () => {
+          if (state.answeredCurrent || tile.used) return;
+          playTapSound();
+          tile.used = true;
+          state.placedTiles.push({ id: tile.id, text: tile.text, source: 'tray' });
+          renderBuildAndTray();
+        });
+
+        btn.addEventListener('dragstart', e => {
+          if (state.answeredCurrent || tile.used) { e.preventDefault(); return; }
+          e.dataTransfer.setData('text/plain', JSON.stringify({ source: 'tray', id: tile.id, text: tile.text }));
+        });
+
+        tileTray.appendChild(btn);
+      });
+    }
+
+    function removePlacedTile(placedIdx) {
+      const [removed] = state.placedTiles.splice(placedIdx, 1);
+      if (removed && removed.source === 'tray') {
+        const trayItem = state.trayTiles.find(t => t.id === removed.id);
+        if (trayItem) trayItem.used = false;
+      }
+      renderBuildAndTray();
+    }
+
+    // Drag & Drop handlers on Build Zone
+    buildZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!state.answeredCurrent) buildZone.classList.add('drop-zone-active');
+    });
+    buildZone.addEventListener('dragleave', () => buildZone.classList.remove('drop-zone-active'));
+    buildZone.addEventListener('drop', e => {
+      e.preventDefault();
+      buildZone.classList.remove('drop-zone-active');
+      if (state.answeredCurrent) return;
+      try {
+        const payload = JSON.parse(e.dataTransfer.getData('text/plain'));
+        if (payload.source === 'reorder') {
+          playTapSound();
+          const [moved] = state.placedTiles.splice(payload.fromIdx, 1);
+          state.placedTiles.push(moved);
+          renderBuildAndTray();
+        } else if (payload.source === 'joining') {
+          playTapSound();
+          state.placedTiles.push({ id: `placed_${Date.now()}_${Math.random()}`, text: payload.text, source: 'joining' });
+          renderBuildAndTray();
+        } else if (payload.source === 'tray') {
+          const trayItem = state.trayTiles.find(t => t.id === payload.id);
+          if (trayItem && !trayItem.used) {
+            playTapSound();
+            trayItem.used = true;
+            state.placedTiles.push({ id: trayItem.id, text: trayItem.text, source: 'tray' });
+            renderBuildAndTray();
+          }
+        }
+      } catch (err) {}
+    });
+
+    document.getElementById('clear-zone-btn').addEventListener('click', () => {
+      if (state.answeredCurrent) return;
+      playTapSound();
+      state.placedTiles = [];
+      state.trayTiles.forEach(t => { t.used = false; });
+      renderBuildAndTray();
+    });
+
+    document.getElementById('speak-built-btn').addEventListener('click', () => {
+      const built = formatDisplaySentence(state.placedTiles.map(t => t.text));
+      if (built) speakText(built);
+    });
+
+    // =========================================================================
+    // 8. ANSWER CHECKING & TIMER
+    // =========================================================================
+    function formatDisplaySentence(tokens) {
+      return tokens
+        .join(' ')
+        .replace(/\s+([.,?])/g, '$1')
+        .trim();
+    }
+
+    function normalizeTokensForCompare(str) {
+      return str
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+    }
+
+    const pauseTimerBtn = document.getElementById('pause-timer-btn');
+    const timerControlsGroup = document.getElementById('timer-controls-group');
+    const timerSecondsDisplay = document.getElementById('timer-seconds-display');
+
+    function updatePauseButtonUI() {
+      const iconEl = document.getElementById('pause-btn-icon');
+      const labelEl = document.getElementById('pause-btn-label');
+      if (state.timerPaused) {
+        iconEl.textContent = '▶️';
+        labelEl.textContent = 'Resume';
+        pauseTimerBtn.className = 'px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 border-2 border-emerald-600 text-white text-xs md:text-sm font-black transition flex items-center gap-1 shadow-sm';
+      } else {
+        iconEl.textContent = '⏸️';
+        labelEl.textContent = 'Pause';
+        pauseTimerBtn.className = 'px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 border-2 border-amber-400 text-amber-900 text-xs md:text-sm font-black transition flex items-center gap-1 shadow-sm';
+      }
+    }
+
+    pauseTimerBtn.addEventListener('click', () => {
+      if (!state.timerEnabled || state.answeredCurrent) return;
+      state.timerPaused = !state.timerPaused;
+      updatePauseButtonUI();
+      updateTimerBar();
+    });
+
+    function startTimer() {
+      stopTimer();
+      state.timerPaused = false;
+      if (!state.timerEnabled) {
+        timerBarWrapper.classList.add('hidden');
+        timerControlsGroup.classList.add('hidden');
+        return;
+      }
+      timerBarWrapper.classList.remove('hidden');
+      timerControlsGroup.classList.remove('hidden');
+      pauseTimerBtn.disabled = false;
+      updatePauseButtonUI();
+      state.timerRemaining = state.timerSeconds;
+      updateTimerBar();
+
+      state.timerInterval = setInterval(() => {
+        if (state.timerPaused) return;
+        state.timerRemaining = Math.max(0, state.timerRemaining - 0.1);
+        updateTimerBar();
+        if (state.timerRemaining <= 0) {
+          stopTimer();
+          handleTimeOut();
+        }
+      }, 100);
+    }
+
+    function stopTimer() {
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+    }
+
+    function updateTimerBar() {
+      const pct = (state.timerRemaining / state.timerSeconds) * 100;
+      timerBar.style.width = `${pct}%`;
+      const secs = Math.ceil(state.timerRemaining);
+      const minsStr = String(Math.floor(secs / 60)).padStart(2, '0');
+      const secsStr = String(secs % 60).padStart(2, '0');
+      timerSecondsDisplay.textContent = state.timerPaused ? `${minsStr}:${secsStr} PAUSED` : `${minsStr}:${secsStr}`;
+      timerBar.classList.remove('bg-emerald-500', 'bg-amber-400', 'bg-rose-500', 'bg-slate-400');
+      if (state.timerPaused) {
+        timerBar.classList.add('bg-slate-400');
+      } else if (pct > 50) {
+        timerBar.classList.add('bg-emerald-500');
+      } else if (pct > 25) {
+        timerBar.classList.add('bg-amber-400');
+      } else {
+        timerBar.classList.add('bg-rose-500');
+      }
+    }
+
+    function handleTimeOut() {
+      if (state.answeredCurrent) return;
+      evaluateAnswer(true);
+    }
+
+    checkAnswerBtn.addEventListener('click', () => {
+      if (state.answeredCurrent) return;
+      evaluateAnswer(false);
+    });
+
+    function evaluateAnswer(timedOut) {
+      const q = state.questions[state.currentIndex];
+      const formattedTokens = state.placedTiles.map((t, idx) => formatTileForPosition(t.text, idx));
+      const rawAttempt = formattedTokens.join(' ');
+      const normalizedAttempt = normalizeTokensForCompare(rawAttempt);
+      const isCorrect = !timedOut && q.answers.some(ans => normalizeTokensForCompare(ans) === normalizedAttempt);
+
+      state.answeredCurrent = true;
+      stopTimer();
+      checkAnswerBtn.disabled = true;
+
+      const allAnswersList = q.answers.map(ans => formatDisplaySentence(ans.split(' ')));
+      const bestAnswerDisplay = allAnswersList[0];
+      const allAnswersHtml = allAnswersList
+        .map(a => `<div class="px-2.5 py-1 rounded-lg bg-white/80 border border-slate-200 text-slate-800">• ${a}</div>`)
+        .join('');
+      const userAnswerDisplay = formatDisplaySentence(formattedTokens) || '(No sentence built)';
+
+      if (isCorrect) {
+        state.streak += 1;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        state.correctCount += 1;
+        const points = 10 + Math.min(state.streak * 2, 10);
+        state.score += points;
+
+        playSuccessSound();
+        if (typeof confetti === 'function') {
+          confetti({ particleCount: 55, spread: 60, origin: { y: 0.7 } });
+        }
+        speakText(bestAnswerDisplay);
+
+        feedbackBanner.className = 'rounded-2xl p-3.5 text-sm md:text-base font-bold flex items-center justify-between gap-3 bg-emerald-50 border-2 border-emerald-400 text-emerald-900 animate-pop';
+        document.getElementById('feedback-icon').textContent = '✅';
+        document.getElementById('feedback-title').textContent = `Case Solved! +${points} pts`;
+        document.getElementById('feedback-detail').innerHTML = `
+          <div class="font-extrabold text-emerald-800 mb-1">All Accepted Combinations (${allAnswersList.length}):</div>
+          <div class="space-y-1">${allAnswersHtml}</div>
+        `;
+      } else {
+        state.streak = 0;
+        state.mistakes.push({
+          topic: q.topic,
+          userAnswer: userAnswerDisplay,
+          correctAnswer: bestAnswerDisplay,
+          tip: q.tip
+        });
+
+        playErrorSound();
+        buildZone.classList.add('animate-shake');
+        setTimeout(() => buildZone.classList.remove('animate-shake'), 400);
+
+        feedbackBanner.className = 'rounded-2xl p-3.5 text-sm md:text-base font-bold flex items-center justify-between gap-3 bg-rose-50 border-2 border-rose-400 text-rose-900 animate-pop';
+        document.getElementById('feedback-icon').textContent = timedOut ? '⏰' : '❌';
+        document.getElementById('feedback-title').textContent = timedOut ? "Time's Up!" : 'Almost! Check the clue:';
+        document.getElementById('feedback-detail').innerHTML = `
+          <div class="font-extrabold text-rose-800 mb-1">All Accepted Combinations (${allAnswersList.length}):</div>
+          <div class="space-y-1 mb-1.5">${allAnswersHtml}</div>
+          <div class="text-amber-800 font-bold">💡 ${q.tip}</div>
+        `;
+      }
+
+      document.getElementById('streak-display').textContent = state.streak;
+      document.getElementById('score-display').textContent = state.score;
+
+      const nextBtn = document.getElementById('next-question-btn');
+      nextBtn.textContent = state.currentIndex + 1 >= state.questions.length ? 'See Case Report ▶' : 'Next Case ▶';
+      feedbackBanner.classList.remove('hidden');
+    }
+
+    document.getElementById('next-question-btn').addEventListener('click', () => {
+      state.currentIndex += 1;
+      if (state.currentIndex >= state.questions.length) {
+        showSummary();
+      } else {
+        renderQuestion();
+      }
+    });
+
+    function showSummary() {
+      stopTimer();
+      const total = state.questions.length;
+      const accuracy = total > 0 ? Math.round((state.correctCount / total) * 100) : 0;
+
+      document.getElementById('summary-subtitle').textContent = `${state.playerName} solved ${state.correctCount} of ${total} detective sentences!`;
+      document.getElementById('final-score').textContent = state.score;
+      document.getElementById('final-accuracy').textContent = `${accuracy}%`;
+      document.getElementById('final-streak').textContent = state.bestStreak;
+
+      const mistakesList = document.getElementById('mistakes-list');
+      mistakesList.innerHTML = '';
+      if (state.mistakes.length === 0) {
+        mistakesList.innerHTML = '<div class="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-emerald-800 text-base font-extrabold text-center">🎉 Zero mistakes! Master Detective badge earned!</div>';
+      } else {
+        state.mistakes.forEach(m => {
+          const item = document.createElement('div');
+          item.className = 'p-3.5 rounded-2xl bg-slate-50 border-2 border-slate-200 text-sm space-y-1';
+          item.innerHTML = `
+            <div class="font-black text-indigo-700">🔍 ${m.topic}</div>
+            <div class="text-rose-700 font-semibold"><strong>Your sentence:</strong> ${m.userAnswer}</div>
+            <div class="text-emerald-700 font-bold"><strong>Correct:</strong> ${m.correctAnswer}</div>
+            <div class="text-slate-600 text-xs font-semibold">${m.tip}</div>
+          `;
+          mistakesList.appendChild(item);
+        });
+      }
+
+      if (typeof confetti === 'function' && accuracy >= 70) {
+        confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+      }
+      showScreen(summaryScreen);
+    }
+
+    // =========================================================================
+    // 9. VOCABULARY WORD BANK & TAP-TO-DEFINE
+    // =========================================================================
+    const VOCAB_BANK = {
+      People: [
+        { word: 'detective', pos: 'noun', meaning: 'a person who solves crimes', example: 'The detective searched for clues.' },
+        { word: 'witness', pos: 'noun', meaning: 'a person who saw what happened', example: 'The witness described the thief.' },
+        { word: 'suspect', pos: 'noun', meaning: 'a person thought to have committed a crime', example: 'The suspect had a strong alibi.' },
+        { word: 'victim', pos: 'noun', meaning: 'a person harmed by a crime', example: 'The victim reported the missing jewelry.' },
+        { word: 'forensic scientist', pos: 'noun', meaning: 'a scientist who studies evidence from crimes', example: 'The forensic scientist examined the fingerprints.' }
+      ],
+      Evidence: [
+        { word: 'crime scene', pos: 'noun', meaning: 'the place where a crime happened', example: 'Police secured the crime scene.' },
+        { word: 'fingerprint', pos: 'noun', meaning: 'a mark left by a person’s finger', example: 'A fingerprint was discovered on the door handle.' },
+        { word: 'bloodstain', pos: 'noun', meaning: 'a mark left by blood', example: 'The detective found a bloodstain on the carpet.' },
+        { word: 'strand of hair', pos: 'noun', meaning: 'a single piece of hair', example: 'A strand of hair was found on the jacket.' },
+        { word: 'footprint', pos: 'noun', meaning: 'a mark left by a shoe or foot', example: 'There were muddy footprints near the window.' },
+        { word: 'shoeprint', pos: 'noun', meaning: 'a mark made by a shoe', example: 'The shoeprint matched the suspect’s shoes.' },
+        { word: 'DNA sample', pos: 'noun', meaning: 'material from the body used for identification', example: 'The DNA sample came from a strand of hair.' },
+        { word: 'evidence bag', pos: 'noun', meaning: 'a special bag used to store evidence safely', example: 'The detective placed the hair in an evidence bag.' },
+        { word: 'magnifying glass', pos: 'noun', meaning: 'a tool that makes tiny clues look bigger', example: 'She used a magnifying glass to examine the clue.' },
+        { word: 'alibi', pos: 'noun', meaning: 'proof that a person was somewhere else', example: 'Sam had a strong alibi.' }
+      ],
+      Actions: [
+        { word: 'investigate', pos: 'verb', meaning: 'to carefully examine a crime', example: 'Detectives investigate crimes.' },
+        { word: 'examine', pos: 'verb', meaning: 'to look at something very closely', example: 'Detective Leo examined the crime scene.' },
+        { word: 'inspect', pos: 'verb', meaning: 'to check carefully for clues', example: 'Officers inspected the broken window.' },
+        { word: 'discover', pos: 'verb', meaning: 'to find something hidden or new', example: 'She discovered a hidden key.' },
+        { word: 'question', pos: 'verb', meaning: 'to ask someone for information', example: 'The officer questioned the witness.' },
+        { word: 'interview', pos: 'verb', meaning: 'to ask someone detailed questions', example: 'The detective interviewed several people.' },
+        { word: 'analyze', pos: 'verb', meaning: 'to study evidence carefully in a lab', example: 'Scientists analyzed the DNA sample.' },
+        { word: 'collect', pos: 'verb', meaning: 'to gather clues together', example: 'They collected evidence at the scene.' },
+        { word: 'solve', pos: 'verb', meaning: 'to find the answer to a mystery', example: 'The detective solved the mystery.' }
+      ],
+      Adjectives: [
+        { word: 'suspicious', pos: 'adj', meaning: 'seeming unusual or questionable', example: 'His behavior seemed suspicious.' },
+        { word: 'mysterious', pos: 'adj', meaning: 'difficult to explain', example: 'It was a mysterious disappearance.' },
+        { word: 'stolen', pos: 'adj', meaning: 'taken without permission', example: 'The stolen trophy was recovered.' },
+        { word: 'missing', pos: 'adj', meaning: 'lost or gone', example: 'A valuable painting was missing.' },
+        { word: 'innocent', pos: 'adj', meaning: 'not guilty of a crime', example: 'The suspect was innocent.' },
+        { word: 'guilty', pos: 'adj', meaning: 'responsible for a crime', example: 'The court found him guilty.' }
+      ]
+    };
+
+    const FLAT_VOCAB = Object.values(VOCAB_BANK).flat();
+    let activeWordBankCat = 'People';
+
+    function highlightVocabInText(text) {
+      let out = text;
+      const sorted = [...FLAT_VOCAB].sort((a, b) => b.word.length - a.word.length);
+      sorted.forEach(item => {
+        const escaped = item.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`\\b(${escaped}s?)\\b`, 'gi');
+        out = out.replace(regex, (m) => `<span data-vocab-key="${item.word}" class="underline decoration-dotted decoration-2 decoration-purple-500 text-purple-800 hover:bg-purple-100 rounded px-0.5 cursor-pointer">${m}</span>`);
+      });
+      return out;
+    }
+
+    function showVocabPopover(key) {
+      const item = FLAT_VOCAB.find(v => v.word.toLowerCase() === key.toLowerCase());
+      if (!item) return;
+      document.getElementById('vp-word').textContent = item.word;
+      document.getElementById('vp-pos').textContent = item.pos;
+      document.getElementById('vp-meaning').textContent = item.meaning;
+      document.getElementById('vp-example').textContent = `"${item.example}"`;
+      document.getElementById('vocab-popover').classList.remove('hidden');
+      speakText(item.word);
+    }
+
+    document.getElementById('vp-close').addEventListener('click', () => {
+      document.getElementById('vocab-popover').classList.add('hidden');
+    });
+
+    function openWordBankModal() {
+      renderWordBankTabs();
+      renderWordBankGrid();
+      document.getElementById('wordbank-modal').classList.remove('hidden');
+    }
+
+    function renderWordBankTabs() {
+      const tabsEl = document.getElementById('wordbank-tabs');
+      tabsEl.innerHTML = '';
+      Object.keys(VOCAB_BANK).forEach(cat => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = cat === activeWordBankCat
+          ? 'px-4 py-2 rounded-xl bg-purple-600 text-white font-black text-sm shadow'
+          : 'px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-sm';
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+          activeWordBankCat = cat;
+          renderWordBankTabs();
+          renderWordBankGrid();
+        });
+        tabsEl.appendChild(btn);
+      });
+    }
+
+    function renderWordBankGrid() {
+      const gridEl = document.getElementById('wordbank-grid');
+      gridEl.innerHTML = '';
+      VOCAB_BANK[activeWordBankCat].forEach(item => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'text-left p-3.5 rounded-2xl bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 transition';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-base font-black text-purple-900">${item.word}</span>
+            <span class="px-2 py-0.5 rounded-full bg-white text-purple-700 text-xs font-black border border-purple-200">${item.pos}</span>
+          </div>
+          <div class="text-sm font-bold text-slate-700 mt-1">${item.meaning}</div>
+          <div class="text-xs font-semibold text-slate-500 italic mt-1">${item.example}</div>
+        `;
+        card.addEventListener('click', () => speakText(`${item.word}. ${item.example}`));
+        gridEl.appendChild(card);
+      });
+    }
+
+    document.getElementById('menu-wordbank-btn').addEventListener('click', openWordBankModal);
+    document.getElementById('game-wordbank-btn').addEventListener('click', openWordBankModal);
+    document.getElementById('rb-wordbank-btn').addEventListener('click', openWordBankModal);
+    document.getElementById('wh-wordbank-btn').addEventListener('click', openWordBankModal);
+    document.getElementById('close-wordbank-x').addEventListener('click', () => {
+      document.getElementById('wordbank-modal').classList.add('hidden');
+    });
+
+    // =========================================================================
+    // 10. CLASS 5M2 6-TABLE SCOREBOARD
+    // =========================================================================
+    const tableScores = [0, 0, 0, 0, 0, 0];
+    const tablesScoreboard = document.getElementById('tables-scoreboard');
+
+    function renderTableScoreboard() {
+      tablesScoreboard.innerHTML = '';
+      tableScores.forEach((sc, idx) => {
+        const box = document.createElement('div');
+        box.className = 'flex items-center justify-between bg-emerald-50 border-2 border-emerald-200 rounded-xl px-2.5 py-1 text-xs font-black text-emerald-900';
+        box.innerHTML = `
+          <span>T${idx + 1}: <span class="text-emerald-700">${sc}</span></span>
+          <button type="button" class="px-1.5 py-0.5 rounded bg-emerald-500 hover:bg-emerald-400 text-white font-black">+1</button>
+        `;
+        box.querySelector('button').addEventListener('click', () => {
+          tableScores[idx] += 1;
+          playSuccessSound();
+          renderTableScoreboard();
+        });
+        tablesScoreboard.appendChild(box);
+      });
+    }
+
+    document.getElementById('toggle-tables-btn').addEventListener('click', () => {
+      tablesScoreboard.classList.toggle('hidden');
+      renderTableScoreboard();
+    });
+
+    // =========================================================================
+    // 11. CRIME REPORT BUILDER (GUIDED FRAMES)
+    // =========================================================================
+    const REPORT_CASES = {
+      trophy: {
+        prompt: 'The school trophy disappeared during lunch. The detective found muddy footprints, a torn note, and a fingerprint on the display case. Three students were near the hall that day.',
+        frames: [
+          { prefix: 'When the detective arrived at the', blank: 0, suffix: ', she noticed a stolen trophy.' },
+          { prefix: 'The detective found a', blank: 1, suffix: 'and a torn note near the display case.' },
+          { prefix: 'A', blank: 2, suffix: 'was placed carefully in an evidence bag.' },
+          { prefix: 'The forensic scientist examined the', blank: 3, suffix: 'and identified the suspect.' },
+          { prefix: 'In the end, the mystery was', blank: 4, suffix: 'when the culprit confessed!' }
+        ],
+        chips: ['crime scene', 'muddy footprint', 'fingerprint', 'DNA sample', 'solved', 'shoeprint', 'strand of hair', 'evidence bag', 'magnifying glass']
+      },
+      cruz: {
+        prompt: 'When Detective Cruz arrived at the crime scene, she noticed a bloodstain on the floor near the broken window. A fingerprint was found on a jewelry box.',
+        frames: [
+          { prefix: 'Detective Cruz inspected the', blank: 0, suffix: 'near the broken window.' },
+          { prefix: 'A', blank: 1, suffix: 'on the jewelry box provided important evidence.' },
+          { prefix: 'The forensic scientist placed a', blank: 2, suffix: 'into an evidence bag.' },
+          { prefix: 'At first, the suspect seemed', blank: 3, suffix: ', but he had a strong alibi.' },
+          { prefix: 'After analyzing the evidence, Detective Cruz', blank: 4, suffix: 'the case.' }
+        ],
+        chips: ['bloodstain', 'fingerprint', 'strand of hair', 'suspicious', 'solved', 'shoeprint', 'DNA sample', 'magnifying glass', 'innocent']
+      }
+    };
+
+    const SENTENCE_STARTERS = [
+      'When the detective arrived at the scene, ...',
+      'The first clue was ...',
+      'A witness reported that ...',
+      'The suspect seemed suspicious because ...',
+      'After investigating carefully, ...',
+      'The detective finally discovered ...',
+      'In the end, the mystery was solved when ...'
+    ];
+
+    const rbState = { caseKey: 'trophy', selectedBlank: 0, answers: ['', '', '', '', ''] };
+
+    function renderReportBuilder() {
+      const data = REPORT_CASES[rbState.caseKey];
+      document.getElementById('rb-case-prompt').textContent = data.prompt;
+
+      document.querySelectorAll('.rb-case-btn').forEach(btn => {
+        const active = btn.dataset.case === rbState.caseKey;
+        btn.className = active
+          ? 'rb-case-btn px-3 py-1.5 rounded-xl bg-purple-600 text-white text-xs md:text-sm font-black'
+          : 'rb-case-btn px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 border-2 border-slate-300 text-xs md:text-sm font-black';
+      });
+
+      const framesEl = document.getElementById('rb-frames-container');
+      framesEl.innerHTML = '';
+      data.frames.forEach((f, idx) => {
+        const row = document.createElement('div');
+        row.className = 'p-2.5 rounded-2xl bg-sky-50 border-2 border-sky-100 leading-relaxed';
+        const val = rbState.answers[idx] || '________';
+        const isSelected = rbState.selectedBlank === idx;
+        const blankBtn = `<button type="button" data-blank="${idx}" class="rb-blank-btn px-3 py-0.5 mx-1 rounded-xl border-2 font-black transition ${isSelected ? 'bg-amber-200 border-amber-500 text-amber-900' : rbState.answers[idx] ? 'bg-emerald-100 border-emerald-400 text-emerald-900' : 'bg-white border-dashed border-sky-400 text-sky-600'}">${val}</button>`;
+        row.innerHTML = `${f.prefix} ${blankBtn} ${f.suffix}`;
+        framesEl.appendChild(row);
+      });
+
+      framesEl.querySelectorAll('.rb-blank-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          rbState.selectedBlank = Number(btn.dataset.blank);
+          playTapSound();
+          renderReportBuilder();
+        });
+      });
+
+      const chipsEl = document.getElementById('rb-chips-container');
+      chipsEl.innerHTML = '';
+      data.chips.forEach(chip => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'px-3.5 py-2 rounded-xl bg-white hover:bg-purple-50 border-2 border-purple-300 border-b-4 text-purple-900 font-extrabold text-sm md:text-base transition';
+        btn.textContent = chip;
+        btn.addEventListener('click', () => {
+          playTapSound();
+          rbState.answers[rbState.selectedBlank] = chip;
+          if (rbState.selectedBlank < data.frames.length - 1) rbState.selectedBlank += 1;
+          renderReportBuilder();
+        });
+        chipsEl.appendChild(btn);
+      });
+
+      const fullSentences = data.frames.map((f, i) => `${f.prefix} ${rbState.answers[i] || '___'} ${f.suffix}`);
+      document.getElementById('rb-preview').innerHTML = fullSentences.map(s => `<p class="mb-2">${s}</p>`).join('');
+    }
+
+    function renderReportStarters() {
+      const list = document.getElementById('rb-starters-list');
+      list.innerHTML = '';
+      SENTENCE_STARTERS.forEach(st => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'px-2.5 py-1 rounded-lg bg-white hover:bg-amber-100 border border-amber-300 text-xs font-bold text-amber-900 transition';
+        btn.textContent = st;
+        btn.addEventListener('click', () => speakText(st));
+        list.appendChild(btn);
+      });
+    }
+
+    document.getElementById('open-report-builder-btn').addEventListener('click', () => {
+      showScreen(document.getElementById('report-builder-screen'));
+      renderReportBuilder();
+      renderReportStarters();
+    });
+    document.getElementById('rb-menu-btn').addEventListener('click', () => showScreen(menuScreen));
+    document.querySelectorAll('.rb-case-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        rbState.caseKey = btn.dataset.case;
+        rbState.selectedBlank = 0;
+        rbState.answers = ['', '', '', '', ''];
+        renderReportBuilder();
+      });
+    });
+    document.getElementById('rb-clear-btn').addEventListener('click', () => {
+      rbState.selectedBlank = 0;
+      rbState.answers = ['', '', '', '', ''];
+      renderReportBuilder();
+    });
+    document.getElementById('rb-listen-btn').addEventListener('click', () => {
+      const data = REPORT_CASES[rbState.caseKey];
+      const text = data.frames.map((f, i) => `${f.prefix} ${rbState.answers[i] || 'blank'} ${f.suffix}`).join(' ');
+      speakText(text);
+    });
+
+    // =========================================================================
+    // 12. 9-10/10 WRITING HELPER & RUBRIC STUDIO
+    // =========================================================================
+    const FORMULA_STEPS = [
+      { title: '1. Setting + Crime', desc: 'Introduce WHEN, WHERE, and WHAT crime happened. Example: "One rainy afternoon, the school museum was unusually quiet. Suddenly, the principal discovered that a valuable gold trophy had vanished."' },
+      { title: '2. Investigation', desc: 'Show the detective examining the scene and collecting 3–5 forensic clues (bloodstain, fingerprint, strand of hair) into evidence bags.' },
+      { title: '3. Witness Interview', desc: 'Include direct dialogue with a strong reporting verb! Example: `"I saw someone wearing a blue jacket leave the room," whispered a nervous witness.`' },
+      { title: '4. Red Herring', desc: 'Add a false clue that tricks the detective at first! Example: "At first, the detective suspected Sam because he owned a blue jacket. However, Sam had a strong alibi."' },
+      { title: '5. Twist & Resolution', desc: 'Reveal the real culprit using lab evidence (fingerprint / DNA sample) and close the case with a satisfying ending!' }
+    ];
+
+    const SUCCESS_CRITERIA = [
+      'Clear setting (time & place)',
+      'Specific crime introduced',
+      'Detective, victim & suspect included',
+      '3–5 detailed crime-scene clues',
+      'Witness dialogue with strong reporting verb',
+      'Red herring (false clue)',
+      'Unexpected twist ending',
+      'Strong resolution (case solved)',
+      'Forensic / detective vocabulary',
+      'Vivid & descriptive adjectives',
+      'Consistent past tense throughout',
+      'Smooth 3-part paragraph organization & transitions',
+      'Suspenseful, clear, objective tone (120–150 words)'
+    ];
+
+    const TOP_MODELS = [
+      {
+        tab: '🏆 1. Missing Trophy',
+        title: 'Example 1: The Missing Trophy',
+        paragraphs: [
+          'One rainy afternoon, the students of Green Valley School were shocked to discover that the championship trophy had disappeared from the display case. Principal Brown immediately called Detective Lee to investigate the mysterious theft.',
+          'When Detective Lee arrived at the crime scene, he carefully examined the area. He discovered a muddy shoeprint, a fingerprint on the glass case, and a strand of hair caught on a nearby shelf. The evidence was collected and placed into evidence bags.',
+          'Soon, Detective Lee interviewed a witness. "I saw Jake near the trophy case during lunch," whispered Emma nervously.',
+          'At first, Jake became the main suspect. However, after questioning him, Detective Lee learned that Jake had been playing basketball with his friends at the time of the theft.',
+          'Later, the detective compared the fingerprint with fingerprints from several students. To everyone’s surprise, the fingerprint matched the school janitor. The janitor admitted that he had taken the trophy to repair a broken base but forgot to tell anyone.',
+          'In the end, the trophy was returned, and the mystery was solved.'
+        ],
+        rubricHtml: `
+          <div class="font-black text-indigo-800 mb-2">Why This Scores in the Highest Band:</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-emerald-700">Content (10/10):</strong> Clear crime • Detective, suspect, witness • 3 clues • Resolution</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-sky-700">Language (9–10/10):</strong> examined, discovered, interviewed, compared, admitted</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-purple-700">Organization (5/5):</strong> Introduction → Investigation → Interview → Solution</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-amber-700">Style &amp; Tone (5/5):</strong> Suspenseful, logical, easy to follow</div>
+          </div>
+        `
+      },
+      {
+        tab: '💎 2. Museum Mystery',
+        title: 'Example 2: The Museum Mystery',
+        paragraphs: [
+          'Late on Friday evening, a valuable diamond necklace disappeared from the city museum. The necklace belonged to a famous collector who was visiting the town. Detective Maria Gomez was assigned to solve the case.',
+          'At the crime scene, Detective Gomez noticed a small bloodstain near a broken display case. She also found a fingerprint on the lock and a torn piece of blue fabric hanging from the window. A forensic scientist carefully stored the evidence in sealed evidence bags.',
+          'While questioning witnesses, Detective Gomez learned that a security guard had seen a man wearing a blue jacket leaving the museum shortly before closing time. "I am sure the jacket was bright blue," stated the guard.',
+          'The detective immediately suspected Mr. Harris, a museum employee who often wore a blue jacket. However, security camera footage showed that he had already gone home.',
+          'The investigation continued. After examining the fingerprint evidence, Detective Gomez discovered that it belonged to a delivery driver who had entered the museum earlier that day. The driver confessed that he had stolen the necklace to pay off a debt.',
+          'The stolen necklace was recovered, and the museum reopened safely the next day.'
+        ],
+        rubricHtml: `
+          <div class="font-black text-indigo-800 mb-2">Why This Scores in the Highest Band:</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-emerald-700">Content (10/10):</strong> Strong setting • Victim, detective, suspect • Multiple clues • Witness statement • Complete conclusion</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-rose-700">Advanced Features:</strong> Red herring (blue-jacket employee) • Forensic evidence • Motive</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-sky-700">Language (10/10):</strong> noticed, examining, discovered, confessed, recovered</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-amber-700">Style (5/5):</strong> Feels like a real detective report • Good suspense</div>
+          </div>
+        `
+      },
+      {
+        tab: '🔬 3. Science Lab Break-In',
+        title: 'Example 3: The Science Lab Break-In (Top Examiner Pick)',
+        paragraphs: [
+          'One stormy night, someone broke into Lincoln Middle School’s science lab and stole an expensive tablet containing important research notes. The next morning, Detective Carter arrived to investigate.',
+          'The crime scene was a mess. Papers were scattered across the floor, and a window had been forced open. Near the window, Detective Carter found a bloodstain, a strand of hair, and several muddy footprints. Every clue was carefully collected and placed into evidence bags.',
+          'As the detective questioned witnesses, one student shared important information. "I heard strange noises while I was staying late for basketball practice," explained Kevin.',
+          'At first, the detective suspected an older student who had recently been punished for damaging school property. However, the footprints did not match his shoes.',
+          'After analyzing the evidence, Detective Carter discovered that the strand of hair belonged to a maintenance worker. The worker confessed that he had entered the lab late at night to steal the tablet and sell it online.',
+          'The tablet was recovered, and the school’s research project was saved. Thanks to careful investigation and strong evidence, Detective Carter solved the case.'
+        ],
+        rubricHtml: `
+          <div class="font-black text-indigo-800 mb-2">Why Example 3 Is Slightly Stronger Than the Others:</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-emerald-700">Content (10/10):</strong> Strong beginning • Detailed crime scene • Witness • Suspect • Resolution</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-sky-700">Language (10/10):</strong> scattered, forced open, questioned, analyzing, confessed, recovered</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-purple-700">Organization (5/5):</strong> 1. Crime → 2. Evidence → 3. Witness → 4. False suspect → 5. True culprit</div>
+            <div class="bg-white rounded-xl p-2.5 border border-indigo-100"><strong class="text-amber-700">Style &amp; Tone (5/5):</strong> Builds suspense • Realistic detective &amp; forensic clues</div>
+          </div>
+          <div class="bg-amber-50 border border-amber-300 rounded-xl p-2.5 text-amber-900">
+            <strong>Examiner Edge:</strong> Combines 3 forensic clues (bloodstain, strand of hair, footprints), witness dialogue, a red herring, specific scene description, sophisticated verbs, clear cause-and-effect, and zero wasted sentences.
+          </div>
+        `
+      },
+      {
+        tab: '🏅 4. Detective Leo (120–150w)',
+        title: 'Detective Leo: Quick 5-Paragraph Formula (120–150 Words)',
+        paragraphs: [
+          'One rainy afternoon, the school museum was unusually quiet. Suddenly, the principal discovered that a valuable gold trophy had vanished from its display cabinet.',
+          'Detective Leo carefully examined the crime scene. He discovered a bloodstain near the cabinet, a fingerprint on the glass door, and a strand of hair beside a knocked-over bottle. All the evidence was placed into evidence bags.',
+          '"I saw someone wearing a blue jacket leave the room," whispered a nervous witness.',
+          'At first, the detective suspected Sam because he owned a blue jacket. However, Sam had a strong alibi.',
+          'After comparing the fingerprint and hair sample, Detective Leo identified the real culprit. The stolen trophy was recovered, and the mystery was finally solved.'
+        ],
+        rubricHtml: `
+          <div class="font-black text-indigo-800 mb-1">5-Paragraph Formula Check:</div>
+          <p>Setting + Crime → Investigation (3 clues + evidence bags) → Witness Interview → Red Herring (blue jacket + alibi) → Resolution.</p>
+        `
+      }
+    ];
+    let activeModelIdx = 0;
+
+    function renderModelModal() {
+      const m = TOP_MODELS[activeModelIdx];
+      document.getElementById('model-modal-title').textContent = m.title;
+
+      const tabsEl = document.getElementById('model-tabs');
+      tabsEl.innerHTML = '';
+      TOP_MODELS.forEach((item, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = idx === activeModelIdx
+          ? 'px-3.5 py-2 rounded-xl bg-amber-400 text-slate-900 font-black text-xs md:text-sm shadow'
+          : 'px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs md:text-sm';
+        btn.textContent = item.tab;
+        btn.addEventListener('click', () => {
+          activeModelIdx = idx;
+          renderModelModal();
+        });
+        tabsEl.appendChild(btn);
+      });
+
+      const banner = document.getElementById('model-highlight-banner');
+      if (activeHighlightIdx !== null) {
+        document.getElementById('model-highlight-label').textContent = `🔍 Highlighting: ${SUCCESS_CRITERIA[activeHighlightIdx]}`;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+      const mp = document.getElementById('model-paragraphs');
+      mp.innerHTML = m.paragraphs.map((p, i) => `<p class="p-2.5 rounded-xl bg-amber-50 border border-amber-200"><strong class="text-amber-800">P${i + 1}:</strong> ${applyModelHighlights(p)}</p>`).join('');
+      document.getElementById('model-rubric-box').innerHTML = m.rubricHtml;
+    }
+
+    let whActiveStep = 0;
+    let whShowWeak = false;
+    const whChecked = new Array(SUCCESS_CRITERIA.length).fill(false);
+
+    function renderWritingHelper() {
+      const tabsEl = document.getElementById('wh-formula-tabs');
+      tabsEl.innerHTML = '';
+      FORMULA_STEPS.forEach((step, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = idx === whActiveStep
+          ? 'px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs md:text-sm font-black shadow'
+          : 'px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs md:text-sm font-extrabold';
+        btn.textContent = step.title;
+        btn.addEventListener('click', () => {
+          whActiveStep = idx;
+          renderWritingHelper();
+        });
+        tabsEl.appendChild(btn);
+      });
+      document.getElementById('wh-formula-detail').textContent = FORMULA_STEPS[whActiveStep].desc;
+    }
+
+    function populateInsertChips(containerId, words, colorCls) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      const textarea = document.getElementById('wh-draft-textarea');
+      words.forEach(w => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `px-2.5 py-1 rounded-lg border text-xs font-extrabold transition ${colorCls}`;
+        btn.textContent = w;
+        btn.addEventListener('click', () => {
+          const start = textarea.selectionStart || textarea.value.length;
+          const before = textarea.value.slice(0, start);
+          const after = textarea.value.slice(start);
+          const spacer = before && !before.endsWith(' ') && !before.endsWith('\n') ? ' ' : '';
+          textarea.value = before + spacer + w + ' ' + after;
+          textarea.focus();
+          updateWordCount();
+        });
+        el.appendChild(btn);
+      });
+    }
+
+    function updateWordCount() {
+      const text = document.getElementById('wh-draft-textarea').value.trim();
+      const count = text ? text.split(/\s+/).length : 0;
+      const badge = document.getElementById('wh-word-count-badge');
+      badge.textContent = `Words: ${count} / 120–150`;
+      badge.className = count >= 120 && count <= 150
+        ? 'px-3 py-1.5 rounded-xl bg-emerald-100 border-2 border-emerald-400 text-emerald-800 text-xs md:text-sm font-black'
+        : 'px-3 py-1.5 rounded-xl bg-slate-100 border-2 border-slate-300 text-slate-800 text-xs md:text-sm font-black';
+    }
+
+    const CRITERIA_HIGHLIGHTS = [
+      ['One rainy afternoon', 'Green Valley School', 'Late on Friday evening', 'city museum', 'One stormy night', 'Lincoln Middle School’s science lab', 'the school museum'],
+      ['championship trophy had disappeared', 'valuable diamond necklace disappeared', 'stole an expensive tablet', 'valuable gold trophy had vanished'],
+      ['Principal Brown', 'Detective Lee', 'Jake', 'school janitor', 'famous collector', 'Detective Maria Gomez', 'Mr. Harris', 'delivery driver', 'Detective Carter', 'older student', 'maintenance worker', 'Detective Leo', 'Sam'],
+      ['muddy shoeprint', 'fingerprint on the glass case', 'strand of hair', 'small bloodstain', 'fingerprint on the lock', 'torn piece of blue fabric', 'muddy footprints', 'fingerprint on the glass door', 'bloodstain'],
+      ['"I saw Jake near the trophy case during lunch," whispered Emma nervously.', '"I am sure the jacket was bright blue," stated the guard.', '"I heard strange noises while I was staying late for basketball practice," explained Kevin.', '"I saw someone wearing a blue jacket leave the room," whispered a nervous witness.'],
+      ['At first, Jake became the main suspect. However, after questioning him, Detective Lee learned that Jake had been playing basketball with his friends at the time of the theft.', 'The detective immediately suspected Mr. Harris, a museum employee who often wore a blue jacket. However, security camera footage showed that he had already gone home.', 'At first, the detective suspected an older student who had recently been punished for damaging school property. However, the footprints did not match his shoes.', 'At first, the detective suspected Sam because he owned a blue jacket. However, Sam had a strong alibi.'],
+      ['To everyone’s surprise, the fingerprint matched the school janitor.', 'belonged to a delivery driver', 'belonged to a maintenance worker', 'identified the real culprit'],
+      ['the trophy was returned, and the mystery was solved', 'The stolen necklace was recovered, and the museum reopened safely the next day', 'The tablet was recovered, and the school’s research project was saved', 'The stolen trophy was recovered, and the mystery was finally solved'],
+      ['crime scene', 'evidence bags', 'muddy shoeprint', 'fingerprint', 'strand of hair', 'bloodstain', 'forensic scientist', 'muddy footprints', 'alibi', 'hair sample'],
+      ['rainy', 'shocked', 'mysterious', 'muddy', 'broken', 'valuable', 'famous', 'nervous', 'bright blue', 'stormy', 'expensive', 'scattered', 'unusually quiet', 'stolen'],
+      ['examined', 'discovered', 'interviewed', 'compared', 'admitted', 'noticed', 'confessed', 'recovered', 'questioned', 'explained', 'suspected', 'analyzed', 'solved'],
+      ['When Detective Lee arrived', 'Soon,', 'At first,', 'However,', 'Later,', 'In the end,', 'While questioning witnesses,', 'The investigation continued.', 'After examining', 'As the detective questioned', 'After analyzing', 'After comparing'],
+      ['unusually quiet', 'Suddenly,', 'mysterious theft', 'To everyone’s surprise', 'a window had been forced open', 'The crime scene was a mess', 'immediately suspected']
+    ];
+    let activeHighlightIdx = null;
+
+    function applyModelHighlights(text) {
+      if (activeHighlightIdx === null) return text;
+      const phrases = [...(CRITERIA_HIGHLIGHTS[activeHighlightIdx] || [])].sort((a, b) => b.length - a.length);
+      if (!phrases.length) return text;
+      const pattern = phrases.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      const regex = new RegExp(`(${pattern})`, 'gi');
+      return text.replace(regex, '<mark class="bg-yellow-300 text-slate-900 px-1 rounded font-black ring-2 ring-amber-400">$1</mark>');
+    }
+
+    function renderWritingChecklist() {
+      const listEl = document.getElementById('wh-checklist');
+      listEl.innerHTML = '';
+      SUCCESS_CRITERIA.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center justify-between gap-2 p-2 rounded-xl bg-rose-50/70 hover:bg-rose-100/70 border border-rose-200 transition';
+        row.innerHTML = `
+          <label class="flex items-center gap-2 cursor-pointer flex-1">
+            <input type="checkbox" ${whChecked[idx] ? 'checked' : ''} class="w-4 h-4 accent-rose-600 rounded shrink-0" />
+            <span class="${whChecked[idx] ? 'line-through text-slate-400' : 'text-slate-800'}">${item}</span>
+          </label>
+          <button type="button" class="wh-find-btn shrink-0 px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-900 text-xs font-black transition" title="Highlight in 10/10 Models">
+            🔍 Highlight
+          </button>
+        `;
+        row.querySelector('input').addEventListener('change', e => {
+          whChecked[idx] = e.target.checked;
+          const totalDone = whChecked.filter(Boolean).length;
+          document.getElementById('wh-rubric-score-badge').textContent = `Checklist: ${totalDone} / ${SUCCESS_CRITERIA.length}`;
+          renderWritingChecklist();
+        });
+        row.querySelector('.wh-find-btn').addEventListener('click', () => {
+          activeHighlightIdx = idx;
+          renderModelModal();
+          document.getElementById('model-modal').classList.remove('hidden');
+        });
+        listEl.appendChild(row);
+      });
+    }
+
+    document.getElementById('open-writing-helper-btn').addEventListener('click', () => {
+      showScreen(document.getElementById('writing-helper-screen'));
+      renderWritingHelper();
+      populateInsertChips('wh-transitions', ['At first,', 'Soon,', 'Later,', 'After examining the evidence,', 'Meanwhile,', 'Finally,', 'In the end,'], 'bg-sky-50 hover:bg-sky-100 border-sky-300 text-sky-800');
+      populateInsertChips('wh-detective-verbs', ['examined', 'inspected', 'discovered', 'investigated', 'spotted', 'followed', 'questioned', 'analyzed', 'collected', 'arrested'], 'bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-800');
+      populateInsertChips('wh-reporting-verbs', ['whispered', 'mentioned', 'admitted', 'exclaimed', 'muttered'], 'bg-purple-50 hover:bg-purple-100 border-purple-300 text-purple-800');
+      populateInsertChips('wh-forensic-clues', ['bloodstain', 'evidence bag', 'strand of hair', 'DNA sample', 'shoeprint', 'magnifying glass', 'forensic scientist', 'muddy footprint', 'fingerprint'], 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-800');
+      renderWritingChecklist();
+      updateWordCount();
+    });
+
+    document.getElementById('wh-menu-btn').addEventListener('click', () => showScreen(menuScreen));
+    document.getElementById('wh-draft-textarea').addEventListener('input', updateWordCount);
+    document.getElementById('wh-listen-draft-btn').addEventListener('click', () => {
+      const txt = document.getElementById('wh-draft-textarea').value.trim();
+      if (txt) speakText(txt);
+    });
+    document.getElementById('wh-copy-draft-btn').addEventListener('click', () => {
+      const ta = document.getElementById('wh-draft-textarea');
+      ta.select();
+      try {
+        document.execCommand('copy');
+        const st = document.getElementById('wh-copy-status');
+        st.classList.remove('hidden');
+        setTimeout(() => st.classList.add('hidden'), 2000);
+      } catch (e) {}
+    });
+
+    document.getElementById('wh-style-toggle-btn').addEventListener('click', () => {
+      whShowWeak = !whShowWeak;
+      const box = document.getElementById('wh-style-box');
+      if (whShowWeak) {
+        box.innerHTML = `<div class="text-rose-700 font-black mb-1">❌ Weak (Too Simple):</div>"Tim stole the necklace. The detective found him."`;
+      } else {
+        box.innerHTML = `<div class="text-emerald-700 font-black mb-1">⭐ Strong (Suspenseful):</div>"Detective Mia noticed a muddy shoeprint beside the broken display case. A torn piece of blue fabric hung from the window latch. As she examined the evidence, she began to suspect that the thief was someone familiar with the museum."`;
+      }
+    });
+
+    document.getElementById('wh-model-btn').addEventListener('click', () => {
+      activeHighlightIdx = null;
+      renderModelModal();
+      document.getElementById('model-modal').classList.remove('hidden');
+    });
+    document.getElementById('clear-model-highlight-btn').addEventListener('click', () => {
+      activeHighlightIdx = null;
+      renderModelModal();
+    });
+    document.getElementById('close-model-x').addEventListener('click', () => document.getElementById('model-modal').classList.add('hidden'));
+    document.getElementById('listen-model-btn').addEventListener('click', () => speakText(TOP_MODELS[activeModelIdx].paragraphs.join(' ')));
+    document.getElementById('use-model-btn').addEventListener('click', () => {
+      document.getElementById('wh-draft-textarea').value = TOP_MODELS[activeModelIdx].paragraphs.join('\n\n');
+      updateWordCount();
+      document.getElementById('model-modal').classList.add('hidden');
+    });
+
+    // Update showScreen to include new screens
+    const origShowScreen = showScreen;
+    showScreen = function(screenEl) {
+      [menuScreen, gameScreen, summaryScreen, document.getElementById('report-builder-screen'), document.getElementById('writing-helper-screen')].forEach(el => {
+        if (el) el.classList.add('hidden');
+      });
+      screenEl.classList.remove('hidden');
+    };
+
+  </script>
+</body>
+</html>
